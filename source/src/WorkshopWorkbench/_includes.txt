@@ -1,0 +1,5 @@
+# Base compartida con el Jog (archivos, ayuda, laser.json), lo propio de la mesa (area de corte,
+# posiciones guardadas y sus macros de la SD) y el mapa de la cama y sus herramientas
+_workbench_base
+_workbench_cut
+_zones

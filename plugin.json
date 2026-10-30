@@ -1,0 +1,19 @@
+{
+  "id": "WorkshopWorkbench",
+  "name": "Workbench",
+  "author": "jhonf441",
+  "version": "2.21.4",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
+  "tags": [
+    "laser",
+    "cnc",
+    "work-zones"
+  ],
+  "dwcVersion": "3.6",
+  "dwcDependencies": [
+    "WorkshopService"
+  ],
+  "sbcRequired": false,
+  "data": {}
+}

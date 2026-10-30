@@ -1,0 +1,6 @@
+{
+	"cutarea": {
+		"invalid_laser_power_1_to_200": "invalid laser power (1 to 200 W)",
+		"there_is_no_known_laser_correction": "there is no known laser correction (no zone has one)"
+	}
+}

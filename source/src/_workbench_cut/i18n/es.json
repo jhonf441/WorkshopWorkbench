@@ -1,0 +1,6 @@
+{
+	"cutarea": {
+		"invalid_laser_power_1_to_200": "potencia del láser inválida (1 a 200 W)",
+		"there_is_no_known_laser_correction": "no hay corrección de láser conocida (ninguna zona la tiene)"
+	}
+}
