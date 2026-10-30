@@ -167,7 +167,7 @@
         if (inCut) {
           var free = tg.ctx.machine.free();
           if (tg.counts) p3.appendChild(tzEl("div", "tz-muted", i18nT('large.this_part_cuts_mm', { this_mm: Math.round(tg.counts.this_mm), v: rn.missing > 0.5 ? i18nT('large.then_mm_remain', { missing: Math.round(rn.missing) }) : i18nT('large.it_is_the_last_part') })));
-          tzSafetyRender(p3, function () { tgGrRender(tg, true); }); // glasses, lid, extraction, area clear: needed to burn the marks or cut
+          tzSafetyRender(p3, function () { tgGrRender(tg, true); }, "Laser"); // glasses, lid, extraction, area clear: needed to burn the marks or cut
           if (rn.missing > 0.5) {
             var hasMarks = tg.data.marks && tg.data.marks.part === tgGrN(tg);
             var fm = tzEl("div", "tz-row");

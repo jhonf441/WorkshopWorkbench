@@ -1,5 +1,5 @@
       // ---- Workbench page, part 1: the geometry of the machine for the cut area ----
-      // Laser <-> pointer correction, travel limits and probe offset, from the machine state and the zones.
+      // Laser <-> pointer correction (the "laser" settings store), travel limits and probe offset (the machine state).
 
       // Probe offset (G31) of the active mode: where it touches relative to the head.
       function tzDataAreaProbeOffset(pzd) {
@@ -8,15 +8,11 @@
         return o && isFinite(o[0]) && isFinite(o[1]) && (o[0] || o[1]) ? { x: o[0], y: o[1] } : null;
       }
 
-      function tzDataCutCorrection(pzd) {
-        var mc = tjLaserCorrection(); // a single one for the machine (2026-10-10)
-        if (mc) return { cx: mc.x, cy: mc.y };
-        var z = pzd.zones[pzd.st.wn];
-        if (z && (z.correctionX || z.correctionY)) return { cx: z.correctionX || 0, cy: z.correctionY || 0 };
-        for (var i = 0; i < pzd.zones.length; i++) {
-          if (pzd.zones[i] && (pzd.zones[i].correctionX || pzd.zones[i].correctionY)) return { cx: pzd.zones[i].correctionX || 0, cy: pzd.zones[i].correctionY || 0 };
-        }
-        return null;
+      // The laser <-> pointer correction: only the machine's, from the "laser" settings store (14-laser-cfg.js); null when it was never
+      // measured (the correction written inside each zone file p<N>.g is that same value applied, never a source of its own).
+      function tzDataCutCorrection() {
+        var mc = tjLaserCorrection();
+        return mc ? { cx: mc.x, cy: mc.y } : null;
       }
 
       function tzDataCutLimits(pzd) {

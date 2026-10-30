@@ -77,7 +77,7 @@
       }
 
       // A tab that lives on the page of the other plugin (TZ_PAGES, 30-zones-page.js): that page opens through the router with the
-      // tab stored as its last view; if its plugin is not installed or is off, a notice says which one. false: this page did not change.
+      // tab in its route query; if its plugin is not installed or is off, a notice says which one. false: this page did not change.
       // The tab (and any extra data) travels as ROUTE QUERY parameters of the other page: ?layout=<tab>&x=..&y=.. (review #12), so the
       // other plugin reads route.query and no undeclared localStorage key is a contract between the two plugins.
       function tzNavGoOtherPage(pnv, l, query) {
@@ -87,11 +87,6 @@
         if (!workshopPathExists(other.path)) {
           tzAgilityNotice(pnv.notice, i18nT('zonesPage.needs_other_plugin', { title: other.title, plugin: other.plugin }));
           return false;
-        }
-        try {
-          localStorage.setItem(other.key, l); // TRANSITIONAL: WorkshopMachine still reads its last view from here; delete when it reads route.query.layout
-        } catch (e) {
-          /* the other page opens on its last tab */
         }
         var p = pnv.router ? pnv.router.push({ path: other.path, query: Object.assign({ layout: l }, query || {}) }) : null;
         if (p && typeof p.catch === "function") p.catch(function () {});

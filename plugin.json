@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.21.5",
+  "version": "2.22.1",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -19,6 +19,7 @@
   "data": {},
   "sdFiles": [
     "sys/workshop/examples/WorkshopWorkbench/macros/probe/homezhere.g",
+    "sys/workshop/macros/cncguard.g",
     "sys/workshop/macros/cutguard.g",
     "sys/workshop/macros/focushere.g",
     "sys/workshop/macros/focusref.g",
@@ -47,7 +48,7 @@
     "sys/workshop/macros/zsurface.g"
   ],
   "dwcFiles": [
-    "js/WorkshopWorkbench.1c0e92d7.js",
-    "js/WorkshopWorkbench.1c0e92d7.js.gz"
+    "js/WorkshopWorkbench.ae08aa4b.js",
+    "js/WorkshopWorkbench.ae08aa4b.js.gz"
   ]
 }

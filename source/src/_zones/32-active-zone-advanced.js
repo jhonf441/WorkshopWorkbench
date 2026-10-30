@@ -24,8 +24,8 @@
       // Z by hand: take the surface under the head as Z0 (G92 Z0), or measure Z with the probe where the head is. Reading the probe
       // without changing anything is the "Probe" button of the Jog.
       function tzActManualZ(za, zr) {
-        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, homedXY: true, homedAll: true, needAll: true, needPoint: false, hasPoint: true });
-        var whyAny = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, homedXY: true, homedAll: true, needAll: false, needPoint: false, hasPoint: true }); // G92 Z0 needs no homing
+        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: true, homedAll: true, needAll: true, needPoint: false, hasPoint: true });
+        var whyAny = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: true, homedAll: true, needAll: false, needPoint: false, hasPoint: true }); // G92 Z0 needs no homing
         var l = tzActLine(za, zr.adv);
         var pz = tzBtn(i18nT('zoneActive.probe_z_here'), null, function () {
           tzActRun(za, 'M98 P"0:/macros/probe/homezhere.g"', i18nT('zoneActive.z_measured_with_the_bltouch_here'));

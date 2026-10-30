@@ -124,7 +124,7 @@
 
       // the laser burns: the manual safety list first (46-ready-safety.js), recorded in the Activity history; nothing else is done before it
       function tgGrGate(tg, what) {
-        return tzSafetyGate({ zone: tg.ctx.data.nameActive(), what: what });
+        return tzSafetyGate({ mode: "Laser", zone: tg.ctx.data.nameActive(), what: what });
       }
 
       function tgGrMark(tg) {

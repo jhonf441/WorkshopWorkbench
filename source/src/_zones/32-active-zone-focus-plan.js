@@ -34,10 +34,10 @@
       }
 
       // Why a button that moves the machine is off: the key (zoneActive.*) of the reason, or "" when it can be used.
-      // i: {signedOut, free, homedXY, homedAll, needAll (the action also moves Z, so Z must be homed), needPoint, hasPoint}
+      // i: {signedOut, free, status (the state of the machine, for the reason), homedXY, homedAll, needAll (the action also moves Z, so Z must be homed), needPoint, hasPoint}
       function tzActBlockedWhy(i) {
         if (i.signedOut) return "why_signed_out";
-        if (!i.free) return "why_busy";
+        if (!i.free) return tzNotFreeWhy(i.status);
         if (i.needAll && !i.homedAll) return "why_home_all";
         if (!i.needAll && !i.homedXY) return "why_home_xy";
         if (i.needPoint && !i.hasPoint) return "why_no_point";

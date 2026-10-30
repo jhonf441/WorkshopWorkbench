@@ -193,25 +193,97 @@
         };
       }
 
-      // Does the toolpath stay inside the area? area = { xmin, xmax, ymin, ymax } (cut area; null = no check) and zRecorrido =
-      // travel of the Z axis in mm (null = unknown). Returns the codes of what is wrong; the card shows them and blocks the file.
-      function tzCncValidate(plan, area, zRoute) {
+      // The deepest pass of the plan (mm below Z0, positive; 0 without levels).
+      function tzCncDeepest(plan) {
+        var d = 0;
+        plan.shapes.forEach(function (f) { f.levels.forEach(function (z) { d = Math.max(d, -z); }); });
+        return d;
+      }
+
+      // Does the toolpath stay inside the area and within the Z the machine has at this Z0, away from the clamps?
+      //   area  = { xmin, xmax, ymin, ymax } (cut area; null = no check)
+      //   z     = { min, max, z0 } in machine mm: travel of the Z axis and the Z0 of the active work system (its offset); a field that is
+      //           not known is null. z0 = 0 means the zero was never set on the material (the file is still made; the start is not).
+      //   clamps = [{ name, x, y, w, h, height }] of the map (bed coordinates; height = mm above the material, missing = unknown)
+      // Returns the codes of what is wrong; the card shows them and blocks the file.
+      function tzCncValidate(plan, area, z, clamps) {
         var errors = [], notices = [];
         if (!area) notices.push({ c: "without_area" });
         var r = plan.tool && plan.tool.diameter ? plan.tool.diameter / 2 : 0;
-        var outside = [];
-        var zMax = 0;
+        var outside = [], overClamp = [], hitClamps = {};
+        var cl = clamps || [];
         plan.shapes.forEach(function (f) {
-          f.levels.forEach(function (z) { zMax = Math.max(zMax, -z); });
-          if (!area) return;
-          var bb = tzCncBox(f.outlines);
-          if (!bb) return;
-          // the tool body reaches r beyond its center: the whole cutter must stay inside the area
-          if (bb.xmin - r < area.xmin - 1e-6 || bb.xmax + r > area.xmax + 1e-6 || bb.ymin - r < area.ymin - 1e-6 || bb.ymax + r > area.ymax + 1e-6) outside.push(f.name);
+          if (area) {
+            var bb = tzCncBox(f.outlines);
+            // the tool body reaches r beyond its center: the whole cutter must stay inside the area
+            if (bb && (bb.xmin - r < area.xmin - 1e-6 || bb.xmax + r > area.xmax + 1e-6 || bb.ymin - r < area.ymin - 1e-6 || bb.ymax + r > area.ymax + 1e-6)) outside.push(f.name);
+          }
+          // the cutter at depth may not pass over a clamp (the body counts: the rectangle grows by r)
+          var hits = cl.filter(function (q) { return f.levels.length && tzCncOverRect(f.outlines, q, r); });
+          if (hits.length) {
+            overClamp.push(f.name);
+            hits.forEach(function (q) { hitClamps[q.name || "#" + (cl.indexOf(q) + 1)] = true; });
+          }
         });
         if (outside.length) errors.push({ c: "outside_area", shapes: outside.join(", ") });
-        if (zRoute && zMax > zRoute + 1e-6) errors.push({ c: "outside_z", depth: zMax, route: zRoute });
+        if (overClamp.length) errors.push({ c: "over_clamp", shapes: overClamp.join(", "), clamps: Object.keys(hitClamps).join(", ") });
+        // Z: the depth against the travel, and against the room left below / above the real Z0
+        var zi = z || {};
+        var zMax = tzCncDeepest(plan);
+        var route = zi.min !== null && zi.min !== undefined && zi.max !== null && zi.max !== undefined && isFinite(zi.min) && isFinite(zi.max) ? zi.max - zi.min : null;
+        if (route !== null && zMax > route + 1e-6) errors.push({ c: "outside_z", depth: zMax, route: route });
+        var z0 = typeof zi.z0 === "number" && isFinite(zi.z0) ? zi.z0 : null;
+        var safe = plan.tool && plan.tool.altSafe ? plan.tool.altSafe : 0;
+        if (z0 === null) notices.push({ c: "z0_unknown" });
+        else if (z0 === 0) notices.push({ c: "z0_not_set" });
+        else {
+          if (route !== null && z0 - zMax < zi.min - 1e-6) errors.push({ c: "below_z_min", depth: zMax, room: Math.round((z0 - zi.min) * 100) / 100 });
+          if (route !== null && safe && z0 + safe > zi.max + 1e-6) errors.push({ c: "safe_above_z_max", safe: safe, room: Math.round((zi.max - z0) * 100) / 100 });
+        }
+        // the safe height must clear every clamp of the map; a clamp without height cannot be checked
+        var low = [], unknown = [];
+        cl.forEach(function (q, i) {
+          var nm = q.name || "#" + (i + 1);
+          var h = tzCncNum(q.height);
+          if (h === null) unknown.push(nm);
+          else if (safe && safe <= h + 1e-6) low.push(nm + " (" + h + " mm)");
+        });
+        if (low.length) errors.push({ c: "safe_below_clamp", safe: safe, clamps: low.join(", ") });
+        if (unknown.length) notices.push({ c: "clamp_no_height", clamps: unknown.join(", ") });
         return { ok: errors.length === 0, errors: errors, notices: notices };
+      }
+
+      // segments [[x1, y1, x2, y2]...] of one tool center contour (a circle as a 48-gon)
+      function tzCncOutlineSegs(c) {
+        var out = [];
+        if (c.k === "circular") {
+          var prev = null;
+          for (var i = 0; i <= 48; i++) {
+            var an = (i / 48) * Math.PI * 2;
+            var q = [c.cx + c.r * Math.cos(an), c.cy + c.r * Math.sin(an)];
+            if (prev) out.push([prev[0], prev[1], q[0], q[1]]);
+            prev = q;
+          }
+        } else for (var j = 1; j < c.pts.length; j++) out.push([c.pts[j - 1][0], c.pts[j - 1][1], c.pts[j][0], c.pts[j][1]]);
+        return out;
+      }
+
+      // Does a segment touch the rectangle { x, y, w, h } grown by r on every side? (Liang-Barsky clip: a non empty part inside)
+      function tzCncSegHitsRect(s, q, r) {
+        var x0 = q.x - r, x1 = q.x + q.w + r, y0 = q.y - r, y1 = q.y + q.h + r;
+        var dx = s[2] - s[0], dy = s[3] - s[1];
+        var t0 = 0, t1 = 1;
+        var p = [-dx, dx, -dy, dy], qq = [s[0] - x0, x1 - s[0], s[1] - y0, y1 - s[1]];
+        for (var i = 0; i < 4; i++) {
+          if (p[i] === 0) { if (qq[i] < 0) return false; continue; }
+          var t = qq[i] / p[i];
+          if (p[i] < 0) { if (t > t1) return false; if (t > t0) t0 = t; }
+          else { if (t < t0) return false; if (t < t1) t1 = t; }
+        }
+        return t0 <= t1;
+      }
+      function tzCncOverRect(outlines, q, r) {
+        return (outlines || []).some(function (c) { return tzCncOutlineSegs(c).some(function (s) { return tzCncSegHitsRect(s, q, r); }); });
       }
 
       // bounding box of the tool center path
@@ -244,8 +316,19 @@
         return { k: "poly", pts: c.pts.slice().reverse(), closed: c.closed };
       }
 
-      // The file. Never uses G53, homing, the laser words (M4, M106) or any macro: only G-code a plain CNC understands.
-      // Safe moves: Z up to the safe height before every rapid in XY; the cutter goes down only at the start of each shape.
+      // The guard of the file: the first code line of every CNC job (the same pattern as cutguard.g of the laser cuts). The macro aborts,
+      // and that cancels the whole job before the spindle starts, unless the machine is in CNC mode, X Y Z are homed and the Z0 of the
+      // active work system is set; with the depth (D) and the safe height (H), both in mm below / above Z0, it also checks that they fit
+      // in the Z travel at the real Z0. The copy of the macro lives in src/_workbench_cut/sd/sys/workshop/macros/cncguard.g.
+      var TZ_CNC_GUARD = "0:/sys/workshop/macros/cncguard.g";
+      function tzCncGuardLine(plan) {
+        var safe = plan.tool && plan.tool.altSafe ? plan.tool.altSafe : 0;
+        return 'M98 P"' + TZ_CNC_GUARD + '" D' + tzCncN(tzCncDeepest(plan), "mm") + " H" + tzCncN(safe, "mm") + "   ; aborts and cancels the job unless the machine is ready (CNC mode, homed, Z0 set, Z travel)";
+      }
+
+      // The file. Never uses G53, homing or the laser words (M4, M106); the only macro is the guard of the first line: after it, only
+      // G-code a plain CNC understands. Safe moves: Z up to the safe height before every rapid in XY; the cutter goes down only at the
+      // start of each shape.
       function tzCncGcode(plan) {
         var u = plan.units;
         var h = plan.tool;
@@ -255,6 +338,7 @@
         L.push("; Machine must be in CNC mode. Z0 = top surface of the material, X Y in bed coordinates.");
         L.push("; Tool diameter " + N(h.diameter) + (u === "in" ? " in" : " mm") + ", safe Z " + N(h.altSafe) + ", feed " + N(h.feed) + "/min, plunge " + N(h.feedPen) + "/min" + (h.rpm ? ", " + h.rpm + " rpm" : ", spindle started by hand"));
         L.push("; Check the cut area and the Z zero before starting. The file does not home and does not move the machine to any park position.");
+        L.push(tzCncGuardLine(plan));
         L.push(u === "in" ? "G20" : "G21");
         L.push("G90");
         L.push("G17");

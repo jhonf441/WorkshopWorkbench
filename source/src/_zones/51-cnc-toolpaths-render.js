@@ -4,7 +4,7 @@
         rc.s = cnc.ctx.machine.getSt();
         rc.pl = tzCncTrayPlan(cnc, false);
         rc.v = tzCncTrayValidate(cnc, rc.pl);
-        var key = JSON.stringify([cnc.d, cnc.sel, cnc.level, !!cnc.placing, cnc.M.text, cnc.M.ok, !!cnc.ctx.machine.free(), rc.s && rc.s.mode, tzCncTrayArea(cnc), tzCncTrayZRoute(cnc), cnc.file && cnc.file.key === JSON.stringify(rc.pl), cnc.doc.designs.length, typeof tmatItems !== "undefined" ? tmatItems.length : 0]);
+        var key = JSON.stringify([cnc.d, cnc.sel, cnc.level, !!cnc.placing, cnc.M.text, cnc.M.ok, !!cnc.ctx.machine.free(), rc.s && rc.s.mode, rc.s && rc.s.status, tzCncTrayArea(cnc), tzCncTrayZ(cnc), tzCncTrayClamps(cnc), cnc.file && cnc.file.key === JSON.stringify(rc.pl), cnc.doc.designs.length, typeof tmatItems !== "undefined" ? tmatItems.length : 0, tzSafetyKey()]);
         if (!force && key === cnc.before) return;
         cnc.before = key;
         rc.card = cnc.ctx.card;
@@ -206,12 +206,16 @@
         rc.acc.appendChild(bc);
       }
 
+      // the safety list of the CNC, the Start button (locked with its reason while something is missing) and the file line
       function tzCncTrayFile(cnc, rc, force) {
         var fresh = !!cnc.file && cnc.file.key === JSON.stringify(rc.pl);
+        tzSafetyRender(rc.card, function () { tzCncTrayRender(cnc, true); }, "CNC"); // spindle and tool, workpiece, extraction, area clear, Z0 (46-ready-safety.js)
+        var why = tzCncTrayStartBlock(cnc, rc.pl, rc.v);
         var bs = tzBtn(i18nT('cnc.start'), null, tzBind(tzCncTrayLaunch, cnc), i18nT('cnc.start_confirm'), "cnc-start");
-        if (!fresh || !rc.pl.ok || !rc.v.ok || !cnc.ctx.machine.free() || !rc.s || rc.s.mode !== "CNC") bs.disabled = true;
+        if (why) { bs.disabled = true; bs.title = why; }
         rc.acc.appendChild(bs);
         rc.card.appendChild(rc.acc);
+        if (why && fresh && rc.pl.ok && rc.v.ok) rc.card.appendChild(tzEl("div", "tz-muted tz-start-why", why)); // what the errors above and the file line do not already say
         if (cnc.file) rc.card.appendChild(tzEl("div", "tz-muted", fresh ? cnc.file.path : i18nT('cnc.file_stale')));
         if (cnc.M.text) rc.card.appendChild(cnc.M.node());
       }

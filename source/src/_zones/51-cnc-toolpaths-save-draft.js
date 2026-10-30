@@ -16,10 +16,19 @@
         return cnc.ctx.cut.area() || cnc.ctx.cut.limits();
       }
 
-      function tzCncTrayZRoute(cnc) {
+      // What the machine says about Z, in machine mm: the travel (min, max) and the Z0 of the active work system (its offset in the
+      // object model: move.axes[].workplaceOffsets[wn]); null = not known. z0 = 0 is "never set" (see tzCncValidate).
+      function tzCncTrayZ(cnc) {
         var s = cnc.ctx.machine.getSt();
         var ax = s && s.axes && s.axes.Z;
-        return ax && isFinite(ax.max) && isFinite(ax.min) ? ax.max - ax.min : null;
+        var num = function (v) { return typeof v === "number" && isFinite(v) ? v : null; };
+        var off = ax && ax.workplaceOffsets && s ? ax.workplaceOffsets[s.wn || 0] : null;
+        return { min: ax ? num(ax.min) : null, max: ax ? num(ax.max) : null, z0: num(off) };
+      }
+
+      // the clamps of the map (only when the page uses them: ctx.data.clamps is the active list)
+      function tzCncTrayClamps(cnc) {
+        return cnc.ctx.data.clamps() || [];
       }
 
       function tzCncTrayPlan(cnc, conDate) {
@@ -27,9 +36,23 @@
       }
 
       function tzCncTrayValidate(cnc, pl) {
-        var v = tzCncValidate(pl, tzCncTrayArea(cnc), tzCncTrayZRoute(cnc));
+        var v = tzCncValidate(pl, tzCncTrayArea(cnc), tzCncTrayZ(cnc), tzCncTrayClamps(cnc));
         if (!cnc.ctx.cut.area()) v.notices.push({ c: "area_machine" });
         return v;
+      }
+
+      // Why Start is locked (the text for the person; "" when it can start): the most final reason first. The machine that is not free
+      // says why with the same reason the needs list uses (34-block-reason.js). The safety list is the last thing asked.
+      function tzCncTrayStartBlock(cnc, pl, v) {
+        var s = cnc.ctx.machine.getSt();
+        if (!s || s.mode !== "CNC") return i18nT('cnc.mode_is_not_cnc');
+        if (!cnc.ctx.machine.free()) return i18nT('zoneActive.' + tzNotFreeWhy(s.status));
+        if (!pl.ok || !v.ok) return i18nT('cnc.fix_errors_first');
+        if (!cnc.file) return i18nT('cnc.no_file');
+        if (cnc.file.key !== JSON.stringify(tzCncTrayPlan(cnc, false))) return i18nT('cnc.file_stale');
+        if (!tzCncTrayZ(cnc).z0) return i18nT('cnc.z0_not_set'); // not known, or still 0 (never set on the material)
+        if (!tzSafetyDone("CNC")) return i18nT('ready.safety_needed_cnc');
+        return "";
       }
 
       // ---- files ----
@@ -74,13 +97,17 @@
         );
       }
 
+      // Start: every lock of tzCncTrayStartBlock is checked again here (the button may be stale), then the safety list of the CNC is used
+      // up and recorded in the Activity history (46-ready-safety.js) and only then the file starts.
       function tzCncTrayLaunch(cnc) {
-        var s = cnc.ctx.machine.getSt();
-        if (!cnc.file || cnc.file.key !== JSON.stringify(tzCncTrayPlan(cnc, false))) return cnc.M.set(i18nT('cnc.file_stale'), false);
-        if (!s || s.mode !== "CNC") return cnc.M.set(i18nT('cnc.mode_is_not_cnc'), false);
-        if (!cnc.ctx.machine.free()) return cnc.M.set(i18nT('cnc.machine_busy'), false);
-        tzStartFile(cnc.file.path).then( // 22-start-file.js
-          function () { cnc.M.set(i18nT('cnc.started', { path: cnc.file.path }), true); }
+        var pl = tzCncTrayPlan(cnc, false);
+        var why = tzCncTrayStartBlock(cnc, pl, tzCncTrayValidate(cnc, pl));
+        if (why) return cnc.M.set(why, false);
+        var path = cnc.file.path;
+        tzSafetyGate({ mode: "CNC", zone: cnc.ctx.data.nameActive(), what: "cnc" }).then(function () {
+          return tzStartFile(path); // 22-start-file.js
+        }).then(
+          function () { cnc.M.set(i18nT('cnc.started', { path: path }), true); }
         ).catch(function (e) { cnc.M.set(i18nT('cnc.not_started', { err: e && e.message ? e.message : e }), false); });
       }
 

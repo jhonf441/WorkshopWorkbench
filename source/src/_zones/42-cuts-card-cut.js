@@ -168,7 +168,7 @@
             after: function () { tc.lastKey = ""; tc.ctx.machine.read().then(tzBind(tcGo, tc)); },
           });
           if (isCut) {
-            tzSafetyRender(conf, function () { tcGo(tc); }); // the manual safety list of the laser (46-ready-safety.js): glasses, lid, extraction, area clear
+            tzSafetyRender(conf, function () { tcGo(tc); }, "Laser"); // the manual safety list of the laser (46-ready-safety.js): glasses, lid, extraction, area clear
           } else {
             var al = tzEl("label");
             al.style.cssText = "display:flex;gap:6px;align-items:center;margin-top:4px;font-size:12px;";
@@ -188,7 +188,7 @@
             else
               tcFrameStart(tc, "laser", tc.jobStep.pct);
           });
-          goJ.disabled = !rc.free || !(isCut ? tzSafetyDone() : tc.jobStep.ack) || tcValidate(tc, { frame: !isCut }).length > 0;
+          goJ.disabled = !rc.free || !(isCut ? tzSafetyDone("Laser") : tc.jobStep.ack) || tcValidate(tc, { frame: !isCut }).length > 0;
           rc.cr3.appendChild(goJ);
           rc.cr3.appendChild(tzBtn(i18nT('zcal.cancel'), null, function () { tc.jobStep = null; tcGo(tc); }));
         }
@@ -198,7 +198,7 @@
       function tcCutStart(tc) {
         var st = tc.ctx.machine.getSt();
         var zone = tcCutGuardInput(tc).zoneName;
-        tzSafetyGate({ zone: zone, what: "cut" }).then(function () {
+        tzSafetyGate({ mode: "Laser", zone: zone, what: "cut" }).then(function () {
           var idsCut = tcShapesInCutOrder(tc).map(function (x) { return x.id; });
           var jbBefore = (st && st.job) || {};
           tcStartJob(tc, TC_JOB_FILE, tcBuildJob(tc), i18nT('cuts.cut_running_pause_cancel_in_dwc'), function () {

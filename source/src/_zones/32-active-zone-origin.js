@@ -5,7 +5,7 @@
         var ob = tzActBlock(za, zr.card, i18nT('zoneActive.origin_and_zero'));
         if (zr.correction && zr.laserMode) tzActOffsetToggle(za, zr, ob);
         else if (zr.laserMode) tzActNote(za, ob, i18nT('zoneActive.has_no_laser_correction_x0_y0', { code: TZ_CODES[zr.wn] }));
-        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: false, needPoint: false, hasPoint: true });
+        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: false, needPoint: false, hasPoint: true });
         var target = zr.laserMode && zr.correction && zr.s.offsetOn ? "laser" : "pointer";
         var l2 = tzActLine(za, ob);
         var go = tzBtn(i18nT('zoneActive.go_to_x0_y0_target', { target: target === "laser" ? "laser" : i18nT('zoneActive.pointer_lc') }), "primary big", function () {

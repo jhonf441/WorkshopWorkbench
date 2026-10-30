@@ -82,7 +82,7 @@
         }
         tzReadyRows(card, checks, inp);
         if (rd.msg.text) card.appendChild(rd.msg.node());
-        tzSafetyRender(card, function () { rd.lastKey = ""; tzReadyRender(rd); });
+        tzSafetyRender(card, function () { rd.lastKey = ""; tzReadyRender(rd); }, "Laser");
         var go = tzEl("div", "tz-row");
         go.style.cssText += "gap:6px;margin-top:8px;";
         go.appendChild(tzBtn(i18nT('ready.go_job'), "primary", function () { rd.ctx.nav.go("cuts"); }));
@@ -98,7 +98,7 @@
         hd.style.alignItems = "center";
         hd.appendChild(tzEl("h3", null, i18nT('ready.title')));
         var bad = checks.filter(function (c) { return c.state === "bad"; }).length;
-        var ready = bad === 0 && tzSafetyDone();
+        var ready = bad === 0 && tzSafetyDone("Laser");
         var badge = tzEl("span", "wf-state tz-badge " + (ready ? "ok" : "err"), bad ? i18nT('ready.n_to_fix', { n: bad }) : ready ? i18nT('ready.all_ok') : i18nT('ready.tick_the_list'));
         badge.style.marginLeft = "8px";
         hd.appendChild(badge);

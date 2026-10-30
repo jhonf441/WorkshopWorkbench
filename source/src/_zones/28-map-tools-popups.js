@@ -142,26 +142,34 @@
         var f = tzEl("div", "tz-form");
         f.style.cssText = "display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 6px;align-items:center;max-width:280px;";
         var ins = {};
-        [["name", i18nT('common.name'), "text"], ["x", "X", "number"], ["y", "Y", "number"], ["w", i18nT('cuts.width'), "number"], ["h", i18nT('cuts.height'), "number"]].forEach(function (d) {
+        var fields = [["name", i18nT('common.name'), "text"], ["x", "X", "number"], ["y", "Y", "number"], ["w", i18nT('cuts.width'), "number"], ["h", i18nT('cuts.height'), "number"]];
+        if (!isR) fields.push(["height", i18nT('zonesPage.clamp_height'), "number"]); // a clamp: how far it stands above the material (the CNC toolpaths check the safe Z against it)
+        fields.forEach(function (d) {
           var l = tzEl("span", "tz-muted", d[1]);
           var i = document.createElement("input");
           i.type = d[2];
           i.className = "tz-input";
-          i.value = d[0] === "name" ? q.name || "" : tzFmt(q[d[0]]);
+          i.value = d[0] === "name" ? q.name || "" : d[0] === "height" ? (typeof q.height === "number" ? tzFmt(q.height) : "") : tzFmt(q[d[0]]);
           if (d[2] === "number") i.step = "0.5";
           if (d[0] === "name") { i.style.gridColumn = "2 / 5"; i.maxLength = 30; }
+          if (d[0] === "height") i.placeholder = "?";
           f.appendChild(l);
           f.appendChild(i);
           ins[d[0]] = i;
         });
         pmt.posPop.appendChild(f);
         pmt.posPop.appendChild(tzEl("div", "tz-muted", i18nT('zonesPage.x_y_bottom_left_corner_where')));
+        if (!isR) pmt.posPop.appendChild(tzEl("div", "tz-muted", i18nT('zonesPage.clamp_height_tip')));
         var row = tzEl("div", "tz-row");
         row.style.cssText += "gap:4px;margin-top:6px;flex-wrap:wrap;";
         var msg = tzEl("div", "tz-msg", "");
         row.appendChild(tzBtn(i18nT('zcal.save'), "primary", function () {
           var n = { name: String(ins.name.value || "").slice(0, 30), x: tzNum(ins.x.value), y: tzNum(ins.y.value), w: tzNum(ins.w.value), h: tzNum(ins.h.value) };
           if (![n.x, n.y, n.w, n.h].every(isFinite) || !(n.w > 0) || !(n.h > 0)) return tzSetMsg(msg, i18nT('zonesPage.check_the_numbers_width_and_height'), false);
+          if (ins.height && String(ins.height.value).trim() !== "") {
+            n.height = tzNum(ins.height.value);
+            if (!isFinite(n.height) || n.height < 0) return tzSetMsg(msg, i18nT('zonesPage.check_the_clamp_height'), false);
+          }
           var list = cur.slice();
           list[k] = n;
           saveL(list).then(function () { tzToolClosePosPop(pmt); }, function (e) { tzSetMsg(msg, i18nT('common.not_saved_2', { err: e.message || e }), false); });

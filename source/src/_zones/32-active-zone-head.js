@@ -33,7 +33,7 @@
           sel.appendChild(o);
         });
         sel.disabled = !zr.free || sel.options.length < 2;
-        sel.title = !zr.free ? i18nT('zoneActive.why_busy') : i18nT('zoneActive.activates_another_zone_does_not_move');
+        sel.title = !zr.free ? i18nT('zoneActive.' + tzNotFreeWhy(zr.s.status)) : i18nT('zoneActive.activates_another_zone_does_not_move');
         sel.addEventListener("change", function () {
           var i = parseInt(sel.value, 10);
           if (isFinite(i)) tzActRun(za, TZ_CODES[i], i18nT('zoneActive.active', { code: TZ_CODES[i] }));

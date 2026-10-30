@@ -2,12 +2,9 @@
       // The calibration of the tool height (trigger height of the BLTouch, fine adjustment, paper, SZP) was a card of Zones > Active zone. The owner asked why
       // a calibration of the machine lived in the bed map and not in Machine: it moved to WorkshopMachine (service ops machine.height.*, page "Height").
       // What is left here is what depends on WHERE the material is: the line that says what height the mode works with, and the button that takes the person
-      // to Machine with the Z point of the active zone (the page takes it from the one-shot key below).
+      // to Machine with the Z point of the active zone (as route query parameters ?layout=calibrate&x=..&y=.., vue/WorkshopMachine lib/cross-page.js).
       //   0:/sys/workshop/config/zcal.json   saved by the service (read here, never written)
       var TZC_JSON = "0:/sys/workshop/config/zcal.json";
-      // review #12: the Z point travels as route query parameters (?x=..&y=..) of Machine; the one-shot localStorage key below is
-      // TRANSITIONAL (vue/WorkshopMachine/dwc-src/lib/height.js ASK_KEY still reads it): delete it when Machine reads route.query.
-      var TZC_ASK_KEY = "workshopHeightPoint";
       var tzc = { data: null, text: "", loading: false };
 
       // The saved calibration of a mode: {k0: {z, date} | null, setting: mm}
@@ -34,13 +31,8 @@
           });
       }
 
-      // Machine > Height with this zone's Z point (the assistants of Machine measure there)
+      // Machine > Height with this zone's Z point (the assistants of Machine measure there): the point is the route query, nothing is stored
       function tzcGoMachine(go, zp) {
-        try {
-          if (zp && isFinite(zp.x) && isFinite(zp.y)) localStorage.setItem(TZC_ASK_KEY, JSON.stringify({ x: zp.x, y: zp.y }));
-        } catch (e) {
-          /* without storage Machine opens on its own last view and the person types the point */
-        }
         go(zp && isFinite(zp.x) && isFinite(zp.y) ? { x: zp.x, y: zp.y } : undefined);
       }
 

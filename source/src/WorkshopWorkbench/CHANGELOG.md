@@ -1,5 +1,19 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.1 -- 2026-10-30
+
+- Work origins live only in the Workbench: the laser correction comes from the settings store, not from the zones
+
+## 2.22.0 -- 2026-10-30
+
+- CNC safety: the toolpaths card asks for its own safety list before Start (spindle and tool, workpiece, extraction, area clear, Z zero), recorded in Activity like the laser one; Start says why it is locked (off, emergency stop, busy, Z0 not set, list missing)
+- CNC files start with sys/workshop/macros/cncguard.g: the job cancels itself unless the machine is in CNC mode, X Y Z are homed, the Z0 of the work system is set and the depth / safe height fit in the Z travel at that Z0
+- The CNC plan is also checked against the real Z0 of the machine and the clamps of the map (the cutter may not pass over one; the safe Z must clear their height, editable in the clamp popup)
+
+## 2.21.6 -- 2026-10-30
+
+- Shorter lock texts; the reason the machine cannot move says off, emergency stop or no connection instead of busy
+
 ## 2.21.5 -- 2026-10-30
 
 - Manifest: sbcRequired true (needs WorkshopService); side bar keeps the group names
