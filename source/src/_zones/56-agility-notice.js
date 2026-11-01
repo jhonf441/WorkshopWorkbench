@@ -1,4 +1,5 @@
       function tzAgilityNotice(A, text) {
+        if (!A.mounted) return; // the page was left or the plugin stopped: a late answer must not draw on the screen
         if (!A.noticeEl) {
           A.noticeEl = tzEl("div", "tz-ag-notice");
           A.noticeEl.id = "workshop-workbench-notice";
@@ -210,7 +211,7 @@
             var r = tzShortcutAssign(c.id, combo);
             if (!r.ok) {
               var other = r.con ? A.record.get(r.con) : null;
-              tzAgilityNotice(A, r.reason === "used" ? i18nT('shortcuts.used', { name: other ? other.label : r.con }) : r.reason === "reserved" ? i18nT('shortcuts.reservado') : i18nT('shortcuts.invalid'));
+              tzAgilityNotice(A, r.reason === "used" ? i18nT('shortcuts.used', { name: other ? other.label : r.con }) : r.reason === "reserved" ? tzTx('shortcuts.reservado', 'jog') : i18nT('shortcuts.invalid'));
               return;
             }
             tzAgilityNotice(A, combo ? i18nT('shortcuts.saved', { combo: tzNameCombo(combo) }) : i18nT('shortcuts.removed'));

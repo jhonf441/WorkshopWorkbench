@@ -28,10 +28,10 @@
         var whyAny = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: true, homedAll: true, needAll: false, needPoint: false, hasPoint: true }); // G92 Z0 needs no homing
         var l = tzActLine(za, zr.adv);
         var pz = tzBtn(i18nT('zoneActive.probe_z_here'), null, function () {
-          tzActRun(za, 'M98 P"0:/macros/probe/homezhere.g"', i18nT('zoneActive.z_measured_with_the_bltouch_here'));
+          tzActRun(za, 'M98 P"0:/macros/probe/homezhere.g"', i18nT('zoneActive.z_measured_with_the_probe_here', { probe: tzProbeName(zr.probe) }));
         });
-        pz.disabled = !!why;
-        tzTip(pz, i18nT('zoneActive.raises_5_mm_and_measures_z'));
+        pz.disabled = !!why || !zr.probe.measures; // without a probe that can touch the surface there is nothing to measure with: Z0 here (paper) is below
+        tzTip(pz, zr.probe.measures ? i18nT('zoneActive.raises_5_mm_and_measures_z', { probe: tzProbeName(zr.probe) }) : i18nT('zoneActive.probe_z_here_without_probe'));
         l.appendChild(pz);
         var zz = tzBtn(i18nT('zoneActive.z0_here'), null, function () {
           tzActRun(za, 'M98 P"0:/sys/workshop/macros/zhere0.g"', i18nT('zoneActive.z_0_at_the_current_position'));
@@ -43,10 +43,10 @@
       }
 
       // The height the mode works with (34-zcal.js): only a summary here; the calibration is in Machine > Height, which opens with this zone's Z point.
-      // Without the Machine plugin (or its page) the person is told which one is missing instead of getting a dead button.
+      // Without the Machine plugin (not installed or off) there is no button and nothing says where the calibration is done.
       function tzActCalibration(za, zr) {
-        tzActNote(za, zr.adv, i18nT('zoneActive.calibration_note'));
-        if (typeof workshopPathExists !== "function" || !workshopPathExists(TZ_PAGES.machine.path)) return tzActNote(za, zr.adv, i18nT('zonesPage.needs_other_plugin', { title: TZ_PAGES.machine.title, plugin: TZ_PAGES.machine.plugin }));
+        tzActNote(za, zr.adv, tzTx('zoneActive.calibration_note', 'machine'));
+        if (!workshopPluginActive("machine")) return;
         tzcRender(zr.adv, {
           s: zr.s, zp: zr.zp, line: tzBind(tzActLine, za), goMachine: function (query) { za.ctx.nav.go("calibrate", query); },
           rerender: function () { za.lastKey = ""; tzActRender(za); },

@@ -46,21 +46,63 @@
         return attempt(0);
       }
 
-      function tzStartFile(path, texto, deps) {
-        var read = (deps && deps.readState) || workshopReadState;
+      // The text of a job file onto the machine (nothing to do without a text: the file is already there).
+      function tzPutJob(path, texto, deps) {
+        if (texto === undefined || texto === null) return Promise.resolve();
         var put = deps && deps.put ? deps.put : function (p, t) {
           return fetch("/machine/file/" + p, { method: "PUT", headers: { "Content-Type": "application/octet-stream" }, body: t }).then(function (r) {
             if (!r.ok) throw new Error(i18nT('common.http_saving_the_job', { status: r.status }));
           });
         };
+        return Promise.resolve(put(path, texto));
+      }
+
+      function tzStartFile(path, texto, deps) {
+        var read = (deps && deps.readState) || workshopReadState;
         var send = deps && deps.code ? deps.code : function (c) { return postCode(c).then(function (r) { return r && typeof r.text === "function" ? r.text() : ""; }); };
         var before = null;
         return Promise.resolve()
           .then(function () { return read().then(function (s) { before = s; }, function () { before = null; }); })
-          .then(function () { return texto === undefined || texto === null ? null : put(path, texto); })
+          .then(function () { return tzPutJob(path, texto, deps); })
           .then(function () { return send('M32 "' + path + '"'); })
           .then(function (t) {
             if (/error|cancel/i.test(t || "")) throw new Error(String(t).trim());
             return before ? tzStartConfirm(path, before, deps).then(function () { return t; }) : t; // no state to compare with: the answer decides
           });
+      }
+
+      // ---- The permission of ONE launch of a generated job (2026-10-30, architecture review finding 6) ----
+      // The file of a laser cut (0:/sys/workshop/gcodes/cuts.gcode) or of the CNC toolpaths (0:/gcodes/cnc-*.gcode) can be launched from DWC
+      // (Files, Jobs, the Send of Simulate job, M32 by hand) without the checks the page makes before it: zone, material, focus, work area,
+      // clamps, safety list. The first line of those files is a guard (cutguard.g, cncguard.g) that only lets the launch go when the page armed
+      // it with jobarm.g right before its M32 (global.workshopLaserArmed / workshopCncArmed = uptime + 30 s) and uses the permission up.
+      // kind = "Laser" | "CNC". A1 arms one launch of that kind, A0 disarms both. The macro ships with the plugin:
+      // src/_workbench_cut/sd/sys/workshop/macros/jobarm.g.
+      var TZ_JOB_ARM = "0:/sys/workshop/macros/jobarm.g";
+      function tzJobArmCode(kind, on) {
+        return 'M98 P"' + TZ_JOB_ARM + '" A' + (on ? 1 : 0) + (on ? ' K"' + kind + '"' : "");
+      }
+
+      // The order has to be taken: a reply with an error or a warning (macro missing, board refusing) is a refusal.
+      // deps (optional, for tests): { send: function(code) -> Promise<text> }
+      function tzJobArm(kind, on, deps) {
+        var send = deps && deps.send ? deps.send : function (c) { return postCode(c).then(function (r) { return r && typeof r.text === "function" ? r.text() : ""; }); };
+        return send(tzJobArmCode(kind, on)).then(function (t) {
+          if (/error|warning/i.test(t || "")) throw new Error(String(t).trim());
+        });
+      }
+
+      // Uploads the text (if there is one), arms the guard of that kind, starts the file (tzStartFile) and, when the start did not go through,
+      // takes the permission back so it cannot serve the next file (it also expires by itself in 30 s). The permission is given AFTER the
+      // upload, right before M32. When the job started the guard has used it up already: nothing is sent to the machine while a job runs.
+      // A machine without jobarm.g refuses the start (common.not_armed). deps (optional, for tests): { send, start, put, ... } as the two above.
+      function tzStartArmed(kind, path, texto, deps) {
+        var start = deps && deps.start ? deps.start : tzStartFile;
+        var disarm = function () { return tzJobArm(kind, false, deps).catch(function () { /* it expires by itself */ }); };
+        return tzPutJob(path, texto, deps).then(function () {
+          return tzJobArm(kind, true, deps)
+            .catch(function (e) { throw new Error(i18nT('common.not_armed', { err: e && e.message ? e.message : e })); })
+            .then(function () { return start(path, null, deps); })
+            .catch(function (e) { return disarm().then(function () { throw e; }); });
+        });
       }

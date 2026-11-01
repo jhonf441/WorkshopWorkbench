@@ -122,7 +122,7 @@
           var t = window.__workshop;
           var pick = t && t.visionPick;
           // a point Vision sent for the zone editor is taken only by the page that has Zones (not the Machine page)
-          if (pick && Date.now() - pick.ts < 120000 && pz.pag.layouts.indexOf("zones") !== -1) {
+          if (pick && Date.now() - pick.ts < 120000 && workshopPluginActive("vision") && pz.pag.layouts.indexOf("zones") !== -1) {
             t.visionPick = null;
             pz.table.visionOrigin(pick);
           }
@@ -152,6 +152,24 @@
       }
 
       function tzPagTimers(pz, root, opts) {
+        // Another plugin (Machine, Offsets) sends the person here with ?layout=zones&zone=G55. DWC keeps this page alive, so when it is already open
+        // only the route query changes: it is read again whenever it changes while the page is in view (and once at mount, for the zone).
+        var lastQuery = "";
+        pz.timers.push(
+          setInterval(function () {
+            if (!workshopPageVisible(root)) { lastQuery = ""; return; } // coming back with the same query must apply it again
+            var q = workshopHostCurrentQuery() || {};
+            var key = (typeof q.layout === "string" ? q.layout : "") + "|" + (typeof q.zone === "string" ? q.zone : "");
+            if (key === "|" || key === lastQuery) { if (key === "|") lastQuery = ""; return; }
+            lastQuery = key;
+            var l = pz.nav.queryLayout();
+            if (l && l !== pz.nav.layout()) pz.nav.goLayout(l);
+            var zi = typeof q.zone === "string" ? TZ_CODES.indexOf(q.zone) : -1;
+            if (zi >= 0 && pz.nav.layout() === "zones") {
+              try { pz.table.openEditor(zi); } catch (e) { /* the editor is not available for this role: the tab is enough */ }
+            }
+          }, 400)
+        );
         pz.timers.push(
           setInterval(function () {
             // SD files: only with the page in view (DWC keeps it alive

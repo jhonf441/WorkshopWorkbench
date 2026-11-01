@@ -7,13 +7,26 @@
 ; Use:  M98 P"0:/sys/workshop/macros/cncguard.g" D6 H5
 ;       D = deepest pass of the job below Z0 (mm, positive)   H = safe height above Z0 (mm)
 ; (never P for a value: in M98 the P is the file name.)
+; Without the permission of the page (jobarm.g) it aborts: the spindle is not started and the job is cancelled.
 ;
 ; The same pattern as sys/workshop/macros/cutguard.g (laser): what is checked
 ; is that the machine is ready: real CNC mode (M453), X/Y/Z homed, the Z0 of
 ; the active work system set on the material (its offset is not 0) and, with
 ; D / H, that the job fits in the Z travel at that Z0.
+;
+; And who started it: the file of the page sits in 0:/gcodes/, where DWC (Files, Jobs) can launch it without the checks the page
+; makes at Start (work area, clamps, file older than the design, safety list). So the FIRST thing asked here is the permission
+; the Start of the page gives with jobarm.g (K"CNC") right before its M32 (global.workshopCncArmed, 30 s). It is used up here whatever
+; happens next: every launch needs its own Start of the page.
 
+var armed = exists(global.workshopCncArmed) ? global.workshopCncArmed : 0   ; uptime second until which the Start of the page allows ONE launch (0 = none, see jobarm.g)
+if exists(global.workshopCncArmed)
+    set global.workshopCncArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+if var.armed == 0
+    abort {var.en ? ("CNC: this file was not started from the Workbench page. Press Start in Workbench > CNC toolpaths (it checks the area, the clamps and the safety list). The spindle was not started.") : ("CNC: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa Iniciar en Mesa de trabajo > Trayectorias CNC (revisa el area, las mordazas y la lista de seguridad). No se encendio el husillo.")}
+if state.upTime > var.armed
+    abort {var.en ? ("CNC: the Start of the Workbench page expired (30 s) before the file began. Press Start again. The spindle was not started.") : ("CNC: el Iniciar de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa Iniciar otra vez. No se encendio el husillo.")}
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 if var.modo != "CNC"
     abort {var.en ? ("CNC: the machine is not in CNC mode. The spindle was not started.") : ("CNC: la maquina no esta en modo CNC. No se encendio el husillo.")}

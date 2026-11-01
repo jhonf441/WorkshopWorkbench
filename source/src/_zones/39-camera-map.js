@@ -3,10 +3,13 @@
       // 2026-10-10: "the map camera shows up in every part and there should be only
       // one place to configure it; if it is already configured in Vision, just leave
       // a switch that allows using it in Work zones". The camera is
-      // configured ONCE, in the Vision page (0:/sys/workshop/config/vision.json:
-      // address, calibration per resolution and lens height). Here it is only
-      // read: Vision > Camera > "Use in Work zones" (mapa.use) and the
-      // opacity (mapa.opacity); on the map the Camera layer (eye) remains.
+      // configured ONCE, in the Vision page (the "vision" settings store, file
+      // 0:/sys/workshop/config/vision.json: which camera of the list of cameras
+      // (`camera`, an id), calibration per resolution, lens height, where the
+      // camera is mounted). Here it is read through the
+      // settings store (workshopSettings): Vision > Camera > "Use in Work zones"
+      // (map.use); the opacity is of this screen (localStorage, Layers panel);
+      // on the map the Camera layer (eye) remains.
       //
       // The camera is on the GANTRY (it follows Y, rises with Z): the calibration's
       // image -> machine homography is corrected with the current position
@@ -14,8 +17,8 @@
       // in its place while the gantry moves. The video is only downloaded
       // while the layer is on and the page open.
 
-      var TCM_FILE = "0:/sys/workshop/config/vision.json";
-      var TCM_DEFAULT_URL = "http://127.0.0.1:8090/stream"; // it is read by the system: in the browser the DWC host goes
+      var TCM_SETTINGS = "vision"; // the settings store of Vision's configuration
+      var TCM_OPACITY_DEFAULT = 0.75;
 
       function tcmMul(A, B) {
         var R = [];
@@ -30,7 +33,6 @@
       // one of the same proportion scaled (like Config.calib_para).
       function tcmCalibrationFor(vcfg, w, h) {
         var cs = Object.assign({}, vcfg.calibs || {});
-        if (vcfg.calibration && vcfg.calibration.size) cs[vcfg.calibration.size.join("x")] = cs[vcfg.calibration.size.join("x")] || vcfg.calibration; // formato 1.0
         var flat = function (c) { return [].concat(c.H[0], c.H[1], c.H[2]); };
         var c = cs[w + "x" + h];
         if (c && c.H) return { c: c, H: flat(c) };
@@ -45,7 +47,7 @@
 
       // Port of mover_pose from vision.py: Y shifts the image dY; Z scales it
       // around the nadir N by k = (z + h0) / (z_cal + h0). With the camera on the
-      // CARRIAGE (sys/workshop/config/vision.json camera_en "carro", 2026-10-10) X shifts it dX.
+      // CARRIAGE (vision.json camera_en "carriage", 2026-10-10) X shifts it dX.
       function tcmPose(H, c, height, y, z, x, carriage) {
         if (c.y === null || c.y === undefined || c.z === null || c.z === undefined) return { H: H };
         if (carriage && (c.x === null || c.x === undefined)) return { err: i18nT('cameraMap.the_camera_is_on_the_carriage') };

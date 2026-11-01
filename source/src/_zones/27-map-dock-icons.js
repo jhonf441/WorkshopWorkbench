@@ -196,7 +196,8 @@
           tzTip(b, i18nT('zonesPage.activates_in_the_machine_also_applies', { v: zi && zi.name ? zi.name + ". " : "", c: c }));
           r.appendChild(b);
         });
-        var correction = z && (z.correctionX || z.correctionY);
+        var mc = pdk.data.cutCorrection(); // one correction for the machine (settings store "laser")
+        var correction = z && mc && (mc.cx || mc.cy);
         var laserMode = pdk.data.st() && pdk.data.st().mode === "Laser";
         if (correction && laserMode) {
           var s1 = tzTechOnly(tzDockDSec(pdk, box, i18nT('zonesPage.x0_y0_falls_where'))); // laser / pointer correction: the technician's

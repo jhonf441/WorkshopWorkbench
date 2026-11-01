@@ -20,7 +20,7 @@
         var st = psp.data.st();
         var t = tzTextState(st, psp.data.zones());
         var block = t.withState ? tzSpaceBlockReason(t, st) : null; // why the controls are locked: it is read at the top, where the state is
-        var key = JSON.stringify([t.withState, t.level, t.state, t.zone, t.head, block, tzLjStopOffered() ? [!!(st && st.liveJob), tzLjBannerSig()] : null]);
+        var key = JSON.stringify([t.withState, t.level, t.state, t.zone, t.head, block, tzLjStopOffered() ? [!!(st && st.liveJob), tzLjBannerSig(), workshopPluginActive("bar")] : null]);
         if (key === psp.headKey) return;
         psp.headKey = key;
         psp.headBar.innerHTML = "";
@@ -66,7 +66,7 @@
         if (!tzLjStopOffered() || !(st && st.liveJob)) return;
         var box = tzEl("span", "tz-hdstop");
         var cell = tzEl("span", "tz-hdcell", i18nT('livejob.in_progress'));
-        cell.title = i18nT('livejob.in_progress_tip');
+        cell.title = tzTx('livejob.in_progress_tip', 'bar');
         box.appendChild(cell);
         psp.headBar.appendChild(box);
       }

@@ -1,13 +1,14 @@
 ; laserfocus.g
 ; Selects the origin of a material, MEASURES the surface of the material with the
-; BLTouch and leaves the laser at the focus distance above that surface.
+; probe (zmeasure.g, by the type of probe the machine declares) and leaves the laser at the
+; focus distance above that surface.
 ; So the height does not depend on what Z was homed on before
 ; (empty bed or another sheet thickness).
 ;
 ; Use:  M98 P"0:/sys/workshop/macros/laserfocus.g" W2 H7.5 N"MDF 3mm"
 ;   W = workplace: 1=G54 2=G55 3=G56 4=G57 5=G58 6=G59
-;   H = focus distance in mm ABOVE the surface of the material. Optional if T is given: then it is
-;       calculated from the thickness (focusrule.g: the maker table + the measured geometry)
+;   H = focus distance in mm ABOVE the surface of the material, 0.3 to 60 (the same range as focusrule.g and focushere.g). Optional if T is
+;       given: then it is calculated from the thickness (focusrule.g: the maker table + the measured geometry)
 ;   N = name for the message (optional)
 ;   Q = 1: ask first whether there is material on the table (Cancel stops before moving)
 ;   T = expected thickness of the material in mm (optional): if the measurement does
@@ -20,11 +21,14 @@ var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : f
 var probeX = exists(param.X) ? param.X : 30     ; measuring point, relative to the zero of the material
 var probeY = exists(param.Y) ? param.Y : 30
 var clearZ = 15                                 ; minimum height to move in XY without touching the sheet
+var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 
 if !exists(param.W) || (!exists(param.H) && !exists(param.T))
     abort {var.en ? ("laserfocus: W (workplace) and H (focus) or T (thickness) missing") : ("laserfocus: faltan W (sistema de trabajo) y H (foco) o T (grosor)")}
 if param.W < 1 || param.W > 6
     abort {var.en ? ("laserfocus: W must be 1..6 (G54..G59)") : ("laserfocus: W debe ser 1..6 (G54..G59)")}
+if exists(param.H) && (param.H < 0.3 || param.H > 60)
+    abort {var.en ? ("laserfocus: H" ^ param.H ^ " out of range (0.3 to 60 mm)") : ("laserfocus: H" ^ param.H ^ " fuera de rango (0.3 a 60 mm)")}
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
     abort {var.en ? ("Laser focus: home all axes first") : ("Foco laser: primero hace homing de todos los ejes")}
 
@@ -41,11 +45,12 @@ if exists(param.Q) && param.Q == 1
 
 ; The BLTouch pin has to be STOWED before moving (request
 ; 2026-10-08): if it was left out (e.g. probe offset wizard) a possible alarm
-; is cleared and it is stowed. If it was already stowed nothing happens.
-M280 P0 S160                                    ; clear the BLTouch alarm (raises the pin)
-G4 P300
-M402                                            ; stow the pin
-G4 P300
+; is cleared and it is stowed. If it was already stowed nothing happens. Only a BLTouch has a pin.
+if var.servo
+    M280 P0 S160                                ; clear the BLTouch alarm (raises the pin)
+    G4 P300
+    M402                                        ; stow the pin
+    G4 P300
 
 var name = exists(param.N) ? param.N : ("P" ^ param.W)
 
@@ -54,6 +59,9 @@ var focusH = exists(param.H) ? param.H : 0
 if !exists(param.H)
     M98 P"0:/sys/workshop/macros/focusrule.g" T{param.T}
     set var.focusH = global.focusRuleH
+; the height that G53 G0 Z will use below, whichever way it was given: never outside the range focusrule.g and focushere.g accept
+if var.focusH < 0.3 || var.focusH > 60
+    abort {var.en ? ("laserfocus: focus height H" ^ var.focusH ^ " is out of range (0.3 to 60 mm)") : ("laserfocus: la altura de foco H" ^ var.focusH ^ " esta fuera de rango (0.3 a 60 mm)")}
 
 if !exists(global.laserOffsetOn)
     global laserOffsetOn = true
@@ -77,7 +85,7 @@ else
 
 G53 G0 Z{max(move.axes[2].machinePosition, var.clearZ)}   ; raise before moving
 ; The PROBE has to TOUCH at X30 Y30 of the material (not the head): the head goes
-; to point - G31 offset of the BLTouch. If with that offset the head cannot reach
+; to point - G31 offset of the probe. If with that offset the head cannot reach
 ; (near the edge of the machine), the point is moved into the
 ; material just enough.
 var ox = sensors.probes[0].offsets[0]
@@ -89,7 +97,7 @@ set var.probeY = max(var.probeY, move.axes[1].min - var.wy + var.oy + 1)
 set var.probeX = min(var.probeX, move.axes[0].max - var.wx + var.ox - 1)
 set var.probeY = min(var.probeY, move.axes[1].max - var.wy + var.oy - 1)
 G0 X{var.probeX - var.ox} Y{var.probeY - var.oy}  ; head placed so that the PROBE is over the measuring point
-G30                                             ; measure: Z0 = surface of the material
+M98 P"0:/sys/workshop/macros/zmeasure.g"        ; measure: Z0 = surface of the material (by probe type)
 M98 P"0:/sys/workshop/macros/zsurface.g" T{exists(param.T) ? param.T : 0} N{var.name}   ; thickness (T = expected)
 G53 G0 Z{var.focusH}                            ; focus distance above the surface
 

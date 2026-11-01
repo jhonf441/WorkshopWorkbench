@@ -20,15 +20,17 @@ if !exists(param.X) || !exists(param.Y) || !exists(param.A)
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
     abort {var.en ? ("SZP: home all axes first (Z0 = bed)") : ("SZP: primero hace homing de todos los ejes (Z0 = cama)")}
 
+var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 var ox = sensors.probes[1].offsets[0]
 var oy = sensors.probes[1].offsets[1]
 var hx = min(max(param.X - var.ox, move.axes[0].min), move.axes[0].max)
 var hy = min(max(param.Y - var.oy, move.axes[1].min), move.axes[1].max)
 
-M280 P0 S160                                    ; BLTouch: pin stowed before moving
-G4 P300
-M402
-G4 P300
+if var.servo
+    M280 P0 S160                                ; BLTouch: pin stowed before moving
+    G4 P300
+    M402
+    G4 P300
 M400
 G90
 G53 G0 Z{max(move.axes[2].machinePosition, 10)}

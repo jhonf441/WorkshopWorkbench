@@ -14,6 +14,16 @@
       var tmatItems = [];
       var tmatLoaded = false;
 
+      // The list that window.__workshopMaterials shows to the other modules is taken back when the plugin stops (only if it is still this plugin's
+      // list); a read or a save that ends after the stop does not publish it again.
+      function tmatPublish() {
+        if (!pluginStopped) window.__workshopMaterials = tmatItems;
+      }
+      workshopOnStop(function () {
+        if (window.__workshopMaterials === tmatItems) delete window.__workshopMaterials;
+        tmatItems = [];
+      });
+
       function tmatLoad() {
         return tzGetText(TMAT_FILE)
           .then(function (t) {
@@ -25,14 +35,14 @@
           })
           .then(function () {
             tmatLoaded = true;
-            window.__workshopMaterials = tmatItems;
+            tmatPublish();
             return tmatItems;
           });
       }
       function tmatSave(list) {
         return tzPutText(TMAT_FILE, JSON.stringify({ version: 1, materials: list }, null, 1)).then(function () {
           tmatItems = list;
-          window.__workshopMaterials = tmatItems;
+          tmatPublish();
         });
       }
       // Focus of a material (2026-10-10): the lens is a single one (tjLaserFocus);

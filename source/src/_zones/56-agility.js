@@ -54,7 +54,35 @@
         document.head.appendChild(s);
       }
 
+      // The adapters that are mounted (one per Workbench page). When the plugin stops they are closed from here: the palette, the right-click menu and
+      // the notice are nodes of document.body, and the keyboard listener is on document, so they would outlive a plugin whose page DWC 3.6 cannot
+      // remove. The nodes are also taken out by their id, in case an adapter was lost.
+      var tzAgilityMounted = [];
+      var TZ_AGILITY_NODE_IDS = ["workshop-workbench-menu", "workshop-workbench-notice", "workshop-workbench-palette"];
+
       function tzAgilityAssemble(A) {
         tzAgilityStart(A);
+        tzAgilityMounted.push(A);
         return tzAgilityApi(A);
       }
+
+      // Closes one adapter: idempotent (the page calls it again when it is left)
+      function tzAgilityDestroy(A) {
+        A.mounted = false;
+        document.removeEventListener("keydown", tzBind(tzAgilityOnKey, A));
+        tzAgilityClosePalette(A);
+        tzAgilityCloseMenu(A);
+        clearTimeout(A.noticeT);
+        if (A.noticeEl && A.noticeEl.parentNode) A.noticeEl.parentNode.removeChild(A.noticeEl);
+        var i = tzAgilityMounted.indexOf(A);
+        if (i >= 0) tzAgilityMounted.splice(i, 1);
+      }
+
+      function tzAgilityStopAll() {
+        tzAgilityMounted.slice().forEach(tzAgilityDestroy);
+        TZ_AGILITY_NODE_IDS.forEach(function (id) {
+          var n = document.getElementById(id);
+          if (n && n.parentNode) n.parentNode.removeChild(n);
+        });
+      }
+      workshopOnStop(tzAgilityStopAll);

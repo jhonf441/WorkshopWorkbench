@@ -13,8 +13,9 @@
         var sz = pmt.data.zoneSizes()[i];
         var m = tmatById(pmt.data.zoneMaterial(i));
         var f = pmt.data.focusByZone()[i];
+        var mc = pmt.data.cutCorrection(); // the machine's one correction (settings store "laser"), never a zone's
         [
-          i18nT('zonesPage.point_x_y', { refX: tzFmt(z.refX), refY: tzFmt(z.refY), v: z.correctionX || z.correctionY ? i18nT('zonesPage.laser_correction_x_y', { correctionX: tzFmt(z.correctionX), correctionY: tzFmt(z.correctionY) }) : "" }),
+          i18nT('zonesPage.point_x_y', { refX: tzFmt(z.refX), refY: tzFmt(z.refY), v: mc && (mc.cx || mc.cy) ? i18nT('zonesPage.laser_correction_x_y', { x: tzFmt(mc.cx), y: tzFmt(mc.cy) }) : "" }),
           sz && sz.w > 0 ? i18nT('zonesPage.material_x_mm', { w: tzFmt(sz.w), h: tzFmt(sz.h) }) : i18nT('zonesPage.no_material_size'),
           m ? tmatLabel(m) + " (" + m.mode + ")" : i18nT('zonesPage.no_material_assigned'),
           f ? i18nT('zonesPage.focus_mm', { h: f.h, macro: f.macro }) : "",

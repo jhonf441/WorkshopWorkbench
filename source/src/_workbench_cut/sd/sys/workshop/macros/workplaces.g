@@ -6,9 +6,12 @@
 ; from config.g at every startup, from the material macros and from
 ; sys/workshop/macros/laseroffset.g.
 ;
-; Each p<N>.g keeps the position of the POINTER + its correction, and adds it
-; only if global.laserOffsetOn (flag, see sys/workshop/macros/laseroffset.g):
-;   G10 L2 P2 X{20.0375 + (global.laserOffsetOn ? -16.5 : 0)} Y{...} Z0
+; Each p<N>.g keeps the position of the POINTER and adds the laser <-> pointer
+; correction of the machine only if global.laserOffsetOn (flag, see sys/workshop/macros/laseroffset.g):
+;   G10 L2 P2 X{20.0375 + (global.laserOffsetOn ? global.workshopLaserCorrX : 0)} Y{...} Z0
+; The correction is ONE value (settings store "laser", Machine > Offsets): the service writes it to
+; sys/workshop/macros/lasercorrection.g, run below before the zones, so a new correction rewrites no zone. That file also sets
+; global.workshopLaserCorrKnown (true = measured); while it is false or the file is missing the zones load with 0 and this macro says so.
 ;
 ; P1 = G54 (free / general: CNC setzero.g, "Set Work" button of DWC)
 ; P2 = G55 MDF 3mm (macros/laser/mdf3mm.g)
@@ -17,6 +20,17 @@
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
 if !exists(global.laserOffsetOn)
     global laserOffsetOn = true                 ; default at startup: offset applied
+if !exists(global.workshopLaserCorrX)
+    global workshopLaserCorrX = 0               ; no correction measured yet (or no service): the pointer is the laser
+if !exists(global.workshopLaserCorrY)
+    global workshopLaserCorrY = 0
+if !exists(global.workshopLaserCorrKnown)
+    global workshopLaserCorrKnown = false       ; true only while lasercorrection.g says a correction was MEASURED: 0 0 with false is "unknown", not "zero"
+if fileexists("0:/sys/workshop/macros/lasercorrection.g")
+    M98 P"0:/sys/workshop/macros/lasercorrection.g"
+; Without a measured correction the zones load with 0 (the pointer is the laser): said, not hidden. It does not abort: this runs from config.g.
+if global.laserOffsetOn && (!fileexists("0:/sys/workshop/macros/lasercorrection.g") || !global.workshopLaserCorrKnown)
+    M118 P0 S{var.en ? "WARNING: the laser-pointer correction is not known (Machine > Offsets): the zones load WITHOUT correction" : "AVISO: la correccion laser-puntero no se conoce (Maquina > Offsets): las zonas se cargan SIN correccion"}
 
 ; Usable cut area per mode (measured by the jog: Advanced -> Zones -> Cut
 ; area). Defines global.cutAreaLaser / cutAreaCNC / cutAreaFFF = {Xmin, Xmax,

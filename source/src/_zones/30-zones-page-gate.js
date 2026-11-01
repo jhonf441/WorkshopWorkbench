@@ -63,7 +63,7 @@
         pz.page.classList.toggle("tz-modes-closed", g.gated);
         g.panel.style.display = g.gated ? "" : "none";
         if (g.gated) {
-          var key = [d.reason, tzPageMode(pz), g.info.state.source, JSON.stringify(g.info.state.answer), g.guide, g.status, g.busy, workshopPathExists("/Plugins/Machine")].join("|");
+          var key = [d.reason, tzPageMode(pz), g.info.state.source, JSON.stringify(g.info.state.answer), g.guide, g.status, g.busy, workshopPluginActive("machine")].join("|");
           if (key !== g.key) { g.key = key; tzGateRender(pz, d); }
         } else if (was) {
           g.key = "";
@@ -145,16 +145,14 @@
           row.appendChild(tzBtn(i18nT("modes_gate.guide_close"), "", function () { g.guide = false; g.status = ""; tzGatePaint(pz); }));
         }
         // optional enrichment: the same switches live in Machine > Modes, linked only when that plugin is there
-        if (workshopPathExists("/Plugins/Machine")) {
+        if (workshopPluginActive("machine")) {
+          // the section travels as the route query ?layout=modes (vue/WorkshopMachine lib/cross-page.js): nothing stored, no event
           row.appendChild(tzBtn(i18nT("modes_gate.open_machine"), "", function () {
-            try { localStorage.setItem("workshopMachineSection", "modes"); } catch (e) { /* not critical */ }
-            pz.nav.goPath("/Plugins/Machine");
-            // the page can already be open with another module on show (Machine listens for this)
-            try { window.dispatchEvent(new CustomEvent("workshop-machine-goto", { detail: { section: "modes" } })); } catch (e) { /* not critical */ }
+            pz.nav.goPath("/Plugins/Machine", { layout: "modes" });
           }));
         }
         var other = tzModeElsewhere(tzPageMode(pz));
-        if (other && workshopPathExists(other.path)) {
+        if (other && workshopPluginActive(other.plugin)) {
           row.appendChild(tzBtn(i18nT("zonesPage.other_mode_open", { page: i18nT(other.name) }), "", function () { pz.nav.goPath(other.path); }));
         }
         p.appendChild(row);

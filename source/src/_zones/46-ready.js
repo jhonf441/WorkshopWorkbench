@@ -25,6 +25,10 @@
         if (matOk && tcFocusRequired(m)) add("focus", tzFocusAppliedOk(inp.focus, st), "ready.focus_ok", "ready.focus_bad");
         else add("focus", null, "ready.focus_not_needed", "ready.focus_not_needed");
         add("area", !!inp.area && !!inp.correction, "ready.area_ok", inp.area ? "ready.correction_bad" : "ready.area_bad");
+        // the board must run the correction the machine measured (inp.boardCorrection = tjCorrectionState: "ok" | "board_missing" | "differs" | "none")
+        if (inp.boardCorrection === "ok") add("correction_board", true, "ready.correction_loaded", "");
+        else if (inp.boardCorrection === "board_missing") add("correction_board", false, "", "ready.correction_board_missing");
+        else if (inp.boardCorrection === "differs") add("correction_board", false, "", "ready.correction_board_differs");
         var errs = inp.designErrors || [];
         add("design", errs.length === 0, "ready.design_ok", "ready.design_bad", { n: errs.length });
         add("frame", inp.frameDone ? true : null, "ready.frame_ok", "ready.frame_optional");
@@ -50,6 +54,7 @@
           focus: st ? tzFocusAppliedRead(st.wn) : null,
           area: !!ctx.cut.area(),
           correction: !!ctx.cut.correction(),
+          boardCorrection: st ? tjBoardCorrection(st.globals) : undefined,
           designErrors: rd.deps.designErrors(),
           frameDone: !!(st && tzWorkFlags()["border:" + st.wn]),
           hw: tzSafetyHw(),
@@ -108,7 +113,7 @@
       // the rows of the checks that tjNeedsRow does not already show, and the first lines of what is wrong in the design
       function tzReadyRows(card, checks, inp) {
         checks.forEach(function (c) {
-          if (c.id === "mode" || c.id === "homing" || c.id === "free") return; // shown by tjNeedsRow, with its buttons
+          if (c.id === "mode" || c.id === "homing" || c.id === "free" || (c.id === "correction_board" && c.state === "bad")) return; // shown by tjNeedsRow, with its buttons
           var r = tzEl("div", "tz-row");
           r.style.cssText += "gap:6px;align-items:center;margin-top:3px;";
           r.appendChild(tzEl("span", "wf-state tz-badge " + (c.state === "ok" ? "ok" : c.state === "bad" ? "err" : ""), c.state === "ok" ? "OK" : c.state === "bad" ? "!" : "-"));

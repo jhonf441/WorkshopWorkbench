@@ -48,20 +48,19 @@
             name: tzCleanName(ed.nameInp.value),
             refX: parseFloat(ed.rxInp.value),
             refY: parseFloat(ed.ryInp.value),
-            correctionX: parseFloat(ed.cxInp.value) || 0,
-            correctionY: parseFloat(ed.cyInp.value) || 0,
           };
         };
         ed.preview = function preview() {
           var z = ed.current();
-          var errs = isFinite(z.refX) && isFinite(z.refY) ? tzValidate(z, ptb.data.st()) : [i18nT('zonesPage.point_x_y_missing')];
+          var mc = ptb.data.cutCorrection(); // the machine's, never the zone's: the zone file adds the globals of lasercorrection.g
+          var errs = isFinite(z.refX) && isFinite(z.refY) ? tzValidate(z, ptb.data.st(), mc) : [i18nT('zonesPage.point_x_y_missing')];
           ed.info.textContent =
-            i18nT('zonesPage.applied_origin_x_y_laser_offset', { v: tzFmt(z.refX + z.correctionX), v2: tzFmt(z.refY + z.correctionY), refX: tzFmt(z.refX), refY: tzFmt(z.refY) });
+            i18nT('zonesPage.applied_origin_x_y_laser_offset', { v: tzFmt(z.refX + (mc ? mc.cx : 0)), v2: tzFmt(z.refY + (mc ? mc.cy : 0)), refX: tzFmt(z.refX), refY: tzFmt(z.refY) });
           tzSetMsg(ed.msg, errs.join("\n"), false);
           ed.saveBtn.disabled = errs.length > 0;
         };
         if (tzEditorFields(ptb, ed, which, opts)) return;
-        tzEditorCorrection(ptb, ed, which, opts);
+        tzEditorSizeAndMaterial(ptb, ed, which, opts);
         tzEditorMacro(ptb, ed, which, opts);
         tzEditorSave(ptb, ed, which, opts);
       }
@@ -120,7 +119,7 @@
           // reference (the pointer), in machine coords.
           var posSel = document.createElement("select");
           posSel.style.cssText = "background:#263238;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:4px;margin:2px;max-width:230px;";
-          tzTip(posSel, i18nT('zonesPage.set_as_the_zone_point_one'));
+          tzTip(posSel, tzTx('zonesPage.set_as_the_zone_point_one', 'jog'));
           var o0 = document.createElement("option");
           o0.value = "";
           o0.textContent = i18nT('zonesPage.use_saved_position');
@@ -141,23 +140,14 @@
           });
           ptb.edCard.appendChild(posSel);
         }
-        var pair2 = tzEl("div", "pair");
-        ptb.edCard.appendChild(pair2);
-        ed.mcorr = tjLaserCorrection();
-        var defCorrection = ed.src ? ed.src : ed.mcorr ? { correctionX: ed.mcorr.x, correctionY: ed.mcorr.y } : ptb.data.zones()[2] || ptb.data.zones()[1] || { correctionX: -16.5, correctionY: 0 };
-        ed.cxInp = tzTableField(ptb, pair2, i18nT('zonesPage.laser_correction_x'), tzNum(defCorrection.correctionX), "number");
-        ed.cyInp = tzTableField(ptb, pair2, i18nT('zonesPage.laser_correction_y'), tzNum(defCorrection.correctionY), "number");
+        // the laser <-> pointer correction is the machine's (settings store "laser", Machine > Offsets): shown, never typed per zone
+        var mc = ptb.data.cutCorrection();
+        var corrNote = tzEl("div", "tz-muted", mc ? i18nT('zonesPage.machine_laser_correction', { x: tzFmt(mc.cx), y: tzFmt(mc.cy) }) : tzTx('zonesPage.machine_laser_correction_none', 'machine'));
+        tzTip(corrNote, tzTx('zonesPage.it_s_the_machine_s_offsets', 'machine'));
+        ptb.edCard.appendChild(corrNote);
       }
 
-      function tzEditorCorrection(ptb, ed, which, opts) {
-        if (ed.mcorr) {
-          // a single one for the machine: changed in Offsets and valid for all
-          ed.cxInp.value = tzNum(ed.mcorr.x);
-          ed.cyInp.value = tzNum(ed.mcorr.y);
-          ed.cxInp.disabled = ed.cyInp.disabled = true;
-          tzTip(ed.cxInp, i18nT('zonesPage.it_s_the_machine_s_offsets'));
-          tzTip(ed.cyInp, i18nT('zonesPage.it_s_the_machine_s_offsets'));
-        }
+      function tzEditorSizeAndMaterial(ptb, ed, which, opts) {
         var pair3 = tzEl("div", "pair");
         ptb.edCard.appendChild(pair3);
         var srcIdx = ed.isNew ? opts.from : ed.idx;
@@ -275,7 +265,7 @@
         ed.info.style.marginTop = "6px";
         ptb.edCard.appendChild(ed.info);
         ed.msg = tzEl("div", "tz-msg", "");
-        [ed.nameInp, ed.rxInp, ed.ryInp, ed.cxInp, ed.cyInp].forEach(function (inp) {
+        [ed.nameInp, ed.rxInp, ed.ryInp].forEach(function (inp) {
           inp.addEventListener("input", ed.preview);
         });
         ed.macroInp.addEventListener("input", function () {

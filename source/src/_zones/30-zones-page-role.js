@@ -30,7 +30,9 @@
           return false;
         });
         tzWorkStart(pz); // the work state of the service (22-work-state.js): Prepare marks, focus applied
-        pz.unRole = typeof workshopOnIdentity === "function" ? workshopOnIdentity(function () { if (pz.shell.alive()) tzRoleApply(pz); }) : null;
+        // another person (or role) drops the safety ticks of the one before (46-ready-safety.js)
+        if (typeof workshopIdentity === "function") tzSafetyScopeSet("who", tzSafetyWho(workshopIdentity()));
+        pz.unRole = typeof workshopOnIdentity === "function" ? workshopOnIdentity(function (id) { tzSafetyScopeSet("who", tzSafetyWho(id)); if (pz.shell.alive()) tzRoleApply(pz); }) : null;
         tzRoleApply(pz);
       }
 

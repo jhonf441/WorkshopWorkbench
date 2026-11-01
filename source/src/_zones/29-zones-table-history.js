@@ -37,7 +37,7 @@
               .then(function (txt) {
                 var z = tzParseZoneFile(txt);
                 desc.textContent =
-                  when + " -- " + (z ? i18nT('zonesPage.point_x_y_correction_x', { v: z.name || i18nT('zonesPage.unnamed'), refX: tzFmt(z.refX), refY: tzFmt(z.refY), correctionX: tzFmt(z.correctionX) }) : i18nT('zonesPage.not_understood'));
+                  when + " -- " + (z ? i18nT('zonesPage.name_point_x_y', { v: z.name || i18nT('zonesPage.unnamed'), refX: tzFmt(z.refX), refY: tzFmt(z.refY) }) : i18nT('zonesPage.not_understood'));
                 if (!z) return;
                 row.appendChild(
                   tzBtn(

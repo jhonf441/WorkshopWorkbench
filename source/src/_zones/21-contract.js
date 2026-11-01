@@ -14,7 +14,7 @@
         // geometry of the machine
         cut: ["correction", "limits", "area", "bboxShapes"],
         // zones and materials (read only; writing stays in the page except the two guardar* calls)
-        data: ["zones", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "setCorrection", "sincFoco"],
+        data: ["zones", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "clampsFile", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "sincFoco"],
         // change of tab and editing (goOffsets and offsetsProbeVisible are given per module: the Mesh of WorkshopMachine)
         nav: ["go", "goOffsets", "offsetsProbeVisible", "openEditorAt", "goPointer", "onChange", "cleanWorkbench"],
         // formatting and panels
@@ -24,7 +24,7 @@
       // Builds the ctx of one module from the accessors of the page P (see tzMountPage) and the extras of that module.
       //   P     = { st, zones, zoneSizes, focusByZone, layout, renderMap, refreshAll, readStatus, machineFree, jobRunning,
       //             cutCorr, cutLimits, prensas, retazos, zonePoint, saveZonePoint, zoneMaterial, saveZoneMaterial,
-      //             saveFocus, zoneChecks, refPoints, savedPos, probeOffset, setZoneCorr, syncFoco, openEditor,
+      //             saveFocus, zoneChecks, refPoints, savedPos, probeOffset, syncFoco, openEditor,
       //             goLayout, syncMaterialZones }
       //   id    = tab id of the module (visible() defaults to "the layout is id")
       //   extra = { card, visible, mapa: {...}, nav: {...}, ui: {...}, datos: {...} } overrides / additions of the module
@@ -90,7 +90,8 @@
               P.offcuts().forEach(function (r) { out.push({ name: r.name || i18nT('zonesPage.offcut_2'), x: r.x, y: r.y, w: r.w, h: r.h }); });
               return out;
             },
-            clamps: function () { return P.clamps(); },
+            clamps: function () { return P.clamps(); }, // the clamps the page uses now (the "Use clamps" preference)
+            clampsFile: function () { return P.clampsFile(); }, // every clamp of clamps.json, whatever the preference says
             nameActive: function () {
               var st = P.st();
               var z = st ? P.zones()[st.wn] : null;
@@ -100,7 +101,6 @@
             pointsRef: function () { return P.refPoints(); },
             offsetProbe: function () { return P.probeOffset(); },
             posSaved: function () { return P.savedPos(); },
-            setCorrection: function (i, cx, cy) { return P.setZoneCorrection(i, cx, cy); },
             sincFoco: function () { return P.syncFocus(); },
           },
           nav: {

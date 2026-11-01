@@ -20,7 +20,9 @@
         head.style.marginTop = "10px";
         box.appendChild(head);
         ["what", "why", "missing", "help"].forEach(function (part) {
-          box.appendChild(tzEl("div", "tz-gate-help", i18nT("modes_gate.step_" + step.id + "_" + part)));
+          // the help of the switch step points at the buttons of the control bar: without that plugin it says the same without naming it
+          var help = step.id === "switch" && part === "help" ? tzTx("modes_gate.step_switch_help", "bar") : i18nT("modes_gate.step_" + step.id + "_" + part);
+          box.appendChild(tzEl("div", "tz-gate-help", help));
         });
         if (step.kind === "apply") tzGateSwitches(pz, box);
         var row = tzEl("div", "tz-row tz-actions");

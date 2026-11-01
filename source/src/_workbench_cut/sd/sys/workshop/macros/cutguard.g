@@ -10,8 +10,20 @@
 ; Unlike sys/workshop/macros/laserguard.g (framing, 10 % cap), here the cap is
 ; 100 %: cutting needs real power. What is checked is that the machine
 ; is ready: real Laser mode (M452) and X/Y homed.
+;
+; And who started it: the file of the page can be launched from DWC (Files, Jobs, the Send of Simulate job, a second M32) without the
+; checks the page makes at CUT (zone, material, focus, work area, clamps, safety list). So the FIRST thing asked here is the permission
+; the CUT of the page gives with jobarm.g (K"Laser") right before its M32 (global.workshopLaserArmed, 30 s). It is used up here whatever
+; happens next: every launch needs its own CUT of the page.
 
+var armed = exists(global.workshopLaserArmed) ? global.workshopLaserArmed : 0   ; uptime second until which the CUT of the page allows ONE launch (0 = none, see jobarm.g)
+if exists(global.workshopLaserArmed)
+    set global.workshopLaserArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+if var.armed == 0
+    abort {var.en ? ("Cut: this file was not started from the Workbench page. Press CUT in Workbench > Simple cuts (it checks the zone, the focus, the area and the safety list). The laser was not turned on.") : ("Corte: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa CORTAR en Mesa de trabajo > Cortes simples (revisa la zona, el foco, el area y la lista de seguridad). No se encendio el laser.")}
+if state.upTime > var.armed
+    abort {var.en ? ("Cut: the CUT of the Workbench page expired (30 s) before the file began. Press CUT again. The laser was not turned on.") : ("Corte: el CORTAR de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa CORTAR otra vez. No se encendio el laser.")}
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 if !exists(param.S)
     abort {var.en ? ("Cut: power missing (S%)") : ("Corte: falta la potencia (S%)")}

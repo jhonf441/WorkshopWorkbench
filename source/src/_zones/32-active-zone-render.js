@@ -26,7 +26,8 @@
         zr.free = za.ctx.machine.free();
         zr.wn = zr.s.wn;
         zr.z = zr.zones[zr.wn];
-        zr.correction = zr.z && (zr.z.correctionX || zr.z.correctionY) ? { cx: zr.z.correctionX || 0, cy: zr.z.correctionY || 0 } : null;
+        var mc = za.ctx.cut.correction(); // the machine's one correction (settings store "laser"); a zone file holds none
+        zr.correction = zr.z && mc && (mc.cx || mc.cy) ? { cx: mc.cx, cy: mc.cy } : null;
         zr.laserMode = zr.s.mode === "Laser";
         zr.cncMode = zr.s.mode === "CNC";
         zr.ax = zr.s.axes;
@@ -38,6 +39,7 @@
         zr.f = zr.focus[zr.wn];
         zr.zp = za.ctx.data.point(zr.wn);
         zr.po = za.ctx.data.offsetProbe();
+        zr.probe = tzProbeInfo(zr.s.probes); // what the machine declares: the steps ask it instead of assuming a BLTouch
         return zr;
       }
 
@@ -46,11 +48,11 @@
         var s = zr.s, ax = zr.ax;
         return JSON.stringify([
           zr.wn, s.offsetOn, s.mode, zr.free, s.status, zr.offX, zr.offY,
-          zr.zones.map(function (q) { return q ? [q.name, q.refX, q.refY, q.correctionX, q.correctionY] : null; }),
+          zr.zones.map(function (q) { return q ? [q.name, q.refX, q.refY] : null; }), zr.correction,
           zr.focus[zr.wn] || null, za.aimAsk, za.M.text, za.M.ok, tjNeedsKey(s), za.ctx.data.focusList(),
           zr.zp, zr.po, za.ctx.data.pointsRef().length, za.ctx.data.posSaved().length, za.secOpen.advanced, za.hDraft,
           tmatById(za.ctx.data.material(zr.wn)), za.ctx.data.controls(zr.wn), (window.__workshopMaterials || []).length, s.globals && s.globals.workshopThickness,
           Math.round(ax.X.machinePosition * 10), Math.round(ax.Y.machinePosition * 10), ax.X.homed, ax.Y.homed, ax.Z.homed,
-          tzActSignedOut(), tzcKey(s),
+          tzActSignedOut(), tzcKey(s), tzPresenceKey(),
         ]);
       }

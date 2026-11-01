@@ -4,8 +4,8 @@
       function tzLayersMountList(ply) {
         var TZ_LAYER_GROUPS = [
           [i18nT('zonesPage.machine'), [
-            ["head", i18nT('common.head'), "#ffffff", i18nT('zonesPage.cross_pointer_red_dot_where_the')],
-            ["probe", i18nT('common.probe_bltouch'), "#66bb6a", i18nT('zonesPage.where_the_probe_touches_head_g31')],
+            ["head", i18nT('common.head'), "#ffffff", tzTx('zonesPage.cross_pointer_red_dot_where_the', 'machine')],
+            ["probe", i18nT('common.probe_layer'), "#66bb6a", i18nT('zonesPage.where_the_probe_touches_head_g31')],
             ["travel", i18nT('zonesPage.travel'), "#9e9e9e", i18nT('zonesPage.how_far_the_axes_reach_m208')],
             ["photoBed", i18nT('zonesPage.bed_photo'), "#a1887f", i18nT('zonesPage.the_photo_of_the_whole_bed')],
             ["ruler", i18nT('zonesPage.ruler'), "#bdbdbd", i18nT('zonesPage.mm_on_the_edges_adapts_to')],
@@ -20,7 +20,7 @@
             ["clamps", i18nT('zonesPage.clamps'), "#ef5350", i18nT('zonesPage.clamps_screws_or_stops_warns_if')],
             ["offcuts", i18nT('zonesPage.offcuts'), "#c8a878", i18nT('zonesPage.leftover_material_pieces_the_laser_editor')],
             ["refs", i18nT('zonesPage.references'), "#80cbc4", i18nT('zonesPage.centres_and_corners_the_taps_snap')],
-            ["positions", i18nT('zonesPage.positions'), "#ffcc80", i18nT('zonesPage.saved_positions_of_the_jog')],
+            ["positions", i18nT('zonesPage.positions'), "#ffcc80", tzTx('zonesPage.saved_positions_of_the_jog', 'jog')],
           ]],
           [i18nT('zonesPage.image'), [
             ["camera", i18nT('cuts.camera'), "#b39ddb", i18nT('zonesPage.camera_video_under_the_map_it')],
@@ -78,6 +78,8 @@
         // Vision service (vision.post /config); changing it asks for recalibration.
         ply.cameraAssemblesBox = tzEl("div");
         ply.cameraAssemblesBox.style.cssText = "margin:0 0 8px 22px;";
+        // both boxes belong to the Camera layer: they follow its row (hidden while Vision is not there)
+        ply.visionRows.push(ply.cameraOpBox, ply.cameraAssemblesBox);
       }
 
       function tzLayersMountBoxes(ply) {

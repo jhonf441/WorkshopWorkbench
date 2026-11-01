@@ -38,6 +38,7 @@
     "step_switch_why": "What it is for: the page follows the mode the machine is in now.",
     "step_switch_missing": "If it is missing: the page waits, closed, until the machine is in that mode.",
     "step_switch_help": "How: with the machine idle, switch it with the mode buttons of the control bar or run the macro of the mode (macros/mode/selectlaser.g or selectcnc.g). Then press the button.",
+    "step_switch_help_no_bar": "How: with the machine idle, run the macro of the mode (macros/mode/selectlaser.g or selectcnc.g). Then press the button.",
     "guide_apply": "Turn on and continue",
     "pick_one": "Tick Laser or CNC, or press \"I do not use laser or CNC\".",
     "not_using": "I do not use laser or CNC",

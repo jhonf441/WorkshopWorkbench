@@ -73,7 +73,7 @@
         if (qLay) { pz.nav.setLayout(qLay); pz.layoutRemembered = true; }
         // Vision sent a shape "To the Laser editor" (window.__workshop.visionForma, taken
         // by 40-cuts.js): the Editor is opened so that it is seen
-        if (window.__workshop && window.__workshop.visionShape && pz.pag.layouts.indexOf("cuts") !== -1) pz.nav.setLayout("cuts");
+        if (window.__workshop && window.__workshop.visionShape && workshopPluginActive("vision") && pz.pag.layouts.indexOf("cuts") !== -1) pz.nav.setLayout("cuts");
         // Window-like tabs (request: "that they look like windows, like the
         // BtnCmd layouts"). Find center has its own.
         pz.layoutButtons = {};
@@ -148,6 +148,7 @@
           cutCorrection: function () { return pz.data.cutCorrection(); },
           cutLimits: function () { return pz.data.cutLimits(); },
           clamps: function () { return pz.data.clampsAct(); },
+          clampsFile: function () { return pz.data.clamps(); },
           offcuts: function () { return pz.data.offcuts(); },
           zonePoint: function (i) { return pz.data.zonePoint(i); },
           saveZonePoint: function (i, p) { return pz.data.saveZonePoint(i, p); },
@@ -166,7 +167,6 @@
           refPoints: function () { return pz.snap.refPoints(); },
           savedPos: function () { return pz.data.savedPos(); },
           probeOffset: function () { return pz.data.probeOffset(); },
-          setZoneCorrection: function (i, cx, cy) { return pz.data.setZoneCorrection(i, cx, cy); },
           syncFocus: function () { return pz.data.syncFocus(); },
           openEditor: function (i, o) { pz.table.openEditor(i, o); },
           goLayout: function (l) { pz.nav.goLayout(l); },
@@ -225,7 +225,7 @@
       // HOOK etapa 6/7: the card of every tool registered with tzRegisterTool (20-mode-profile.js) that this page has; it lives in the
       // side panel (inspector). def.bar: a bar right above the card (the Mesh steps). The api a tool returns may have render (the tool
       // is opened or the state is known), tick (every machine state, open or not), refresh (the files of the page were reread),
-      // enable (the tool was just opened), modMap / mapModule() (its map module while open) and help() ({title, steps, notes}).
+      // enable (the tool was just opened), disable (it was just closed: another tab was opened), modMap / mapModule() (its map module while open) and help() ({title, steps, notes}).
       function tzPagTools(pz) {
         pz.extraCards = {};
         pz.extraBars = {};
@@ -282,6 +282,7 @@
       }
 
       function tzMarkGroups(pz, mode) {
+        tzSafetyScopeSet("mode", mode); // a change of mode drops the safety ticks (46-ready-safety.js)
         var view = pz.roleViewName || tzViewNow();
         if (mode === pz.modeSeen && view === pz.viewSeen) return;
         var firstMode = !pz.modeSeen;

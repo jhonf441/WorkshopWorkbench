@@ -9,7 +9,7 @@
           // Vision installed (its configuration exists): without Vision (WorkshopJog
           // published alone) the Camera tool and Find center
           // with the camera are not shown. undefined = still reading.
-          hasVision: function () { return tcm.vcfg === undefined ? undefined : tcm.vcfg !== null && workshopPathExists("/Plugins/Vision"); },
+          hasVision: function () { return tcm.vcfg === undefined ? undefined : tcm.vcfg !== null && workshopPluginActive("vision"); },
           place: tzBind(tcmPlace, tcm),
           sync: function () { tcmSync(tcm); tcmPlace(tcm); },
           reload: tzBind(tcmReload, tcm),

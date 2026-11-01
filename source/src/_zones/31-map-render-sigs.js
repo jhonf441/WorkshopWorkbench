@@ -33,7 +33,8 @@
       function tzMapSigMarks(pmr, mp) {
         var L = pmr.layerState.layers(), st = pmr.data.st(), full = !mp.focus;
         mp.pHit = mp.focus ? pmr.nav.module("job").hits(pmr.data.clampsAct()) : [];
-        var tv = window.__workshop && window.__workshop.vision;
+        // the detections stay in the registry after Vision stops (and for 30 minutes anyway): they are drawn only while Vision is there
+        var tv = workshopPluginActive("vision") && window.__workshop && window.__workshop.vision;
         mp.vision = L.vision && full && tv && tv.items && Date.now() - tv.ts < 30 * 60000 ? tv : null;
         mp.refPoints = L.refs && full ? pmr.snap.refPoints() : [];
         mp.zPoint = (L.zpoint && full && pmr.data.zonePoint(st.wn)) || null;

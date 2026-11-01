@@ -116,8 +116,10 @@
       }
 
       // -- trabajos --
+      // The files of the service (the marks, a part) start with cutguard.g like the cut of the editor: they start armed by the page
+      // (jobarm.g right before M32, 22-start-file.js), after the safety list of tgGrGate.
       function tgGrRunFile(tg, file, text) {
-        return tzStartFile(file).then(function () { // 22-start-file.js
+        return tzStartArmed("Laser", file, null).then(function () { // 22-start-file.js
           tgGrSetMsg(tg, text, true);
         });
       }
@@ -129,7 +131,7 @@
 
       function tgGrMark(tg) {
         var c = tgGrCorrection(tg);
-        if (!c) return tgGrSetMsg(tg, i18nT('large.no_known_laser_correction_offsets'), false);
+        if (!c) return tgGrSetMsg(tg, tzTx('large.no_known_laser_correction_offsets', 'machine'), false);
         tg.busy = true;
         tgGrSetMsg(tg, i18nT('large.choosing_where_the_marks_go'));
         tgGrGate(tg, "large part marks")
@@ -151,7 +153,7 @@
 
       function tgGrCut(tg) {
         var c = tgGrCorrection(tg);
-        if (!c) return tgGrSetMsg(tg, i18nT('large.no_known_laser_correction_offsets'), false);
+        if (!c) return tgGrSetMsg(tg, tzTx('large.no_known_laser_correction_offsets', 'machine'), false);
         tg.busy = true;
         tgGrSetMsg(tg, i18nT('large.preparing_part', { n: tgGrN(tg) }));
         tgGrGate(tg, "large part cut")

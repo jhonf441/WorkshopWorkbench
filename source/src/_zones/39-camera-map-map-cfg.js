@@ -1,10 +1,10 @@
       function tcmMapCfg(tcm) {
         var m = (tcm.vcfg && tcm.vcfg.map) || {};
-        return { use: !!m.use, opacity: m.opacity >= 0.1 && m.opacity <= 1 ? m.opacity : 0.75 };
+        return { use: !!m.use };
       }
 
       function tcmCalibrated(tcm) {
-        return !!tcm.vcfg && (Object.keys(tcm.vcfg.calibs || {}).length > 0 || !!(tcm.vcfg.calibration && tcm.vcfg.calibration.size));
+        return !!tcm.vcfg && Object.keys(tcm.vcfg.calibs || {}).length > 0;
       }
 
       function tcmUsable(tcm) {
@@ -15,16 +15,18 @@
         return !!tcm.vcfg && tcm.vcfg.camera_en === "carriage";
       }
 
+      // The video of the camera Vision looks at (vision.json `camera`, an id of the list of cameras; "main" when it has none), on the relay of this
+      // machine (_camera_client/10-camera-ports.js): the layer keeps no address of its own.
       function tcmUrl(tcm) {
-        var u = String((tcm.vcfg && tcm.vcfg.url) || TCM_DEFAULT_URL);
-        return u.replace("[HOSTNAME]", location.hostname).replace(/^(https?:\/\/)(127\.0\.0\.1|localhost)(?=[:/])/i, "$1" + location.hostname);
+        return workshopRelayStream(tcm.vcfg && tcm.vcfg.camera);
       }
 
+      // Vision's configuration through the settings store (value null = there is no vision.json: no Vision; a failed read counts the same)
       function tcmReload(tcm) {
-        return tzGetText(TCM_FILE)
-          .then(function (t) {
-            var o = JSON.parse(t.replace(/^﻿/, ""));
-            tcm.vcfg = o && typeof o === "object" ? o : {};
+        return workshopSettings
+          .load(TCM_SETTINGS)
+          .then(function (r) {
+            tcm.vcfg = r.value && typeof r.value === "object" ? r.value : null;
           }, function () {
             tcm.vcfg = null;
           })
@@ -111,7 +113,7 @@
         } catch (e) {
           opScreen = NaN;
         }
-        tcm.img.style.opacity = String(opScreen >= 0.1 && opScreen <= 1 ? opScreen : tcmMapCfg(tcm).opacity);
+        tcm.img.style.opacity = String(opScreen >= 0.1 && opScreen <= 1 ? opScreen : TCM_OPACITY_DEFAULT);
         tcm.img.style.display = "block";
       }
 
@@ -152,8 +154,7 @@
       // -> null without a calibration.
       function tcmInfo(tcm) {
         if (!tcmCalibrated(tcm)) return null;
-        var cs = Object.assign({}, tcm.vcfg.calibs || {});
-        if (tcm.vcfg.calibration && tcm.vcfg.calibration.size) cs[tcm.vcfg.calibration.size.join("x")] = cs[tcm.vcfg.calibration.size.join("x")] || tcm.vcfg.calibration;
+        var cs = tcm.vcfg.calibs || {};
         var c = tcm.now && tcm.now.c;
         if (!c) {
           var ks = Object.keys(cs);

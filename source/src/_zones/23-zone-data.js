@@ -11,6 +11,7 @@
         return {
           st: function () { return pzd.st; },
           zones: function () { return pzd.zones; },
+          legacyZones: function () { return pzd.legacyZones; },
           zoneSizes: function () { return pzd.zoneSizes; },
           focusByZone: function () { return pzd.focusByZone; },
           clamps: function () { return pzd.clamps; },
@@ -31,7 +32,6 @@
           headNow: tzBind(tzDataHeadNow, pzd),
           zonePoint: tzBind(tzDataZonePoint, pzd),
           saveZonePoint: tzBind(tzDataSaveZonePoint, pzd),
-          setZoneCorrection: tzBind(tzDataSetZoneCorrection, pzd),
           zoneChecks: tzBind(tzDataZoneChecks, pzd),
           checksBadge: tzBind(tzDataChecksBadge, pzd),
           zoneMaterial: tzBind(tzDataZoneMaterial, pzd),

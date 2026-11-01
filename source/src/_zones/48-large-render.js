@@ -98,7 +98,7 @@
           fmg.appendChild(tgGrNumber(tg, tzFmt(tg.data.margin == null ? 5 : tg.data.margin), function (v) { tg.data.margin = Math.max(0, Math.min(100, v)); tgGrSave(tg); tgGrPlaceByPoints(tg); }, 54));
           fmg.appendChild(tzEl("span", "tz-muted", "mm"));
           rn.p2.appendChild(fmg);
-          rn.p2.appendChild(tzEl("div", "tz-muted", i18nT('large.with_the_pointer_bring_the_red')));
+          rn.p2.appendChild(tzEl("div", "tz-muted", tzTx('large.with_the_pointer_bring_the_red', 'jog')));
           var o2 = tzEl("div", null, i18nT('large.or_drag_the_design_on_the'));
           o2.style.marginTop = "8px";
           rn.p2.appendChild(o2);
@@ -217,10 +217,10 @@
               items.appendChild(fl);
             });
             p4.appendChild(items);
-            p4.appendChild(tzEl("div", "tz-muted", i18nT('large.with_the_pointer_bring_the_red_2')));
+            p4.appendChild(tzEl("div", "tz-muted", tzTx('large.with_the_pointer_bring_the_red_2', 'jog')));
             var fb = tzEl("div", "tz-row");
             // the camera is the Vision plugin: no button without it
-            if (workshopPathExists("/Plugins/Vision")) fb.appendChild(tgGrButton(tg, i18nT('large.find_with_the_camera'), "", tzBind(tgGrSearchCamera, tg), i18nT('large.confirm_the_machine_moves_the_camera'), "tg-camera"));
+            if (workshopPluginActive("vision")) fb.appendChild(tgGrButton(tg, i18nT('large.find_with_the_camera'), "", tzBind(tgGrSearchCamera, tg), i18nT('large.confirm_the_machine_moves_the_camera'), "tg-camera"));
             var lists = (tg.data.measures || []).filter(Boolean).length;
             var bcal = tgGrButton(tg, i18nT('large.calculate'), "primary", tzBind(tgGrCompute, tg));
             if (lists < 2) bcal.disabled = true;

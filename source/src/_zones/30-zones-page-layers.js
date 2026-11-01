@@ -58,18 +58,9 @@
           })
         );
         tableHead.appendChild(tzBtn(i18nT('tzTips.l_export_json'), null, pz.data.exportJson));
-        var importInput = document.createElement("input");
-        importInput.type = "file";
-        importInput.accept = ".json,application/json";
-        importInput.style.display = "none";
-        importInput.addEventListener("change", function () {
-          if (importInput.files && importInput.files[0]) pz.data.importJson(importInput.files[0]);
-          importInput.value = "";
-        });
-        pz.tableCard.appendChild(importInput);
         tableHead.appendChild(
           tzBtn(i18nT('zonesPage.import_json'), null, function () {
-            importInput.click();
+            pz.data.importJson();
           })
         );
         pz.tableWrap = pz.table.buildTableWrap();

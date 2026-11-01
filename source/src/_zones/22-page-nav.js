@@ -50,7 +50,11 @@
           setTabs: function (t) { pnv.tabs = t; },
           tabButtons: function () { return pnv.tabButtons; },
           setTabButtons: function (b) { pnv.tabButtons = b; },
-          goPath: function (path) { if (pnv.router) pnv.router.push(path); }, // other pages of the app (e.g. Vision, to build the bed photo)
+          // other pages of the app (e.g. Vision, to build the bed photo); query = route query parameters for that page (e.g. {layout: "modes"})
+          goPath: function (path, query) {
+            var p = pnv.router ? pnv.router.push(query ? { path: path, query: query } : path) : null;
+            if (p && typeof p.catch === "function") p.catch(function () {});
+          },
           module: function (name) { return pnv.modules[name]; },
           setModule: function (name, m) { pnv.modules[name] = m; },
           toolApi: function (id) { return pnv.toolApis[id]; },
@@ -77,15 +81,16 @@
       }
 
       // A tab that lives on the page of the other plugin (TZ_PAGES, 30-zones-page.js): that page opens through the router with the
-      // tab in its route query; if its plugin is not installed or is off, a notice says which one. false: this page did not change.
+      // tab in its route query; if its plugin is not installed or is off, a notice says the page is not available (it never names that
+      // plugin: one that is not there is not mentioned). false: this page did not change.
       // The tab (and any extra data) travels as ROUTE QUERY parameters of the other page: ?layout=<tab>&x=..&y=.. (review #12), so the
       // other plugin reads route.query and no undeclared localStorage key is a contract between the two plugins.
       function tzNavGoOtherPage(pnv, l, query) {
         var k = tzPageOfTab(l, pnv.pag);
         if (!k) return false;
         var other = TZ_PAGES[k];
-        if (!workshopPathExists(other.path)) {
-          tzAgilityNotice(pnv.notice, i18nT('zonesPage.needs_other_plugin', { title: other.title, plugin: other.plugin }));
+        if (!workshopPluginActive(other.plugin)) {
+          tzAgilityNotice(pnv.notice, i18nT('zonesPage.other_page_unavailable'));
           return false;
         }
         var p = pnv.router ? pnv.router.push({ path: other.path, query: Object.assign({ layout: l }, query || {}) }) : null;

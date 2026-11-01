@@ -108,7 +108,7 @@
         if (!TZ_PROFILES[mn.mode]) {
           // a job of a mode another plugin serves (an FFF print in the history): only where it is shown
           var other = tzModeElsewhere(mn.mode);
-          card.appendChild(tzEl("div", "tz-muted", i18nT('job.other_mode_job', { mode: mn.mode, page: other ? i18nT(other.name) : "" })));
+          card.appendChild(tzEl("div", "tz-muted", tzTx('job.other_mode_job', 'printing', { mode: mn.mode, page: other ? i18nT(other.name) : "" })));
           return true;
         }
         mn.verb = mn.mode === "CNC" ? i18nT('job.milling') : i18nT('job.cutting');

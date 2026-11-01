@@ -55,7 +55,7 @@
           if (nearHead || nearLaser || nearProbe) {
             lines.push(i18nT('zonesPage.head_pointer_x_y', { hx: tzFmt(hx), hy: tzFmt(hy), v: pmt.data.st().axes.Z ? "  Z" + tzFmt(pmt.data.st().axes.Z.machinePosition) : "", v2: pmt.data.st().axes.X.homed && pmt.data.st().axes.Y.homed ? "" : i18nT('zonesPage.not_homed') }));
             if (hc) lines.push(i18nT('zonesPage.laser_hits_at_x_y_correction', { v: tzFmt(hx - hc.cx), v2: tzFmt(hy - hc.cy), cx: hc.cx, cy: hc.cy }));
-            else lines.push(i18nT('zonesPage.laser_no_laser_pointer_correction_saved'));
+            else lines.push(tzTx('zonesPage.laser_no_laser_pointer_correction_saved', 'machine'));
             if (hso) lines.push(i18nT('zonesPage.probe_touches_at_x_y_g31', { v: tzFmt(hx + hso.x), v2: tzFmt(hy + hso.y), x: hso.x, y: hso.y, mode: pmt.data.st().mode }));
             var wz = pmt.data.st().wn;
             lines.push(i18nT('zonesPage.active_zone_work_position_x_y', { code: TZ_CODES[wz], x: tzFmt(pmt.data.st().axes.X.userPosition), y: tzFmt(pmt.data.st().axes.Y.userPosition) }));

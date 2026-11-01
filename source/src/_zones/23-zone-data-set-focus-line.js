@@ -46,7 +46,7 @@
         if (!z || !pzd.st || !pzd.st.axes || !pzd.st.axes.X) return out;
         var ax = pzd.st.axes;
         var laser = pzd.st.mode === "Laser";
-        tzValidate(z, pzd.st).forEach(function (t) { out.push({ lvl: "err", txt: t }); });
+        tzValidate(z, pzd.st, tzDataCutCorrection()).forEach(function (t) { out.push({ lvl: "err", txt: t }); });
         var f = pzd.focusByZone[i];
         var m = tmatById(tzDataZoneMaterial(pzd, i));
         if (laser && i <= 5 && !f) out.push({ lvl: "warn", txt: i18nT('zonesPage.no_material_macro_measure_and_focus') });
@@ -81,7 +81,7 @@
             }
             out.push({
               lvl: "warn",
-              txt: i18nT('zonesPage.the_probe_bltouch_is_beside_the', { x: tzFmt(po.x), y: tzFmt(po.y), x2: tzFmt(zp.x), y2: tzFmt(zp.y), hx: tzFmt(hx), hy: tzFmt(hy) }),
+              txt: i18nT('zonesPage.the_probe_is_beside_the', { x: tzFmt(po.x), y: tzFmt(po.y), x2: tzFmt(zp.x), y2: tzFmt(zp.y), hx: tzFmt(hx), hy: tzFmt(hy) }),
               fix: fixc,
             });
           }
@@ -130,7 +130,8 @@
           // with a thickness the macro carries T and no H: laserfocus.g takes the height from the thickness rule
           var par = m.thickness > 0 ? { H: null, T: m.thickness } : { H: h, T: null };
           var zp = tzDataZonePoint(pzd, i);
-          if (zp && zp.macro) { par.X = Math.round((zp.dx - (z.correctionX || 0)) * 100) / 100; par.Y = Math.round((zp.dy - (z.correctionY || 0)) * 100) / 100; }   // keep the macro measuring at the chosen point
+          var mc = tzDataCutCorrection();
+          if (zp && zp.macro) { par.X = Math.round((zp.dx - (mc ? mc.cx : 0)) * 100) / 100; par.Y = Math.round((zp.dy - (mc ? mc.cy : 0)) * 100) / 100; }   // keep the macro measuring at the chosen point
           return tzDataSetFocusLine(pzd, i, par);
         });
       }
@@ -190,7 +191,7 @@
           tzSetMsg(msgThe, i18nT('zonesPage.there_is_a_job_running_zones'), false);
           return Promise.resolve(false);
         }
-        var errs = tzValidate(z, pzd.st);
+        var errs = tzValidate(z, pzd.st, tzDataCutCorrection());
         if (errs.length) {
           tzSetMsg(msgThe, errs.join("\n"), false);
           return Promise.resolve(false);
@@ -201,8 +202,11 @@
           tzSetMsg(msgThe, i18nT('zonesPage.measure_and_focus_laserfocus_g_only', { code: TZ_CODES[idx] }), false);
           return Promise.resolve(false);
         }
-        macroName = String(macroName || "").trim().replace(/[^A-Za-z0-9_.-]/g, "");
-        if (wantFocus && !/\.g$/i.test(macroName)) macroName = (macroName || tzSlug(z.name)) + ".g";
+        if (wantFocus && !tzFocusHeightOk(h)) {
+          tzSetMsg(msgThe, i18nT('zonesPage.focus_height_range', { min: TZ_FOCUS_H_MIN, max: TZ_FOCUS_H_MAX }), false);
+          return Promise.resolve(false);
+        }
+        macroName = tzFocusMacroFile(macroName, z.name);
         var file = "0:/sys/workshop/zones/p" + (idx + 1) + ".g";
         tzSetMsg(msgThe, i18nT('common.saving'), true);
         return tzDataBackupZone(pzd, idx)
@@ -239,7 +243,7 @@
         var line = 'M98 P"0:/sys/workshop/macros/laserfocus.g" W' + (idx + 1) + " H" + h + ' N"' + (z.name || TZ_CODES[idx]) + '"';
         return (
           "; " + macroName + " -- " + (z.name || TZ_CODES[idx]) + " (created on the Work zones page)\n" +
-          "; Selects " + TZ_CODES[idx] + ", measures the sheet with the BLTouch at the Z point of the zone\n" +
+          "; Selects " + TZ_CODES[idx] + ", measures the sheet with the probe at the Z point of the zone\n" +
           "; and leaves the laser " + h + "mm above the surface. It can be run by hand, from \"Measure and\n" +
           '; focus" of the jog or from the "Start GCode" of the program that sends the live job.\n' +
           line + "\n" +

@@ -32,7 +32,7 @@
             .then(function () { tcSetMsg(tc, i18nT('cuts.laser_power_saved_w_for_all', { w: tjLaserWatts }), true); })
             .catch(function (e) { tcSetMsg(tc, String(e.message || e), false); });
         });
-        tzTechOnly(win); // saving laser.json is a technician's (settings.set): the Operator sees the value as data
+        tzTechOnly(win); // saving the "laser" settings store is a technician's (settings.set): the Operator sees the value as data
         wr.appendChild(win);
         wr.appendChild(tzTechOnly(tzEl("span", "tz-muted", i18nT('cuts.w_to_show_watts_limits_are'))));
         wr.appendChild(tzEl("span", "tz-opdata", tjLaserWatts + " W"));

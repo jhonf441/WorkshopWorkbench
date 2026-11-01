@@ -26,9 +26,9 @@
         return { min: ax ? num(ax.min) : null, max: ax ? num(ax.max) : null, z0: num(off) };
       }
 
-      // the clamps of the map (only when the page uses them: ctx.data.clamps is the active list)
+      // every clamp of clamps.json, whatever "Use clamps" says: a CNC cutter hits a clamp that is there even if the map hides it
       function tzCncTrayClamps(cnc) {
-        return cnc.ctx.data.clamps() || [];
+        return cnc.ctx.data.clampsFile() || [];
       }
 
       function tzCncTrayPlan(cnc, conDate) {
@@ -98,14 +98,14 @@
       }
 
       // Start: every lock of tzCncTrayStartBlock is checked again here (the button may be stale), then the safety list of the CNC is used
-      // up and recorded in the Activity history (46-ready-safety.js) and only then the file starts.
+      // up and recorded in the Activity history (46-ready-safety.js), the guard of the file is armed and only then the file starts.
       function tzCncTrayLaunch(cnc) {
         var pl = tzCncTrayPlan(cnc, false);
         var why = tzCncTrayStartBlock(cnc, pl, tzCncTrayValidate(cnc, pl));
         if (why) return cnc.M.set(why, false);
         var path = cnc.file.path;
         tzSafetyGate({ mode: "CNC", zone: cnc.ctx.data.nameActive(), what: "cnc" }).then(function () {
-          return tzStartFile(path); // 22-start-file.js
+          return tzStartArmed("CNC", path); // 22-start-file.js: jobarm.g right before M32, cncguard.g uses it up
         }).then(
           function () { cnc.M.set(i18nT('cnc.started', { path: path }), true); }
         ).catch(function (e) { cnc.M.set(i18nT('cnc.not_started', { err: e && e.message ? e.message : e }), false); });

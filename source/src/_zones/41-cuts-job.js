@@ -78,8 +78,9 @@
         return txt;
       }
 
+      // The cut file starts with cutguard.g, which only lets the launch go that the CUT of the page armed (jobarm.g, 22-start-file.js)
       function tcStartJob(tc, file, text, okMsg, alStart) {
-        return tzStartFile(file, text) // 22-start-file.js
+        return tzStartArmed("Laser", file, text) // 22-start-file.js
           .then(function () {
             tc.jobStep = null;
             if (alStart) alStart();

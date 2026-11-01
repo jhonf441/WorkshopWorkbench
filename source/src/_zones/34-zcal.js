@@ -1,18 +1,29 @@
       // ---- Height calibration: a summary here, the calibration itself in Machine > Height (2026-10-22) ----
-      // The calibration of the tool height (trigger height of the BLTouch, fine adjustment, paper, SZP) was a card of Zones > Active zone. The owner asked why
+      // The calibration of the tool height (trigger height of the probe, fine adjustment, paper, SZP) was a card of Zones > Active zone. The owner asked why
       // a calibration of the machine lived in the bed map and not in Machine: it moved to WorkshopMachine (service ops machine.height.*, page "Height").
       // What is left here is what depends on WHERE the material is: the line that says what height the mode works with, and the button that takes the person
       // to Machine with the Z point of the active zone (as route query parameters ?layout=calibrate&x=..&y=.., vue/WorkshopMachine lib/cross-page.js).
-      //   0:/sys/workshop/config/zcal.json   saved by the service (read here, never written)
+      //   0:/sys/workshop/config/zcal.json   saved by the service (read here, never written). The Z calibration profile of the machine:
+      //     { version: 1, paper: mm of the sheet,
+      //       modes: { <Laser|CNC|FFF>: { general: { method: "bltouch" | "paper" | "szp", setting: fine adjustment mm },
+      //                                   k0: { p, x, y, z, date }   the probe's G31 (offsets X Y, trigger height Z),   szp: { s, r, date } } } }
+      //     method "bltouch" is "measure with the probe the machine declares", whatever its type (sensors.probes[0].type: 12-probe-kind.js).
       var TZC_JSON = "0:/sys/workshop/config/zcal.json";
       var tzc = { data: null, text: "", loading: false };
 
-      // The saved calibration of a mode: {k0: {z, date} | null, setting: mm}
+      // The saved calibration of a mode: {k0: {z, date} | null, setting: mm, method: "bltouch" | "paper" | "szp"}
       function tzcModeOf(data, mode) {
         var o = data && data.modes && data.modes[mode];
         var g = (o && o.general) || {};
         var k0 = o && o.k0 && isFinite(o.k0.z) ? { z: o.k0.z, date: o.k0.date || "" } : null;
-        return { k0: k0, setting: isFinite(parseFloat(g.setting)) ? parseFloat(g.setting) : 0 };
+        var method = g.method === "paper" || g.method === "szp" ? g.method : "bltouch";
+        return { k0: k0, setting: isFinite(parseFloat(g.setting)) ? parseFloat(g.setting) : 0, method: method };
+      }
+
+      // Thickness of the sheet of paper (mm) the saved calibration uses; 0.1 when the file is not there or says nothing valid
+      function tzcPaper(data) {
+        var p = data ? parseFloat(data.paper) : NaN;
+        return isFinite(p) && p >= 0 && p <= 3 ? p : 0.1;
       }
 
       // Reads the file again; when it changed since the last time the card is drawn again (Machine may have saved a new one meanwhile).
@@ -31,15 +42,22 @@
           });
       }
 
+      // How the height is measured, for the summary: "probe (BLTouch)", "paper", "scanning probe (SZP)"
+      function tzcMethodText(method, probe) {
+        if (method === "paper") return i18nT('zcal.method_paper');
+        if (method === "szp") return i18nT('zcal.method_szp');
+        return i18nT('zcal.method_probe', { probe: tzProbeName(probe) });
+      }
+
       // Machine > Height with this zone's Z point (the assistants of Machine measure there): the point is the route query, nothing is stored
       function tzcGoMachine(go, zp) {
         go(zp && isFinite(zp.x) && isFinite(zp.y) ? { x: zp.x, y: zp.y } : undefined);
       }
 
-      // What redraws the card when the height changes: the trigger height of the probe, the mode and the saved file
+      // What redraws the card when the height changes: the trigger height and the type of the probe, the mode and the saved file
       function tzcKey(s) {
         var p0 = s && s.probes && s.probes[0];
-        return [tzc.text.length, p0 && p0.triggerHeight, s && s.mode];
+        return [tzc.text.length, p0 && p0.triggerHeight, s && s.mode, tzProbeInfo(s && s.probes).kind];
       }
 
       // o: {s, zp, line, note, goMachine, rerender}
@@ -50,6 +68,10 @@
         var mo = tzcModeOf(tzc.data, mode);
         var p0 = o.s.probes && o.s.probes[0];
         var th = p0 && isFinite(p0.triggerHeight) ? p0.triggerHeight : null;
+        var probe = tzProbeInfo(o.s.probes);
+        var l0 = o.line(b2);
+        l0.appendChild(tzEl("span", "za-lbl", i18nT('zcal.method')));
+        l0.appendChild(tzEl("b", null, tzcMethodText(mo.method, probe)));
         var l1 = o.line(b2);
         l1.appendChild(tzEl("span", "za-lbl", i18nT('zcal.calibrated_height', { mode: mode })));
         l1.appendChild(tzEl("b", null, th !== null ? tzFmt(th) + " mm" : "--"));

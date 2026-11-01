@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.22.1",
+  "version": "2.22.7",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -19,6 +19,8 @@
   "data": {},
   "sdFiles": [
     "sys/workshop/examples/WorkshopWorkbench/macros/probe/homezhere.g",
+    "sys/workshop/examples/WorkshopWorkbench/sys/workshop/config/focus.g",
+    "sys/workshop/examples/WorkshopWorkbench/sys/workshop/config/focus.json",
     "sys/workshop/macros/cncguard.g",
     "sys/workshop/macros/cutguard.g",
     "sys/workshop/macros/focushere.g",
@@ -29,6 +31,7 @@
     "sys/workshop/macros/gotobed.g",
     "sys/workshop/macros/handcorner.g",
     "sys/workshop/macros/handfree.g",
+    "sys/workshop/macros/jobarm.g",
     "sys/workshop/macros/laserfocus.g",
     "sys/workshop/macros/laserguard.g",
     "sys/workshop/macros/laseroffset.g",
@@ -44,11 +47,12 @@
     "sys/workshop/macros/zcal-szp.g",
     "sys/workshop/macros/zfocusgo.g",
     "sys/workshop/macros/zhere0.g",
+    "sys/workshop/macros/zmeasure.g",
     "sys/workshop/macros/zprobepoint.g",
     "sys/workshop/macros/zsurface.g"
   ],
   "dwcFiles": [
-    "js/WorkshopWorkbench.ae08aa4b.js",
-    "js/WorkshopWorkbench.ae08aa4b.js.gz"
+    "js/WorkshopWorkbench.1b87fb41.js",
+    "js/WorkshopWorkbench.1b87fb41.js.gz"
   ]
 }

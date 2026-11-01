@@ -47,7 +47,7 @@
         var ax = st.axes;
         if (ax && ax.X && ax.Y) r.head = { x: ax.X.machinePosition, y: ax.Y.machinePosition, z: ax.Z ? ax.Z.machinePosition : null, homed: !!(ax.X.homed && ax.Y.homed) };
         r.blocked = tzJobInProgress(st);
-        r.controls = tzJobControls(st);
+        r.controls = workshopJobButtons(st.status, !!st.liveJob);
         r.level = r.blocked ? "blocked" : r.state === "idle" ? "free" : r.state === "off" ? "off" : "busy";
         r.color = TZ_COLOR_STATE[r.level];
         return r;

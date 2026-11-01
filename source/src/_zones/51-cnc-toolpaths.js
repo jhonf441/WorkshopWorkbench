@@ -46,7 +46,8 @@
           id: TCN_TAB_ID, step: 2, minRole: "technician", modes: ["CNC"], name: "cnc.tab", tip: "cnc.tab_tip", icon: TCN_TAB_ICON,
           mount: function (host, card) {
             var m = tzCncAssemble(host.createCtx(TCN_TAB_ID, { card: card }));
-            return { render: function () { m.render(); }, modMap: m };
+            // closing the tool drops the CNC safety ticks: they were given looking at this card (46-ready-safety.js)
+            return { render: function () { m.render(); }, disable: function () { tzSafetyLeave("CNC"); }, modMap: m };
           },
         });
       }

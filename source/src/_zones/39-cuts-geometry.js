@@ -52,7 +52,7 @@
             i18nT('cuts.use_this_center_pointer_to_center'),
             i18nT('cuts.create_circle_or_rectangle_to_cut'),
             i18nT('cuts.fix_the_selected_shape_here_moves'),
-            i18nT('cuts.save_as_position_it_goes_to'),
+            tzTx('cuts.save_as_position_it_goes_to', 'jog'),
           ],
           notes: [
             i18nT('cuts.more_well_spread_points_give_a'),
@@ -151,7 +151,7 @@
 
       // Bed point captured with the machine (2026-10-13). Bed coordinates are
       // where the POINTER falls (= X/Y machine position of the head); the laser
-      // hits at head - correction (0:/sys/workshop/config/laser.json, the same
+      // hits at head - correction (the "laser" settings store, the same
       // rule as "Laser to centre" and Vision). aim: "puntero" | "laser".
       // -> {x, y} or null (no homing, or laser without a measured correction).
       function tcCaptureBed(head, aim, correction) {

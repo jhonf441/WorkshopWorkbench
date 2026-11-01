@@ -1,5 +1,7 @@
 # Base compartida con el Jog (archivos, ayuda, laser.json), lo propio de la mesa (area de corte,
 # posiciones guardadas y sus macros de la SD) y el mapa de la cama y sus herramientas
+# The camera client first: the map layer of the camera reads the port of the relay when it loads
+_camera_client
 _workbench_base
 _workbench_cut
 _zones

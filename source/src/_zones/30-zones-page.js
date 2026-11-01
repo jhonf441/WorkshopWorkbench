@@ -64,6 +64,12 @@
         return null;
       }
 
+      // true when the plugin that owns the tab l (a tab of the other page, not of `own`) is there
+      function tzOtherPageOn(l, own) {
+        var k = tzPageOfTab(l, own);
+        return !!k && workshopPluginActive(TZ_PAGES[k].plugin);
+      }
+
       // Mounts the page inside `root` (called by the route's Vue component).
       // Returns {destroy} for when the user leaves the page.
       function tzMountPage(root, opts) {
@@ -109,10 +115,12 @@
           part(pz, root, opts);
         });
         // the stored last view is a tab of the other plugin's page (tzPagHeader): open it there once this page is mounted
-        if (pz.openOther) setTimeout(function () { if (pz.shell.alive()) pz.nav.goLayout(pz.openOther); }, 0);
+        // (only when that plugin is there: nothing is said about one that is not)
+        if (pz.openOther && tzOtherPageOn(pz.openOther, pz.pag)) setTimeout(function () { if (pz.shell.alive()) pz.nav.goLayout(pz.openOther); }, 0);
         return {
           destroy: function () {
             pz.shell.close();
+            tzSafetyLeave(); // the safety ticks were for this page (46-ready-safety.js)
             TZ_MODULES_EXTRA.forEach(function (m) {
               if (pz.moduleOn && !pz.moduleOn[m.id]) return; // the view never had it
               try {

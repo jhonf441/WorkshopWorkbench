@@ -7,10 +7,10 @@
 ; N = name shown for the live job (optional)
 ; 2026-10-17: only when the material macro was sent by a program. The same macro run from the web page (HTTP channel: Measure and
 ; focus, a material button in the Mesa) is a preparation, not a job: it used to open a live job before any cutting started.
-; 2026-10-18: if laserfocus.g did not reach its end (probe not triggered, BLTouch error...) the job must not go on: abort (cancels a file job, and the
+; 2026-10-18: if laserfocus.g did not reach its end (probe not triggered, probe error...) the job must not go on: abort (cancels a file job, and the
 ; error of this macro makes the bridge refuse the rest of a live job).
 if exists(global.workshopFocusOk) && !global.workshopFocusOk
-    abort "Focus not set (laserfocus.g did not finish: the Z probe did not trigger or there was a BLTouch error). The job was stopped / El foco no quedo fijado (laserfocus.g no termino): trabajo detenido."
+    abort "Focus not set (laserfocus.g did not finish: the Z probe did not trigger or the probe reported an error). The job was stopped / El foco no quedo fijado (laserfocus.g no termino): trabajo detenido."
 if job.file.fileName == null && inputs[state.thisInput].name != "HTTP"
     var nombre = exists(param.N) ? param.N : "Live job"
     M98 P"0:/sys/workshop/macros/service-call.g" S"job.start" A{"name=" ^ var.nombre} W0 Q1

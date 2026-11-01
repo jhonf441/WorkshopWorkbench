@@ -2,7 +2,7 @@
       // ONE place for the height. Laser: the material (its thickness gives the focus by the rule of the lens box), the focus height and
       // where it comes from, the state of the macro of the zone, and the button that measures and focuses. CNC: the height Z ends
       // up at after measuring and the button that measures Z0. The Z point (where the probe touches) is only summarised here; it is
-      // changed under Advanced.
+      // changed under Advanced. A machine without a probe gets the paper buttons instead of the measuring ones (32-active-zone-paper.js).
       function tzActHeight(za, zr) {
         var title = zr.laserMode ? i18nT('zoneActive.z_height_and_focus') : i18nT('zoneActive.z_height');
         zr.hb = tzActBlock(za, zr.card, title);
@@ -81,7 +81,7 @@
       // Laser: the focus height, its source, the macro of the zone and the measure buttons
       function tzActFocusBlock(za, zr) {
         zr.plan = tzActMakePlan(za, zr);
-        tzActNote(za, zr.hb, i18nT('zoneActive.laser_the_bltouch_measures_the_surface'));
+        tzActNote(za, zr.hb, zr.probe.measures ? i18nT('zoneActive.laser_the_probe_measures_the_surface', { probe: tzProbeName(zr.probe) }) : tzTx('zoneActive.laser_the_paper_sets_the_surface', 'jog'));
         var lv = tzActLine(za, zr.hb);
         lv.appendChild(tzEl("span", "za-lbl", i18nT('zoneActive.focus_height')));
         lv.appendChild(tzActHeightInput(za, zr, zr.plan.h));
@@ -90,8 +90,18 @@
           lv.appendChild(tzBtn(i18nT('zoneActive.back_to_calculated'), null, function () { za.hDraft = null; za.lastKey = ""; tzActRender(za); }));
         }
         tzActNote(za, zr.hb, tzActSourceText(zr));
+        tzActFocusFilesNote(za, zr);
         tzActMacroLine(za, zr);
-        tzActMeasureButtons(za, zr);
+        if (zr.probe.measures) tzActMeasureButtons(za, zr);
+        else tzActPaperButtons(za, zr, function () { return zr.plan.h; }, i18nT('paper.z0_and_focus', { h: zr.plan.h }), function () { tzFocusAppliedMark(zr.wn); });
+      }
+
+      // The focus rule works with the geometry of focus.json while the macros read focus.g: a line when the two files do not say the same
+      // (the page and the macro would focus differently) or when focus.g is missing (the macros that use the thickness rule stop)
+      function tzActFocusFilesNote(za, zr) {
+        tzFocusLoad(function () { za.lastKey = ""; tzActRender(za); });
+        var st = tzFocusStatus();
+        if (st === "differs" || st === "no_g") tzActWhy(za, zr.hb, i18nT('zoneActive.focus_files_' + st));
       }
 
       // The number box of the height: what is written is kept as a draft (it is not saved in any file) and redraws the card when released
@@ -149,11 +159,11 @@
         var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: p.action === "none", hasPoint: p.action !== "none" });
         var mf = tzBtn(i18nT('prepare.measure_and_focus_mm', { h: p.action === "stale" ? zr.f.h : p.h }), "primary big", function () { tzActFocusRun(za, zr); });
         mf.disabled = !!why || p.action === "none";
-        tzTip(mf, p.action === "macro" ? i18nT('zoneActive.runs_macros_laser_the_same_as', { macro: zr.f.macro, code: TZ_CODES[zr.wn], h: p.h }) : i18nT('zoneActive.goes_to_the_z_point_the', { xy: zr.zp ? tzActFmtXY(za, zr.zp.x, zr.zp.y) : "--", v: i18nT('zoneActive.the_focus_height'), v2: i18nT('zoneActive.does_not_change_the_zone_or') }));
+        tzTip(mf, p.action === "macro" ? i18nT('zoneActive.runs_macros_laser_the_same_as', { macro: zr.f.macro, code: TZ_CODES[zr.wn], h: p.h, probe: tzProbeName(zr.probe) }) : i18nT('zoneActive.goes_to_the_z_point_the', { xy: zr.zp ? tzActFmtXY(za, zr.zp.x, zr.zp.y) : "--", v: i18nT('zoneActive.the_focus_height'), v2: i18nT('zoneActive.does_not_change_the_zone_or'), probe: tzProbeName(zr.probe) }));
         row.appendChild(mf);
         var fh = tzBtn(i18nT('needs.focus_here'), null, function () { tzActFocusHere(za, zr); });
         fh.disabled = !!why && why !== "why_no_point";
-        tzTip(fh, i18nT('zoneActive.measures_the_surface_with_the_bltouch'));
+        tzTip(fh, i18nT('zoneActive.measures_the_surface_with_the_probe', { probe: tzProbeName(zr.probe) }));
         row.appendChild(fh);
         tzActWhy(za, zr.hb, why ? i18nT('zoneActive.' + why) : "");
         if (!why && p.action === "stale") tzActWhy(za, zr.hb, i18nT('zoneActive.stale_macro_runs_its_own', { h: zr.f.h }));
@@ -184,7 +194,7 @@
 
       // CNC: the height Z ends up at after measuring, and the button that measures Z0 at the Z point
       function tzActLiftBlock(za, zr) {
-        tzActNote(za, zr.hb, i18nT('zoneActive.cnc_the_bltouch_measures_the_top'));
+        tzActNote(za, zr.hb, zr.probe.measures ? i18nT('zoneActive.cnc_the_probe_measures_the_top', { probe: tzProbeName(zr.probe) }) : tzTx('zoneActive.cnc_the_paper_sets_the_top', 'jog'));
         var safe = zr.cncMode && zr.mat && zr.mat.mode === "CNC" && zr.mat.altSafe >= 1;
         var l4 = tzActLine(za, zr.hb);
         l4.appendChild(tzEl("span", "za-lbl", i18nT('zoneActive.after_measuring_rise_to')));
@@ -192,6 +202,7 @@
         if (safe) hIn.title = i18nT('zoneActive.safe_height_of_the_material', { name: zr.mat.name });
         l4.appendChild(hIn);
         l4.appendChild(tzEl("span", "tz-muted", i18nT('common.mm_above_the_surface_2')));
+        if (!zr.probe.measures) return tzActPaperButtons(za, zr, function () { var h = parseFloat(hIn.value); return h >= 1 && h <= 60 ? h : null; }, i18nT('paper.z0_here'), null);
         var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: true, hasPoint: !!zr.zp });
         var l5 = tzActLine(za, zr.hb);
         var zb = tzBtn(i18nT('zoneActive.measure_z0_at_the_z_point'), "primary big", function () {

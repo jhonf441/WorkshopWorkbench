@@ -17,8 +17,9 @@
       // label. A row with true = the label STARTS with it. tzBtn sets it by itself; a
       // data-tip/title of the button itself takes precedence.
       function tzTipsTable() {
-        // built again only when the language changes (the labels are the translated button texts)
-        var probe = i18nT('tzTips.l_new_zone');
+        // built again only when the language or the plugins that are there change (the labels are the translated button texts; some tips
+        // name another plugin and have a variant without the name)
+        var probe = i18nT('tzTips.l_new_zone') + "|" + tzPresenceKey();
         if (tzTipsCache && tzTipsCache.probe === probe) return tzTipsCache;
         var rows = [
           [i18nT('tzTips.l_new_zone'), i18nT('tzTips.t_new_zone')],
@@ -33,13 +34,13 @@
           [i18nT('tzTips.l_history'), i18nT('tzTips.t_history')],
           [i18nT('tzTips.l_restore'), i18nT('tzTips.t_restore')],
           [i18nT('tzTips.l_delete'), i18nT('tzTips.t_delete')],
-          [i18nT('tzTips.l_measure_with_pointer'), i18nT('tzTips.t_measure_with_pointer')],
+          [i18nT('tzTips.l_measure_with_pointer'), tzTx('tzTips.t_measure_with_pointer', 'jog')],
           [i18nT('tzTips.l_measure_with_laser'), i18nT('tzTips.t_measure_with_laser')],
           [i18nT('tzTips.l_measure_by_hand'), i18nT('tzTips.t_measure_by_hand')],
-          [i18nT('tzTips.l_measure_from_the_map'), i18nT('tzTips.t_measure_from_the_map')],
+          [i18nT('tzTips.l_measure_from_the_map'), tzTx('tzTips.t_measure_from_the_map', 'jog')],
           [i18nT('tzTips.l_draw_rectangle'), i18nT('tzTips.t_draw_rectangle')],
           [i18nT('tzTips.l_edit_numbers'), i18nT('tzTips.t_edit_numbers')],
-          [i18nT('tzTips.l_from_saved_positions'), i18nT('tzTips.t_from_saved_positions')],
+          [i18nT('tzTips.l_from_saved_positions'), tzTx('tzTips.t_from_saved_positions', 'jog')],
           [i18nT('tzTips.l_use_these_corners'), i18nT('tzTips.t_use_these_corners')],
           [i18nT('tzTips.l_frame'), i18nT('tzTips.t_frame')],
           [i18nT('tzTips.l_frame_pointer'), i18nT('tzTips.t_frame_pointer')],

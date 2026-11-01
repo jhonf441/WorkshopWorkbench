@@ -9,11 +9,13 @@
       //   - mode          -> a notice (the mode change belongs to the bar)
       //   - machine busy  -> a notice
       //   - focus (optional) -> height H (shortcuts from the material macros)
-      //     + "Focus here" (sys/workshop/macros/focushere.g: measures with the BLTouch where it is,
-      //     without moving X/Y, and leaves the laser at H mm)
+      //     + "Focus here" (sys/workshop/macros/focushere.g: measures with the probe where it is,
+      //     without moving X/Y, and leaves the laser at H mm; a machine without a probe sets Z0 with a sheet of paper instead,
+      //     12-probe-kind.js)
+      //   - the BLTouch pin (stow it) only when the machine declares a BLTouch: no other probe has a pin
       //
       // o: {st, free, mode?, focus?, focusList?: [{name,h}], onMsg(text, ok), after()}
-      // Returns true if nothing mandatory is missing (homing / mode / free).
+      // Returns true if nothing mandatory is missing (homing / mode / free / the board running the machine's laser correction).
 
       // The focus height H used by "Focus here" / "Go to height": the one chosen here (kept in the work state of the service, per
       // machine, 22-work-state.js; it replaces the old browser key workshopFocusH) while the lens focus of the machine (15-cutarea.js)
@@ -26,10 +28,32 @@
         tzWorkSetFocusH(tzWorkData(), v, tjLaserFocus(), Date.now());
         tzWorkSave();
       }
+      // The laser <-> pointer correction the BOARD runs against the one of the machine (the settings store "laser"). The zones are loaded with the
+      // board's globals (lasercorrection.g, which the service writes from that store), so a board that never got the file, lost it or runs another
+      // number cuts shifted by the whole correction. -> "ok" | "none" (the store has no measured correction: the area check says so) |
+      // "board_missing" (the board has no known correction) | "differs" (the board's numbers are not the store's).
+      function tjCorrectionState(globals, correction) {
+        if (!correction || !isFinite(correction.x) || !isFinite(correction.y)) return "none";
+        var g = globals || {};
+        if (g.workshopLaserCorrKnown !== true || typeof g.workshopLaserCorrX !== "number" || typeof g.workshopLaserCorrY !== "number") return "board_missing";
+        return Math.abs(g.workshopLaserCorrX - correction.x) > 0.005 || Math.abs(g.workshopLaserCorrY - correction.y) > 0.005 ? "differs" : "ok";
+      }
+      // The same with the correction of the store as this page has it, and the store read again (at most every 5 s) while the two do not agree: the
+      // correction may have been saved in Machine after this page loaded the store, and a stale copy must not block a cut with a "differs" that
+      // pressing Apply could never fix. The callers that draw or decide use this one; the render key uses the pure one.
+      var tjCorrReadAt = 0;
+      function tjBoardCorrection(globals) {
+        var s = tjCorrectionState(globals, tjLaserCorrection());
+        if ((s === "differs" || s === "board_missing") && Date.now() - tjCorrReadAt > 5000) {
+          tjCorrReadAt = Date.now();
+          tjLoadLaserCfg();
+        }
+        return s;
+      }
       // For the render key of whoever uses it (it changes what is seen).
       function tjNeedsKey(s) {
         var ax = (s && s.axes) || {};
-        return [ax.X && ax.X.homed, ax.Y && ax.Y.homed, ax.Z && ax.Z.homed, s && s.mode, s && s.status, tjFocusH(), s && s.globals && s.globals.probePinOut, !!(s && s.liveJob)];
+        return [ax.X && ax.X.homed, ax.Y && ax.Y.homed, ax.Z && ax.Z.homed, s && s.mode, s && s.status, tjFocusH(), s && s.globals && s.globals.probePinOut, !!(s && s.liveJob), tzProbeInfo(s && s.probes).kind, tzFocusKey(), tjCorrectionState(s && s.globals, tjLaserCorrection())];
       }
 
       function tjNeedsRow(parent, o) {
@@ -55,7 +79,7 @@
           tzTip(hb, i18nT('needs.g28_homes_all_axes_the_machine'));
           r.appendChild(hb);
         } else r.appendChild(tzEl("span", "wf-state tz-badge ok", "homing OK"));
-        if (!nr.modeOk) r.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('needs.mode_needs_change_it_from_the', { cur: nr.s.mode || "?", mode: o.mode })));
+        if (!nr.modeOk) r.appendChild(tzEl("span", "wf-state tz-badge err", tzTx('needs.mode_needs_change_it_from_the', 'bar', { cur: nr.s.mode || "?", mode: o.mode })));
         else if (o.mode) r.appendChild(tzEl("span", "wf-state tz-badge ok", i18nT('needs.mode', { mode: o.mode })));
         if (!o.free)
           r.appendChild(tzEl("span", "wf-state tz-badge err", nr.s.liveJob && nr.s.status === "busy" ? i18nT('needs.live_job_running', { name: nr.s.liveJob.name ? " (" + workshopDefaultName(nr.s.liveJob.name, ["svc.live_job_default_name"]) + ")" : "" }) : tzNotFreeBadge(nr.s.status)));
@@ -63,7 +87,8 @@
         // BLTouch pin out (marked by sys/deployprobe.g / retractprobe.g
         // in global.probePinOut). Request: "before focusing check that the
         // BLTouch is folded". Saving it does not move any axis.
-        var pinOut = nr.s.globals && nr.s.globals.probePinOut === true;
+        nr.probe = tzProbeInfo(nr.s.probes);
+        var pinOut = nr.probe.servo && nr.s.globals && nr.s.globals.probePinOut === true;
         if (pinOut) {
           r.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('needs.bltouch_pin_out')));
           var pb = tzBtn(i18nT('needs.stow_pin'), "primary", function () {
@@ -77,8 +102,32 @@
           tzTip(pb, i18nT('needs.clears_a_possible_bltouch_alarm_and'));
           r.appendChild(pb);
         }
+        nr.corrBad = tjNeedsCorrection(nr, r, o);
         tjNeedsFocus(nr, parent, o);
-        return !nr.miss.length && nr.modeOk && o.free;
+        return !nr.miss.length && nr.modeOk && o.free && !nr.corrBad;
+      }
+
+      // A laser step needs the board to run the machine's correction: the badge says which way it is wrong and the button loads it again (wpload.g
+      // runs lasercorrection.g and the zones; it moves nothing). True when it is wrong.
+      function tjNeedsCorrection(nr, r, o) {
+        nr.corr = tjBoardCorrection(nr.s.globals);
+        if (!(nr.s.mode === "Laser" || o.mode === "Laser") || (nr.corr !== "board_missing" && nr.corr !== "differs")) return false;
+        var g = nr.s.globals || {}, c = tjLaserCorrection();
+        r.appendChild(tzEl("span", "wf-state tz-badge err", nr.corr === "differs" ? i18nT('needs.correction_differs', { bx: tzFmt(g.workshopLaserCorrX), by: tzFmt(g.workshopLaserCorrY), sx: tzFmt(c.x), sy: tzFmt(c.y) }) : i18nT('needs.correction_board_missing')));
+        var ab = tzBtn(i18nT('needs.apply_correction'), "primary", function () {
+          postCode('M98 P"0:/sys/workshop/macros/wpload.g"')
+            .then(function (rs) { return rs.text(); })
+            .then(function (t) {
+              var bad = /error|abort/i.test(t || "");
+              o.onMsg(bad ? i18nT('needs.correction_apply_failed', { err: t.trim() }) : i18nT('needs.correction_applied'), !bad);
+              o.after();
+            })
+            .catch(function (e) { o.onMsg(i18nT('needs.correction_apply_failed', { err: e && e.message ? e.message : e }), false); });
+        });
+        ab.disabled = !o.free;
+        tzTip(ab, tzTx('needs.apply_correction_tip', 'machine'));
+        r.appendChild(ab);
+        return true;
       }
 
       function tjNeedsFocus(nr, parent, o) {
@@ -113,24 +162,27 @@
           });
           fr.appendChild(hi);
           fr.appendChild(tzEl("span", "tz-muted", "mm"));
-          var fb = tzBtn(i18nT('needs.focus_here'), "warn", function () {
+          // With a probe focushere.g measures the surface here; without one the paper sets Z0 here (tzProbeFocusHereCode)
+          var paper = !nr.probe.measures;
+          if (paper) tzcLoad();
+          var fb = tzBtn(paper ? i18nT('needs.focus_here_paper') : i18nT('needs.focus_here'), "warn", function () {
             var hv = tjFocusH();
-            o.onMsg(i18nT('needs.focusing_the_probe_measures_the_surface', { hv: hv }), true);
-            postCode('M98 P"0:/sys/workshop/macros/focushere.g" H' + hv)
+            o.onMsg(paper ? i18nT('needs.focusing_with_the_paper', { hv: hv }) : i18nT('needs.focusing_the_probe_measures_the_surface', { hv: hv }), true);
+            postCode(tzProbeFocusHereCode(nr.probe, hv, 0, tzcPaper(tzc.data)))
               .then(function (rs) { return rs.text(); })
               .then(function (t) {
                 var bad = /error/i.test(t || "");
                 if (!bad) tzFocusAppliedMark(nr.s.wn);
-                o.onMsg(bad ? i18nT('needs.focus', { err: t.trim() }) : i18nT('needs.done_laser_mm_above_the_measured', { hv: hv }), !bad);
+                o.onMsg(bad ? i18nT('needs.focus', { err: t.trim() }) : paper ? i18nT('needs.done_laser_mm_above_the_paper', { hv: hv }) : i18nT('needs.done_laser_mm_above_the_measured', { hv: hv }), !bad);
                 o.after();
               })
               .catch(function (e) { o.onMsg(i18nT('needs.focus', { err: e && e.message ? e.message : e }), false); });
-          });
+          }, paper ? i18nT('needs.focus_here_paper_confirm') : undefined, paper ? "nd-focus-paper" : undefined);
           fb.disabled = !o.free || nr.miss.length > 0 || nr.s.mode !== "Laser";
           tzTip(
             fb,
             nr.miss.length ? i18nT('needs.home_first') : nr.s.mode !== "Laser" ? i18nT('common.laser_mode_only') :
-              i18nT('needs.first_stows_the_bltouch_pin_if')
+              paper ? tzTx('needs.focus_here_paper_tip', 'jog') : nr.probe.servo ? i18nT('needs.first_stows_the_bltouch_pin_if') : i18nT('needs.focus_here_tip', { probe: tzProbeName(nr.probe) })
           );
           fr.appendChild(fb);
           // Without probing: only moves Z to the focus height (machine coordinates). Valid if the material was

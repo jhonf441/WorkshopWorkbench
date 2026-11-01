@@ -26,13 +26,18 @@
         return tzEl("div", "tz-note", i18nT('livejob.where', { line: w.line, x: w.x, y: w.y, mm: w.mm }));
       }
 
-      // Why it cannot be resumed now: one written line per reason (and the role, when that is the reason)
+      // Why it cannot be resumed now: ONE line, the reason that matters most and what to do about it (the person wants to go on, not to read a
+      // list of checks). The role comes first: if it cannot resume, nothing else changes that.
+      var TZ_LJ_WHY_ORDER = ["blocker_role", "blocker_not_resumable", "blocker_rebooted", "blocker_not_laser", "blocker_job_running", "blocker_machine_busy", "blocker_machine_unknown", "blocker_not_homed"];
       function tzLjRecordWhy(rec, box) {
         var rows = tzLjBlockerRows(rec);
         if (!tzLjCan("livejob.resume.arm")) rows.push({ key: "blocker_role", params: {} });
         if (!rows.length || rec.armed) return false;
-        box.appendChild(tzEl("div", "tz-muted", i18nT('livejob.blockers_title')));
-        rows.forEach(function (r) { box.appendChild(tzEl("div", "tz-lj-why", "• " + i18nT('livejob.' + r.key, r.params))); });
+        rows.sort(function (a, b) {
+          var ia = TZ_LJ_WHY_ORDER.indexOf(a.key), ib = TZ_LJ_WHY_ORDER.indexOf(b.key);
+          return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        });
+        box.appendChild(tzEl("div", "tz-lj-why", i18nT('livejob.' + rows[0].key, rows[0].params)));
         return true;
       }
 

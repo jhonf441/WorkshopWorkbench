@@ -204,7 +204,8 @@
       //   area  = { xmin, xmax, ymin, ymax } (cut area; null = no check)
       //   z     = { min, max, z0 } in machine mm: travel of the Z axis and the Z0 of the active work system (its offset); a field that is
       //           not known is null. z0 = 0 means the zero was never set on the material (the file is still made; the start is not).
-      //   clamps = [{ name, x, y, w, h, height }] of the map (bed coordinates; height = mm above the material, missing = unknown)
+      //   clamps = [{ name, x, y, w, h, height }] of clamps.json (bed coordinates; height = mm above the material, missing = unknown),
+      //            all of them whatever the "Use clamps" preference says; none (no file or empty) = a notice that nothing was checked
       // Returns the codes of what is wrong; the card shows them and blocks the file.
       function tzCncValidate(plan, area, z, clamps) {
         var errors = [], notices = [];
@@ -250,6 +251,7 @@
         });
         if (low.length) errors.push({ c: "safe_below_clamp", safe: safe, clamps: low.join(", ") });
         if (unknown.length) notices.push({ c: "clamp_no_height", clamps: unknown.join(", ") });
+        if (!cl.length) notices.push({ c: "clamps_not_checked" });
         return { ok: errors.length === 0, errors: errors, notices: notices };
       }
 
@@ -323,8 +325,13 @@
       var TZ_CNC_GUARD = "0:/sys/workshop/macros/cncguard.g";
       function tzCncGuardLine(plan) {
         var safe = plan.tool && plan.tool.altSafe ? plan.tool.altSafe : 0;
-        return 'M98 P"' + TZ_CNC_GUARD + '" D' + tzCncN(tzCncDeepest(plan), "mm") + " H" + tzCncN(safe, "mm") + "   ; aborts and cancels the job unless the machine is ready (CNC mode, homed, Z0 set, Z travel)";
+        return 'M98 P"' + TZ_CNC_GUARD + '" D' + tzCncN(tzCncDeepest(plan), "mm") + " H" + tzCncN(safe, "mm") + "   ; aborts and cancels the job unless the Start of the page armed it and the machine is ready (CNC mode, homed, Z0 set, Z travel)";
       }
+
+      // The permission of the page (2026-10-30, architecture review finding 6): a .gcode of the page sits in 0:/gcodes/, where DWC's Files or
+      // Jobs can start it without the checks the page makes at Start (work area, clamps, old file, safety list). jobarm.g gives the permission
+      // for ONE launch (tzStartArmed("CNC", ...), 22-start-file.js); cncguard.g asks for it FIRST and uses it up, so only the Start of the page
+      // launches the file.
 
       // The file. Never uses G53, homing or the laser words (M4, M106); the only macro is the guard of the first line: after it, only
       // G-code a plain CNC understands. Safe moves: Z up to the safe height before every rapid in XY; the cutter goes down only at the

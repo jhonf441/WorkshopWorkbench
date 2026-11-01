@@ -11,5 +11,13 @@
       // WorkshopMachine (/Plugins/Machine); its code is not loaded here.
       tzRegisterPage("zones", "mdi-vector-square");
 
-      // Turning the plugin off from DWC stops its timers (workshopCheckEnabled).
+      // Stopping the plugin from DWC (Plugins > Stop) runs what was registered with workshopOnStop (src/_shared/30-lifecycle.js, through
+      // workshopCheckEnabled on 3.6 or the dwcPluginUnloaded event on 3.7). The page does NOT register anything there for its own parts: its
+      // timers, its listeners and its tools belong to the page and end when it is left (tzMountPage destroy), and DWC 3.6 cannot remove the
+      // route. What outlives the page is registered by the module that makes it: the pointer listeners of the cards that are typed in
+      // (14-editing.js), the list of materials in window (36-materials.js) and the palette, menu and notice of the keyboard help
+      // (56-agility.js). The <style> elements with an id of their own are taken out here, as if the plugin had never been loaded; each one is made
+      // again, if it is missing, the next time the page, the editor or the command palette is built.
+      var WORKBENCH_OWN_STYLES = [TZ_STYLE_ID, TZ_GATE_CSS_ID, TC_CSS_ID, TZ_AGILITY_STYLE_ID];
+      workshopOwnStyles(WORKBENCH_OWN_STYLES);
       workshopWatchEnabled();

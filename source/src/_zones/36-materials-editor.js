@@ -144,7 +144,7 @@
           fld(i18nT('materials.depth_per_pass_mm'), function () { return e.profPass; }, function (v) { e.profPass = v; });
         } else {
           if (e.inside === undefined) { e.inside = tmatInside(e); delete e.focus; }
-          fld(i18nT('materials.focus_inside_the_material_mm'), function () { return e.inside; }, function (v) { e.inside = v; }, null, i18nT('materials.0_at_the_surface_the_focus', { f: tjLaserFocus() }));
+          fld(i18nT('materials.focus_inside_the_material_mm'), function () { return e.inside; }, function (v) { e.inside = v; }, null, tzTx('materials.0_at_the_surface_the_focus', 'machine', { f: tjLaserFocus() }));
           [["cut", i18nT('materials.cut')], ["engraving", i18nT('materials.engrave')]].forEach(function (k) {
             fld(i18nT('materials.power', { k: k[1] }), function () { return e[k[0]].power; }, function (v) { e[k[0]].power = v; });
             fld(i18nT('materials.speed_mm_min', { k: k[1] }), function () { return e[k[0]].speed; }, function (v) { e[k[0]].speed = v; });

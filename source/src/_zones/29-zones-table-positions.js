@@ -5,7 +5,7 @@
         ptb.posLastKey = pk;
         ptb.posCard.innerHTML = "";
         ptb.posCard.appendChild(tzEl("h3", null, i18nT('zoneActive.saved_positions')));
-        ptb.posCard.appendChild(tzEl("div", "tz-muted tz-note", i18nT('zonesPage.the_same_as_the_jog_machine'))); // the note has its own line, apart from the controls
+        ptb.posCard.appendChild(tzEl("div", "tz-muted tz-note", tzTx('zonesPage.the_same_as_the_jog_machine', 'jog'))); // the note has its own line, apart from the controls
         var free = ptb.data.machineFree();
         // Compact (2026-10-10: it overflowed in the narrow column and in the
         // kiosk): flexible name, X/Y/Z in one column, buttons that drop
@@ -19,7 +19,7 @@
         tbl.appendChild(hr);
         if (!ptb.data.savedPos().length) {
           var er = tzEl("tr");
-          var td = tzEl("td", "tz-muted", i18nT('zonesPage.there_are_no_positions_take_the'));
+          var td = tzEl("td", "tz-muted", tzTx('zonesPage.there_are_no_positions_take_the', 'jog'));
           td.colSpan = 3;
           er.appendChild(td);
           tbl.appendChild(er);

@@ -144,7 +144,7 @@
             i18nT('zonesPage.tap_again_close_the_job'),
             "close-job"
           );
-          tzTip(bc, i18nT(workshopPathExists("/Plugins/Activity") ? 'zonesPage.closes_the_live_job_that_was' : 'zonesPage.closes_the_live_job_that_was_no_activity'));
+          tzTip(bc, tzTx('zonesPage.closes_the_live_job_that_was', 'activity'));
           // the safe stop is in the header of the page (33-space-head.js), visible in every section
           pjf.banner.appendChild(bc);
         }

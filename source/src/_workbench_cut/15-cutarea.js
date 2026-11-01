@@ -46,8 +46,9 @@
           tjLaserWatts = watts;
         });
       }
-      // The laser <-> pointer correction and the lens focus of laser.json are WRITTEN by Machine (Offsets) since 2026-10-21; the Workbench
-      // only reads them (tjLaserFocus below, the correction through 14-laser-cfg.js of _workbench_base).
+      // The laser <-> pointer correction and the lens focus of the "laser" settings store are WRITTEN by Machine (Offsets) since 2026-10-21; the
+      // Workbench only reads them (tjLaserFocus below, the correction through 14-laser-cfg.js of _workbench_base). The service mirrors the
+      // correction into sys/workshop/macros/lasercorrection.g, the one the zone files p<N>.g read: no zone keeps a number of its own.
       // LENS focus (2026-10-10, "a zone only has one focus; the sensor
       // offset does not change"): focus distance above the surface, ONE for
       // the machine. Each material can focus a few mm INSIDE (Materials); each

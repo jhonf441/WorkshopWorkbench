@@ -41,7 +41,7 @@
         if (!TZ_PROFILES[tvs.prev.mode]) {
           // a file of a mode another plugin serves (an FFF print): only where it is simulated
           var other = tzModeElsewhere(tvs.prev.mode);
-          tvs.card.appendChild(tzEl("div", "tz-msg", i18nT('job.other_mode_job', { mode: tvs.prev.mode, page: other ? i18nT(other.name) : "" })));
+          tvs.card.appendChild(tzEl("div", "tz-msg", tzTx('job.other_mode_job', 'printing', { mode: tvs.prev.mode, page: other ? i18nT(other.name) : "" })));
           return;
         }
         rv.st = tvs.prev.stats || {};
@@ -237,10 +237,13 @@
         en.style.marginTop = "12px";
         tvs.card.appendChild(en);
         tvs.card.appendChild(tzEl("div", "tz-muted", i18nT('tv.send_help', { zone: (tvs.ctx.data.nameActive && tvs.ctx.data.nameActive()) || "?" })));
+        tzSafetyRender(tvs.card, function () { tvVisRender(tvs); }, tvs.prev.mode); // the safety list of the mode of the file (46-ready-safety.js)
         var f3 = tzEl("div", "tz-row");
         f3.style.cssText += "gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;";
         var ini = tzBtn(i18nT('tv.send'), "primary", function () { tvVisStartJob(tvs); }, (tvVisNoticeArea(tvs).length ? i18nT('tv.send_confirm_outside', { f: tvs.sel }) : i18nT('tv.send_confirm', { f: tvs.sel })), "tv-send");
-        ini.disabled = !tvs.ctx.machine.free() || (tvs.ctx.machine.jobInProgress ? tvs.ctx.machine.jobInProgress() : false);
+        var why = tvVisSendBlock(tvs); // the reason Send is grey is written next to it (mode of the machine, safety list)
+        ini.disabled = !tvs.ctx.machine.free() || (tvs.ctx.machine.jobInProgress ? tvs.ctx.machine.jobInProgress() : false) || !!why;
         f3.appendChild(ini);
+        if (why) f3.appendChild(tzEl("span", "tz-muted", why));
         tvs.card.appendChild(f3);
       }

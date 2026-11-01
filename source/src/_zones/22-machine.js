@@ -25,19 +25,5 @@
         var a = st && st.cutArea;
         return a ? { xmin: a[0], xmax: a[1], ymin: a[2], ymax: a[3] } : null;
       }
-      // ---- Pause / resume / cancel of the job in progress (F0, 2026-10-21; pure, no DOM) ----
-      // The same G-codes DWC sends from its own buttons: M25 pauses, M24 resumes, M0 cancels the file job. A live job (a program
-      // through the bridge) has its own controls in the Jog bar and is not handled here.
-      var TZ_JOB_CODES = { pause: "M25", resume: "M24", cancel: "M0" };
-
-      // Which buttons the status bar offers for the machine state st: {pause, resume, cancel} (booleans).
-      function tzJobControls(st) {
-        var none = { pause: false, resume: false, cancel: false };
-        if (!st || st.liveJob) return none;
-        var s = st.status;
-        return {
-          pause: s === "processing",
-          resume: s === "paused",
-          cancel: ["processing", "pausing", "paused", "resuming"].indexOf(s) !== -1,
-        };
-      }
+      // Pause / resume / cancel of the job in progress: the rule is workshopJobButtons / workshopJobCode of src/_shared/01-job-rules.js
+      // (the same one the Job control card of WorkshopPrinting uses; Cancel only while the job is paused).

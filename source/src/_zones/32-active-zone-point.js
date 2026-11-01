@@ -49,7 +49,7 @@
           addOpt(i18nT('zoneActive.the_pointer_white_cross'), { x: zr.ax.X.machinePosition, y: zr.ax.Y.machinePosition }, gNow);
           if (zr.po) addOpt(i18nT('zoneActive.the_probe_without_moving'), { x: zr.ax.X.machinePosition + zr.po.x, y: zr.ax.Y.machinePosition + zr.po.y }, gNow);
         }
-        if (zr.z) addOpt(i18nT('zoneActive.default_x30_y30_of_the_zone'), { x: zr.z.refX + (zr.z.correctionX || 0) + 30, y: zr.z.refY + (zr.z.correctionY || 0) + 30 }, gNow);
+        if (zr.z) addOpt(i18nT('zoneActive.default_x30_y30_of_the_zone'), { x: zr.z.refX + (zr.correction ? zr.correction.cx : 0) + 30, y: zr.z.refY + (zr.correction ? zr.correction.cy : 0) + 30 }, gNow);
         var refs = za.ctx.data.pointsRef();
         if (refs.length) {
           var gR = document.createElement("optgroup");

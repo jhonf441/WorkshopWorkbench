@@ -16,7 +16,8 @@
         l2.appendChild(go);
         tzActOriginSet(za, zr, l2, why);
         tzActWhy(za, ob, why ? i18nT('zoneActive.' + why) : "");
-        tzActNote(za, ob, i18nT('zoneActive.single_axis_in_the_jog'));
+        // the pointer to the Jog card is only said while the Jog is there (nothing names a plugin that is not)
+        if (workshopPluginActive("jog")) tzActNote(za, ob, i18nT('zoneActive.single_axis_in_the_jog'));
       }
 
       // Laser with a correction: choose where X0 Y0 lands (laser = how it cuts, pointer = to check). It does not move the machine.

@@ -1,6 +1,7 @@
 ; zprobepoint.g -- "Measure Z at the point" (WorkshopJog, Zones > Active zone >
-; Z height and focus). Measures the surface with the BLTouch (K0, it exists in the 3
-; modes with its own G31) at a point of the MAP and leaves Z0 = that surface.
+; Z height and focus). Measures the surface with the probe (K0, it exists in the 3
+; modes with its own G31; zmeasure.g measures by the type of probe the machine declares) at a
+; point of the MAP and leaves Z0 = that surface.
 ; What Z0 means depends on the mode:
 ;   Laser: surface of the material; then it goes up to H mm (focus).
 ;   CNC:   top face of the material (zero of the tool); goes up to H
@@ -17,6 +18,7 @@
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 var clearZ = 10                                 ; minimum height before moving / deploying the probe
+var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 
 if !exists(param.X) || !exists(param.Y)
     abort {var.en ? ("Measure Z: X and Y missing (point where the probe touches)") : ("Medir Z: faltan X e Y (punto donde toca la sonda)")}
@@ -33,17 +35,18 @@ var oy = sensors.probes[0].offsets[1]
 var hx = min(max(param.X - var.ox, move.axes[0].min), move.axes[0].max)
 var hy = min(max(param.Y - var.oy, move.axes[1].min), move.axes[1].max)
 
-; BLTouch pin STOWED before moving (like laserfocus.g).
-M280 P0 S160                                    ; clear the BLTouch alarm (raises the pin)
-G4 P300
-M402                                            ; stow the pin
-G4 P300
+; BLTouch pin STOWED before moving (like laserfocus.g). Only a BLTouch has a pin.
+if var.servo
+    M280 P0 S160                                ; clear the BLTouch alarm (raises the pin)
+    G4 P300
+    M402                                        ; stow the pin
+    G4 P300
 
 M400
 G90
 G53 G0 Z{max(move.axes[2].machinePosition, var.clearZ)}   ; raise before moving
 G53 G0 X{var.hx} Y{var.hy}
-G30                                             ; measure: Z0 = surface under the probe
+M98 P"0:/sys/workshop/macros/zmeasure.g"        ; measure: Z0 = surface under the probe (by probe type)
 M98 P"0:/sys/workshop/macros/zsurface.g" T{exists(param.T) ? param.T : 0}   ; thickness (T = expected, optional)
 G53 G0 Z{var.h}
 M400

@@ -7,11 +7,13 @@
         return !!(material && material.thickness > 0);
       }
 
-      // inp = { st, zoneName (null when the zone does not exist), material, focus (the stored rec) } -> list of messages
+      // inp = { st, zoneName (null when the zone does not exist), material, focus (the stored rec), correction (tjCorrectionState, optional) } -> list of messages
       function tcCutGuard(inp) {
         var errs = [];
         var st = inp.st;
         if (!st || st.mode !== "Laser") return errs; // the mode has its own message in tcValidate
+        // the board runs another laser <-> pointer correction than the machine's (or none): the cut would land shifted by the difference
+        if (inp.correction === "board_missing" || inp.correction === "differs") errs.push(i18nT('cuts.need_correction_board'));
         if (inp.zoneName === null || inp.zoneName === undefined) {
           errs.push(i18nT('cuts.need_active_zone'));
           return errs;
@@ -31,5 +33,5 @@
         var z = st && zones ? zones[st.wn] : null;
         var mat = z ? tmatById(tc.ctx.data.material(st.wn)) : null;
         var name = st && z ? TZ_CODES[st.wn] + (z.name ? " " + z.name : "") : null;
-        return { st: st, zoneName: name, material: mat, focus: tzFocusAppliedRead(st ? st.wn : undefined) };
+        return { st: st, zoneName: name, material: mat, focus: tzFocusAppliedRead(st ? st.wn : undefined), correction: st ? tjBoardCorrection(st.globals) : undefined };
       }

@@ -76,12 +76,31 @@
           });
       }
 
+      // Why the file cannot be sent now ("" = it can): the machine has to be in the mode of the file (a CNC file in laser mode would fire the laser
+      // at its spindle codes) and the safety list of that mode has to be ticked (46-ready-safety.js), like everywhere else a job starts. It is
+      // asked again when the file is sent: the button may be stale.
+      function tvVisSendBlock(tvs) {
+        if (!tvs.prev) return "";
+        var mode = tvs.prev.mode, machine = tvs.ctx.machine.mode();
+        if (machine !== mode) return i18nT('tv.send_mode', { file: mode, machine: machine });
+        return tzSafetyDone(mode) ? "" : i18nT(mode === "CNC" ? 'ready.safety_needed_cnc' : 'ready.safety_needed');
+      }
+
+      // Send: the file is the person's (LightBurn, CAM...), it carries no guard of the page, so the page asks here what it asks at every start:
+      // the mode and the safety list (recorded in Activity). A file the Workbench made (a cut, a CNC file) starts with cutguard.g / cncguard.g,
+      // which only let the launch go that the CUT / Start of its own card armed (jobarm.g): launched from here it is cancelled at its first line,
+      // and tzStartFile says so (the machine cancelled it) instead of reporting a job that never ran.
       function tvVisStartJob(tvs) {
-        if (!tvs.prev || !tvs.sel) return;
-        return postCode('M32 "0:/gcodes/' + tvs.sel + '"').then(
-          function () { tvs.msgOk = true; tvs.msg = i18nT('tv.sent'); tvVisRender(tvs); },
-          function (e) { tvs.msgOk = false; tvs.msg = String((e && e.message) || e); tvVisRender(tvs); }
-        );
+        if (!tvs.prev || !tvs.sel) return Promise.resolve();
+        var why = tvVisSendBlock(tvs);
+        if (why) { tvs.msgOk = false; tvs.msg = why; tvVisRender(tvs); return Promise.resolve(); }
+        var path = "0:/gcodes/" + tvs.sel;
+        return tzSafetyGate({ mode: tvs.prev.mode, zone: (tvs.ctx.data.nameActive && tvs.ctx.data.nameActive()) || "", what: "send" })
+          .then(function () { return tzStartFile(path); }) // 22-start-file.js: M32 and a look at the job
+          .then(
+            function () { tvs.msgOk = true; tvs.msg = i18nT('tv.sent'); tvVisRender(tvs); },
+            function (e) { tvs.msgOk = false; tvs.msg = String((e && e.message) || e); tvVisRender(tvs); }
+          );
       }
 
       function tvVisStopFrame(tvs) {

@@ -1,6 +1,6 @@
 ; laseroffset.g -- "laser offset" flag of the work zones
 ; global.laserOffsetOn decides whether the zones saved in sys/workshop/zones/p<N>.g
-; use their correction (e.g. X-16.5):
+; add the laser <-> pointer correction of the machine (global.workshopLaserCorrX / Y, e.g. X-16.5):
 ;   ON  (true)  -> X0 Y0 of the zone = where the LASER hits  (to cut)
 ;   OFF (false) -> X0 Y0 of the zone = where the POINTER is (to locate/check)
 ; It only changes what is in memory; the files are not touched. Goes back to ON

@@ -1,7 +1,7 @@
       function tzTableRenderTable(ptb) {
         var t = tzEl("table", "tz-table");
         var hr = tzEl("tr");
-        [i18nT('common.zone'), i18nT('common.name'), i18nT('zonesPage.point_pointer'), i18nT('zonesPage.correction'), i18nT('zonesPage.applied_origin'), i18nT('zonesPage.material_focus'), i18nT('zonesPage.status'), ""].forEach(function (h) {
+        [i18nT('common.zone'), i18nT('common.name'), i18nT('zonesPage.point_pointer'), i18nT('zonesPage.applied_origin'), i18nT('zonesPage.material_focus'), i18nT('zonesPage.status'), ""].forEach(function (h) {
           hr.appendChild(tzEl("th", null, h));
         });
         t.appendChild(hr);
@@ -20,15 +20,16 @@
 
       function tzTableRowData(ptb, fl, i, free, t) {
         fl.z = ptb.data.zones()[i];
+        fl.legacy = !fl.z && !!ptb.data.legacyZones()[i]; // p<N>.g of an older format: listed so it is not lost without a word
         fl.offX = ptb.data.st().axes.X ? ptb.data.st().axes.X.workplaceOffsets[i] || 0 : 0;
         fl.offY = ptb.data.st().axes.Y ? ptb.data.st().axes.Y.workplaceOffsets[i] || 0 : 0;
         var hasOff = Math.abs(fl.offX) > 0.0005 || Math.abs(fl.offY) > 0.0005;
-        if (!fl.z && !hasOff && i !== 0 && i !== ptb.data.st().wn) return true;
+        if (!fl.z && !fl.legacy && !hasOff && i !== 0 && i !== ptb.data.st().wn) return true;
         fl.tr = tzEl("tr", (i === ptb.data.st().wn ? "active" : "") + (ptb.nav.selected() === i ? " sel" : ""));
         fl.tr.appendChild(tzEl("td", null, TZ_CODES[i] + (i === ptb.data.st().wn ? i18nT('zonesPage.active_4') : "")));
         // the name opens the editor: the Edit button is in the last column, which a narrow screen scrolls out of sight
         var tdNom = tzEl("td");
-        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
+        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : fl.legacy ? i18nT('zonesPage.old_format_name') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
         // the Edit / Create button sits under the name, on its own line: the action column is the last of eight and a narrow screen scrolls it out of sight
         (function (idx, zone) {
           var bEd = tzBtn(zone ? i18nT('tzTips.l_edit') : i18nT('tzTips.l_create'), null, function () { tzTableOpenEditor(ptb, idx); });
@@ -37,7 +38,6 @@
         })(i, fl.z);
         fl.tr.appendChild(tdNom);
         fl.tr.appendChild(tzEl("td", null, fl.z ? "X" + tzFmt(fl.z.refX) + " Y" + tzFmt(fl.z.refY) : "--"));
-        fl.tr.appendChild(tzEl("td", null, fl.z ? "X" + tzFmt(fl.z.correctionX) + " Y" + tzFmt(fl.z.correctionY) : "--"));
         fl.tr.appendChild(tzEl("td", null, "X" + tzFmt(fl.offX) + " Y" + tzFmt(fl.offY)));
         var f = ptb.data.focusByZone()[i];
         var mz = tmatById(ptb.data.zoneMaterial(i));
@@ -54,9 +54,16 @@
             });
           })(i);
           stTd.appendChild(cb);
-          if (ptb.data.st().offsetOn && (Math.abs(fl.offX - (fl.z.refX + fl.z.correctionX)) > 0.01 || Math.abs(fl.offY - (fl.z.refY + fl.z.correctionY)) > 0.01)) {
+          var mc = ptb.data.cutCorrection(); // the machine's correction: what lasercorrection.g gives the zone files
+          var ax0 = ptb.data.st().offsetOn && mc ? mc.cx : 0, ay0 = ptb.data.st().offsetOn && mc ? mc.cy : 0;
+          if (Math.abs(fl.offX - (fl.z.refX + ax0)) > 0.01 || Math.abs(fl.offY - (fl.z.refY + ay0)) > 0.01) {
             stTd.appendChild(tzEl("span", "wf-state tz-badge info", i18nT('zonesPage.not_applied')));
           }
+        } else if (fl.legacy) {
+          // the board still loads this file with the correction an older version wrote INTO it: the zone is not the machine's one
+          var lb = tzEl("span", "wf-state tz-badge warn", i18nT('zonesPage.old_format_badge'));
+          lb.title = i18nT('zonesPage.old_format_tip', { code: TZ_CODES[i] });
+          stTd.appendChild(lb);
         } else {
           stTd.appendChild(tzEl("span", "wf-state tz-badge info", hasOff ? "volatile" : i18nT('zonesPage.empty')));
           if (hasOff) stTd.title = i18nT('zonesPage.it_has_an_offset_in_memory');
@@ -92,9 +99,10 @@
           // shifted (e.g. 16.5 mm) from the zone's circle on the map. That
           // is expected, not an error: it is said here so it does not surprise.
           var goTip = i18nT('zonesPage.activates_and_moves_the_machine_to', { code: TZ_CODES[idx], offX: tzFmt(fl.offX), offY: tzFmt(fl.offY) });
-          if (zone && (zone.correctionX || zone.correctionY)) {
+          var gc = ptb.data.cutCorrection();
+          if (zone && gc && (gc.cx || gc.cy)) {
             goTip += ptb.data.st().offsetOn
-              ? i18nT('zonesPage.laser_offset_applied_the_laser_hits', { v: tzFmt(fl.offX - zone.correctionX), v2: tzFmt(fl.offY - zone.correctionY) })
+              ? i18nT('zonesPage.laser_offset_applied_the_laser_hits', { v: tzFmt(fl.offX - gc.cx), v2: tzFmt(fl.offY - gc.cy) })
               : i18nT('zonesPage.laser_offset_removed_the_pointer_stays');
           }
           go.title = goTip;

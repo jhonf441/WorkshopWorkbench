@@ -1,4 +1,4 @@
-      function tzLayersTzHasVisionNow(ply) { return workshopPathExists("/Plugins/Vision"); }
+      function tzLayersTzHasVisionNow(ply) { return workshopPluginActive("vision"); }
 
       function tzLayersPaintLayerButtons(ply) {
         var hasV = tzLayersTzHasVisionNow(ply);
@@ -86,19 +86,7 @@
           var es = ply.cameraAssembles.value === o[0];
           var b = tzBtn(o[1], es ? "primary" : null, function () {
             if (es) return;
-            tzVisionPost("/config", { camera_en: o[0] })
-              .then(function (j) {
-                if (!j || !j.ok) throw new Error((j && j.error) || i18nT('common.no_response'));
-                ply.cameraAssembles.value = j.camera_en || o[0];
-                ply.cameraAssembles.notice = j.notice || "";
-                tzLayersPaintCameraAssembles(ply);
-                ply.camera.map().reload();
-              })
-              .catch(function (e) {
-                var msg = String((e && e.message) || e);
-                ply.cameraAssembles.notice = i18nT('zonesPage.could_not_change_it_2', { msg: msg });
-                tzLayersPaintCameraAssembles(ply);
-              });
+            tzLayersSaveMount(ply, o[0]);
           }, es ? null : i18nT('common.confirm'), es ? null : "cam-monta-" + o[0]);
           tzTip(b, es ? i18nT('zonesPage.the_camera_is_mounted_here') : i18nT('zonesPage.changes_where_the_camera_is_mounted'));
           r.appendChild(b);
@@ -107,16 +95,41 @@
         if (ply.cameraAssembles.notice) ply.cameraAssemblesBox.appendChild(tzEl("div", "tz-msg err", ply.cameraAssembles.notice));
       }
 
+      // Where the camera is mounted is a setting of vision.json, read and saved through the settings store with revision (workshopSettings): the
+      // same way the Vision page saves it, so the two screens never overwrite each other. The mutator runs over the CURRENT file.
+      function tzLayersMountOf(value) {
+        return value && value.camera_en === "carriage" ? "carriage" : "gantry";
+      }
+
+      function tzLayersSaveMount(ply, mount) {
+        return workshopSettings
+          .save("vision", function (c) {
+            c.camera_en = mount;
+            return c;
+          })
+          .then(function (r) {
+            ply.cameraAssembles.value = tzLayersMountOf(r.value);
+            ply.cameraAssembles.notice = i18nT('zonesPage.the_camera_changed_place');
+            tzLayersPaintCameraAssembles(ply);
+            ply.camera.map().reload();
+          })
+          .catch(function (e) {
+            var msg = String((e && e.message) || e);
+            ply.cameraAssembles.notice = i18nT('zonesPage.could_not_change_it_2', { msg: msg });
+            tzLayersPaintCameraAssembles(ply);
+          });
+      }
+
       function tzLayersReadCameraAssembles(ply) {
-        tzVisionGet("/state")
-          .then(function (j) {
-            if (j && (j.camera_en === "gantry" || j.camera_en === "carriage")) {
-              ply.cameraAssembles.value = j.camera_en;
-              tzLayersPaintCameraAssembles(ply);
-            }
+        return workshopSettings
+          .load("vision")
+          .then(function (r) {
+            if (!r.value || typeof r.value !== "object") return; // no vision.json: no Vision, no selector
+            ply.cameraAssembles.value = tzLayersMountOf(r.value);
+            tzLayersPaintCameraAssembles(ply);
           })
           .catch(function () {
-            /* without Vision: no selector */
+            /* the store does not answer (the service is off, or this role may not read it): no selector */
           });
       }
 

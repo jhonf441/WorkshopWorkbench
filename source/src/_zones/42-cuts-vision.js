@@ -6,6 +6,7 @@
         var t = window.__workshop;
         var vf = t && t.visionShape;
         if (!vf || !Array.isArray(vf.outline) || vf.outline.length < 3) return false;
+        if (!workshopPluginActive("vision")) { t.visionShape = null; return false; } // a shape left by a Vision that is not there any more is not placed
         t.visionShape = null;
         var aPts = function (poly) {
           return poly.map(function (q) { return { x: Math.round(Number(q[0]) * 1000) / 1000, y: Math.round(Number(q[1]) * 1000) / 1000 }; })

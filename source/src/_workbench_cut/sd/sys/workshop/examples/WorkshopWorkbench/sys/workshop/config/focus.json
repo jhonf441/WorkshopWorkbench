@@ -1,0 +1,8 @@
+{
+ "version": 1,
+ "geometry": {
+  "focusBelowBoxEdge": 8.0,
+  "boxEdgeAboveReference": 0.533
+ },
+ "note": "Geometry of the laser focus rule H = focusBelowBoxEdge - boxEdgeAboveReference - lever(thickness). These are the numbers of the reference laser: measure yours with focusref.g. Keep focus.g (the same two numbers, which RRF can read) equal to this file."
+}

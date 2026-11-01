@@ -67,6 +67,7 @@
           pzd.zonePts = res[4];
           pzd.zoneExtra = res[5];
           pzd.zones = rf.newZones;
+          pzd.legacyZones = rf.newLegacy;
           pzd.focusByZone = rf.newFocus;
           pzd.savedPos = res[2];
           pzd.positionListeners.forEach(function (fn) { fn(); });
@@ -89,7 +90,7 @@
         return tzJobInProgress(pzd.st);
       }
 
-      // G31 offset of the active mode's probe K0 (BLTouch).
+      // G31 offset of the active mode's probe K0.
       function tzDataProbeOffset(pzd) {
         var pr = pzd.st && pzd.st.probes && pzd.st.probes[0];
         var o = pr && pr.offsets;
@@ -104,7 +105,8 @@
       function tzDataZonePoint(pzd, i) {
         var z = pzd.zones[i];
         if (!z) return null;
-        var cx = z.correctionX || 0, cy = z.correctionY || 0;
+        var mc = tzDataCutCorrection();
+        var cx = mc ? mc.cx : 0, cy = mc ? mc.cy : 0;
         var r2 = function (v) { return Math.round(v * 100) / 100; };
         var d = pzd.zonePts[i];
         var f = pzd.focusByZone[i];
@@ -129,35 +131,18 @@
         var r2 = function (v) { return Math.round(v * 100) / 100; };
         var next = JSON.parse(JSON.stringify(pzd.zonePts || {}));
         next[i] = { dx: r2(p.x - z.refX), dy: r2(p.y - z.refY) };
+        var mc = tzDataCutCorrection();
         return tzPutText(pzd.TZ_ZPT_FILE, JSON.stringify(next, null, 1))
           .then(function () {
             pzd.zonePts = next;
-            return tzDataSetFocusLine(pzd, i, { X: r2(next[i].dx - (z.correctionX || 0)), Y: r2(next[i].dy - (z.correctionY || 0)) });
+            return tzDataSetFocusLine(pzd, i, { X: r2(next[i].dx - (mc ? mc.cx : 0)), Y: r2(next[i].dy - (mc ? mc.cy : 0)) });
           })
           .then(function () { return tzDataRefreshAll(pzd); });
       }
 
-      // Calibrate > Laser<->pointer: sets the correction (cx, cy) in the zone i
-      // file WITHOUT moving its point (origin) nor its Z point: the Z point is
-      // saved again in map coords, so the material macro's X/Y
-      // (relative to the origin WITH correction) are recomputed.
-      function tzDataSetZoneCorrection(pzd, i, cx, cy) {
-        var z = pzd.zones[i];
-        if (!z || !z.file) return Promise.reject(new Error(i18nT('zonesPage.has_no_zone_file', { code: TZ_CODES[i] })));
-        if (!tzDataMachineFree(pzd)) return Promise.reject(new Error(i18nT('zonesPage.there_is_a_job_running_zones')));
-        var keepPt = tzDataZonePoint(pzd, i);
-        var nz = Object.assign({}, z, { correctionX: cx, correctionY: cy });
-        var errs = tzValidate(nz, pzd.st);
-        if (errs.length) return Promise.reject(new Error(TZ_CODES[i] + ": " + errs.join(" ")));
-        return tzDataBackupZone(pzd, i)
-          .then(function () { return tzPutText("0:/sys/workshop/zones/p" + (i + 1) + ".g", tzZoneFileText(i, nz, "laser correction from Calibrate on " + tzLocalTime())); })
-          .then(function () { return tzCode('M98 P"0:/sys/workshop/macros/workplaces.g"'); })
-          .then(function () { return tzDataRefreshAll(pzd); })
-          .then(function () { return keepPt ? tzDataSaveZonePoint(pzd, i, { x: keepPt.x, y: keepPt.y }) : null; });
-      }
-
       function tzDataReadZones(pzd, rf) {
         rf.newZones = [];
+        rf.newLegacy = {}; // p<N>.g that exists but is not in the current format (an old correction inside): never read, only flagged
         rf.newFocus = {};
         rf.pZones = tzList("0:/sys/workshop/zones").then(function (list) {
           var files = list.filter(function (f) {
@@ -172,6 +157,8 @@
                   if (z) {
                     z.file = true;
                     rf.newZones[idx] = z;
+                  } else {
+                    rf.newLegacy[idx] = true; // the board still loads it as it is: the table says so instead of hiding the zone
                   }
                 })
                 .catch(function () {});

@@ -2,14 +2,16 @@
       // Before a laser cut the person ticks: glasses on, lid closed, extraction on, nobody inside the area. Before a CNC job: spindle
       // free and tool tight, workpiece clamped, extraction / ventilation on, nobody inside the area, Z zero set on the material. The
       // ticks are shared by every place that starts a job of that mode (the cut of the editor, the cut in parts, the "Ready to cut" card,
-      // the CNC toolpaths card): they hold for a few minutes and are used up by the start (the next job asks again). The ticks of one
+      // the CNC toolpaths card): they hold for TZ_SAFETY_TTL_MS and are used up by the start (the next job asks again). The ticks of one
       // mode never count for the other (a tick in a new mode clears the previous ones). The start writes a safety_check event in the
       // Activity history with the user, the zone and the points confirmed (activity.log), so there is a record of who confirmed what:
       // the CNC ids carry a cnc_ prefix so the record says which list it was.
+      // The ticks are also dropped when what they confirmed is no longer in front of the person (tzSafetyScopeSet, tzSafetyLeave): another
+      // person signs in, the machine changes mode, the page is left, or the CNC toolpaths tool is closed.
       // A point that the machine covers with a hardware interlock (lid, extraction) is not asked: the machine profile declares it with the
       // capabilities `lid_interlock` / `extraction_interlock` (workshopProfile.has). The service does not report them yet, so today the
       // lists are always complete; when it does, the points disappear by themselves.
-      var TZ_SAFETY_TTL_MS = 15 * 60 * 1000;
+      var TZ_SAFETY_TTL_MS = 5 * 60 * 1000; // a confirmation is about the machine as it is now: a few minutes later it is asked again
       var TZ_SAFETY_ITEMS = {
         Laser: [
           { id: "glasses", key: "ready.safety_glasses", hw: "" },
@@ -50,6 +52,27 @@
         tzSafety.mode = "";
         tzSafety.checked = {};
         tzSafety.at = 0;
+      }
+      // Who gave the ticks and in which mode of the machine: a change of either drops them. The first value a page learns never drops
+      // (null = not known yet). part = "who" | "mode". Returns true when the ticks were dropped.
+      var tzSafetyScope = { who: null, mode: null };
+      function tzSafetyScopeSet(part, value) {
+        var prev = tzSafetyScope[part];
+        tzSafetyScope[part] = value;
+        if (prev === null || prev === value) return false;
+        tzSafetyReset();
+        return true;
+      }
+      // pure: the person of an auth.whoami answer as a key ('' = nobody signed in): the name and the role, so a change of role counts too
+      function tzSafetyWho(identity) {
+        var u = identity && identity.user;
+        return identity ? String((u && (u.id || u.name)) || "") + "|" + String(identity.role || "") : "";
+      }
+      // the person left what the ticks were for: the page (no mode: everything, and the scope is learnt again) or a tool of `mode`
+      function tzSafetyLeave(mode) {
+        if (mode && tzSafety.mode !== mode) return;
+        tzSafetyReset();
+        if (!mode) tzSafetyScope = { who: null, mode: null };
       }
       // a tick of `mode`: the ticks of another mode are dropped first
       function tzSafetyTick(mode, id, on) {

@@ -1,5 +1,29 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.7 -- 2026-10-31
+
+- Workbench: mount saved through the settings store, camera layer by camera id
+
+## 2.22.6 -- 2026-10-31
+
+- Lot 2: one relay client, camera client folder, single gallery, one presence helper, shared resources released at the last plugin, flash for the operator
+
+## 2.22.5 -- 2026-10-31
+
+- Hides what names a plugin that is absent; a plugin is active only by the machine list
+
+## 2.22.4 -- 2026-10-31
+
+- Interrupted jobs card: one line with the reason that matters
+
+## 2.22.3 -- 2026-10-31
+
+- Fixes of 31-oct: position form, Offsets link to the zone, page reads the query when open
+
+## 2.22.2 -- 2026-10-30
+
+- Laser cut guard permission (jobarm.g), laser correction mirror and known flag, focus range 0.3 to 60, focus.g mirror, probe layer, CNC arm token, data exchange standard
+
 ## 2.22.1 -- 2026-10-30
 
 - Work origins live only in the Workbench: the laser correction comes from the settings store, not from the zones

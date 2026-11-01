@@ -13,18 +13,16 @@
         };
       }
 
-      // Opens the Work area section of the Machine plugin (same hand-off as the modes gate: stored section, then the route, then the event for
-      // a page that is already open).
+      // Opens the Work area section of the Machine plugin: the section travels as the route query ?layout=workarea (vue/WorkshopMachine
+      // lib/cross-page.js); nothing is stored for the other plugin and no event is sent to it.
       function tzAreaOpenInMachine(pca) {
-        try { localStorage.setItem("workshopMachineSection", "workarea"); } catch (e) { /* not critical */ }
-        pca.nav.goPath("/Plugins/Machine");
-        try { window.dispatchEvent(new CustomEvent("workshop-machine-goto", { detail: { section: "workarea" } })); } catch (e) { /* not critical */ }
+        pca.nav.goPath("/Plugins/Machine", { layout: "workarea" });
       }
 
       function tzAreaRenderCutCard(pca) {
         if (!pca.data.st()) return;
         var g = pca.data.st().globals || {};
-        var inMachine = workshopPathExists("/Plugins/Machine");
+        var inMachine = workshopPluginActive("machine");
         var key = JSON.stringify([pca.data.st().mode, g.cutAreaLaser, g.cutAreaCNC, g.cutAreaFFF, inMachine]);
         if (key === pca.cutLastKey) return;
         pca.cutLastKey = key;
@@ -70,16 +68,14 @@
             }
           }
           tile.appendChild(tzEl("div", "tz-cutmode-v", ok ? tzFmt(a[1] - a[0]) + " x " + tzFmt(a[3] - a[2]) + " mm" : "--"));
-          tile.appendChild(tzEl("div", "tz-muted", ok ? "X " + tzFmt(a[0]) + " a " + tzFmt(a[1]) + " · Y " + tzFmt(a[2]) + " a " + tzFmt(a[3]) : active ? i18nT('zonesPage.measure_it_in_machine') : ""));
+          tile.appendChild(tzEl("div", "tz-muted", ok ? "X " + tzFmt(a[0]) + " a " + tzFmt(a[1]) + " · Y " + tzFmt(a[2]) + " a " + tzFmt(a[3]) : active ? tzTx('zonesPage.measure_it_in_machine', 'machine') : ""));
           modesThe.appendChild(tile);
         });
         pca.cutCard.appendChild(modesThe);
+        // the Machine plugin edits the area: without it (not installed or off) there is no button and no word about it
+        if (!inMachine) return;
         var actions = tzEl("div", "tz-row");
         actions.style.marginTop = "6px";
-        if (inMachine) {
-          actions.appendChild(tzBtn(i18nT('zonesPage.edit_in_machine'), "primary", function () { tzAreaOpenInMachine(pca); }));
-        } else {
-          actions.appendChild(tzEl("div", "tz-muted", i18nT('zonesPage.edit_needs_machine')));
-        }
+        actions.appendChild(tzBtn(i18nT('zonesPage.edit_in_machine'), "primary", function () { tzAreaOpenInMachine(pca); }));
         pca.cutCard.appendChild(actions);
       }

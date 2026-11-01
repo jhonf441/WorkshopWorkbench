@@ -86,6 +86,7 @@
           pz.shell.renderMap();
         }
         if (pz.extraActive !== pz.nav.layout()) {
+          if (pz.extraApi[pz.extraActive] && pz.extraApi[pz.extraActive].disable) pz.extraApi[pz.extraActive].disable(); // HOOK: the tool was just closed
           pz.extraActive = pz.nav.layout();
           if (pz.extraApi[pz.extraActive] && pz.extraApi[pz.extraActive].enable) pz.extraApi[pz.extraActive].enable(); // HOOK etapa 6/7: the tool was just opened
         }

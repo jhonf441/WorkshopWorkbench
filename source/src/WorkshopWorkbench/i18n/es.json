@@ -38,6 +38,7 @@
     "step_switch_why": "Para qué sirve: la página sigue el modo en que está la máquina ahora.",
     "step_switch_missing": "Si falta: la página espera, cerrada, hasta que la máquina esté en ese modo.",
     "step_switch_help": "Cómo: con la máquina en reposo, cámbiala con los botones de modo de la barra de control o corre la macro del modo (macros/mode/selectlaser.g o selectcnc.g). Luego pulsa el botón.",
+    "step_switch_help_no_bar": "Cómo: con la máquina en reposo, corre la macro del modo (macros/mode/selectlaser.g o selectcnc.g). Luego pulsa el botón.",
     "guide_apply": "Activar y continuar",
     "pick_one": "Marca Láser o CNC, o pulsa \"No uso láser ni CNC\".",
     "not_using": "No uso láser ni CNC",

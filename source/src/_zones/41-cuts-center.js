@@ -268,12 +268,12 @@
           tc.centerDlgSeen = true;
           tcCenterDlgClose(tc);
           tcCenterIr(tc, aim.x, aim.y)
-            .then(function () { tcSetMsg(tc, i18nT('cuts.pointer_going_to_the_point_adjust'), true); })
+            .then(function () { tcSetMsg(tc, tzTx('cuts.pointer_going_to_the_point_adjust', 'jog'), true); })
             .catch(function (e) { tcSetMsg(tc, i18nT('common.could_not_go', { e: e }), false); });
           tcGo(tc);
         }, i18nT('common.tap_again_moves'));
         bIr.disabled = !tc.ctx.machine.free();
-        tzTip(bIr, i18nT('cuts.takes_the_pointer_there_laser_off'));
+        tzTip(bIr, tzTx('cuts.takes_the_pointer_there_laser_off', 'jog'));
         r.appendChild(bIr);
         r.appendChild(tzBtn(i18nT('zcal.cancel'), null, function () {
           tc.centerAim = null;
@@ -402,7 +402,7 @@
         r.appendChild(tzTip(tzBtn(i18nT('cuts.save_as_position'), null, function () {
           tcCenterDlgClose(tc);
           tcCenterSaveYNotify(tc, cr, tc.centerName);
-        }), i18nT('cuts.adds_it_to_the_saved_positions')));
+        }), tzTx('cuts.adds_it_to_the_saved_positions', 'jog')));
         r.appendChild(tzBtn(i18nT('zcal.cancel'), null, function () { tcCenterDlgClose(tc); }));
         document.body.appendChild(d);
         var x = Math.min(tc.centerXY.x + 14, window.innerWidth - d.offsetWidth - 8);

@@ -11,6 +11,7 @@
         pr.homed = !!(pr.ax.X.homed && pr.ax.Y.homed && pr.ax.Z && pr.ax.Z.homed);
         pr.mat = pr.z ? tmatById(tp.ctx.data.material(pr.wn)) : null;
         pr.f = tp.ctx.data.focusPerZone()[pr.wn];
+        tzFocusLoad(function () { tp.lastKey = ""; tpRender(tp); }); // the geometry of focus.json (cached): the focus height depends on it
         pr.zp = pr.z ? tp.ctx.data.point(pr.wn) : null;
         pr.sz = pr.z ? tp.ctx.data.size(pr.wn) : null;
         pr.chk = pr.z ? tp.ctx.data.controls(pr.wn) : [];
@@ -56,8 +57,10 @@
 
       function tpRenderSteps(tp, pr) {
         pr.laser = pr.s.mode === "Laser";
+        pr.probe = tzProbeInfo(pr.s.probes); // what the machine declares: the measuring step is a probe or the paper
         pr.steps = [];
-        pr.ok1 = pr.homed && pr.free;
+        pr.corrBad = pr.laser && /^(board_missing|differs)$/.test(tjBoardCorrection(pr.s.globals)); // the board must run the machine's correction (13-needs.js)
+        pr.ok1 = pr.homed && pr.free && !pr.corrBad;
         pr.ok2 = !!pr.z;
         pr.ok3 = !!pr.mat || !!tp.skipMat[pr.wn];
         pr.ok4 = !!tp.done["measure:" + pr.wn];
@@ -65,7 +68,7 @@
         pr.steps.push([pr.ok1, i18nT('prepare.machine_ready'), i18nT('prepare.all_axes_homed_and_machine_free')]);
         pr.steps.push([pr.ok2, i18nT('common.zone'), pr.z ? TZ_CODES[pr.wn] + (pr.z.name ? " " + pr.z.name : "") : i18nT('prepare.choose_the_zone_where_the_material')]);
         pr.steps.push([pr.ok3, "Material", pr.mat ? tmatLabel(pr.mat) : tp.skipMat[pr.wn] ? i18nT('prepare.no_material_the_thickness_is_not') : i18nT('prepare.which_material_you_are_going_to')]);
-        pr.steps.push([pr.ok4, pr.laser ? i18nT('prepare.measure_and_focus') : i18nT('prepare.measure_z0'), pr.ok4 && typeof pr.g === "number" && pr.g >= 0 ? i18nT('prepare.measured_thickness_mm', { g: pr.g }) : pr.laser ? i18nT('prepare.the_probe_measures_the_material_and') : i18nT('prepare.the_probe_measures_the_material_z0')]);
+        pr.steps.push([pr.ok4, pr.laser ? i18nT('prepare.measure_and_focus') : i18nT('prepare.measure_z0'), pr.ok4 && typeof pr.g === "number" && pr.g >= 0 ? i18nT('prepare.measured_thickness_mm', { g: pr.g }) : !pr.probe.measures ? (pr.laser ? i18nT('prepare.the_paper_sets_the_material_and') : i18nT('prepare.the_paper_sets_the_material_z0')) : pr.laser ? i18nT('prepare.the_probe_measures_the_material_and') : i18nT('prepare.the_probe_measures_the_material_z0')]);
         pr.steps.push([ok5, i18nT('prepare.check_with_the_pointer'), i18nT('prepare.go_around_the_edge_of_the')]);
         pr.steps.push([pr.ok1 && pr.ok2 && pr.ok3 && pr.ok4, i18nT('prepare.ready_to_cut'), ""]);
         pr.current = 0;
@@ -163,7 +166,10 @@
           var tT = pr.mat && pr.mat.thickness > 0 && pr.mat.mode === pr.s.mode ? " T" + pr.mat.thickness : "";
           // the same plan as the Active zone (32-active-zone-focus-plan.js): the macro when it carries the focus height, else the Z point
           var plan = pr.laser ? tzActPlanFor(pr.mat, pr.f ? pr.f.h : null, !!pr.zp, null) : null;
-          if (pr.laser && pr.f && (plan.action === "macro" || plan.action === "stale")) {
+          if (!pr.probe.measures) {
+            // no probe that can touch the surface: the paper (38-prepare-paper.js)
+            tpPaperButtons(tp, pr, r, pr.laser ? plan.h : (pr.mat && pr.mat.mode === "CNC" && pr.mat.altSafe) || 5, mark);
+          } else if (pr.laser && pr.f && (plan.action === "macro" || plan.action === "stale")) {
             var b = tzBtn(i18nT('prepare.measure_and_focus_mm', { h: pr.f.h }), "primary big", function () {
               tpRun(tp, 'M98 P"0:/macros/laser/' + pr.f.macro + '"', i18nT('prepare.measured_and_focused_laser_at_mm', { h: pr.f.h }), mark);
             });
@@ -176,7 +182,7 @@
               tpRun(tp, 'M98 P"0:/sys/workshop/macros/zprobepoint.g" X' + pr.zp.x + " Y" + pr.zp.y + " H" + h + tT, pr.laser ? i18nT('prepare.laser_mm_above_the_surface', { h: h }) : i18nT('prepare.z0_measured_ended_up_at_mm', { h: h }), mark);
             });
             b2.disabled = !pr.free || !pr.homed;
-            tzTip(b2, i18nT('prepare.the_probe_touches_at_x_y', { x: tzFmt(pr.zp.x), y: tzFmt(pr.zp.y), h: h }));
+            tzTip(b2, i18nT('prepare.the_probe_touches_at_x_y', { x: tzFmt(pr.zp.x), y: tzFmt(pr.zp.y), h: h, probe: tzProbeName(pr.probe) }));
             r.appendChild(b2);
           }
           r.appendChild(tzBtn(i18nT('prepare.already_measured'), null, function () { mark(); tp.lastKey = ""; tpRender(tp); }));
@@ -217,7 +223,8 @@
         // 6. listo
         pr.stepBox(5, function (c) {
           if (!(pr.ok1 && pr.ok2 && pr.ok3 && pr.ok4)) return c.appendChild(tzEl("div", "tz-muted", i18nT('prepare.complete_the_steps_above')));
-          if (pr.laser && pr.z && (pr.z.correctionX || pr.z.correctionY) && !pr.s.offsetOn) {
+          var mc = tp.ctx.cut.correction(); // the machine's one correction (settings store "laser")
+          if (pr.laser && pr.z && mc && (mc.cx || mc.cy) && !pr.s.offsetOn) {
             var r0 = tzEl("div", "tz-row");
             r0.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('prepare.laser_offset_removed')));
             r0.appendChild(tzBtn(i18nT('prepare.apply_offset'), "primary", function () {

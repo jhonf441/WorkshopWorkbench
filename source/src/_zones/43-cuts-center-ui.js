@@ -195,7 +195,7 @@
           } else {
             if (hasCameraC && tc.centerSource !== "machine")
               ct.cc.appendChild(tzEl("div", "tz-muted", i18nT('cuts.the_camera_is_not_ready_for')));
-            ct.cc.appendChild(tzEl("div", "tz-muted", i18nT('cuts.for_each_point_tap_the_map')));
+            ct.cc.appendChild(tzEl("div", "tz-muted", tzTx('cuts.for_each_point_tap_the_map', 'jog')));
             var correctionA = tcCenterCorrection(tc);
             var fa = tzEl("div", "tz-row");
             fa.style.cssText += "gap:4px;align-items:center;flex-wrap:wrap;";
@@ -216,7 +216,7 @@
             ct.cc.appendChild(fa);
             ct.cc.appendChild(tzEl("div", "tz-muted", tcCenterPointsAct(tc) === "laser"
               ? i18nT('cuts.aim_laser_note', { x: tc.fmt(correctionA.cx), y: tc.fmt(correctionA.cy) })
-              : correctionA ? i18nT('cuts.aim_pointer_note', { x: tc.fmt(correctionA.cx), y: tc.fmt(correctionA.cy) }) : i18nT('cuts.aim_pointer_note_no_correction')));
+              : correctionA ? i18nT('cuts.aim_pointer_note', { x: tc.fmt(correctionA.cx), y: tc.fmt(correctionA.cy) }) : tzTx('cuts.aim_pointer_note_no_correction', 'machine')));
           }
         }
       }
@@ -313,11 +313,11 @@
           var outA = area && (tc.centerAim.x < area.xmin || tc.centerAim.x > area.xmax || tc.centerAim.y < area.ymin || tc.centerAim.y > area.ymax);
           var goA = tzBtn(i18nT('common.go_there'), null, function () {
             tcCenterIr(tc, tc.centerAim.x, tc.centerAim.y)
-              .then(function () { tcSetMsg(tc, i18nT('cuts.pointer_going_to_the_target_adjust'), true); })
+              .then(function () { tcSetMsg(tc, tzTx('cuts.pointer_going_to_the_target_adjust', 'jog'), true); })
               .catch(function (e) { tcSetMsg(tc, i18nT('common.could_not_go', { e: e }), false); });
           }, i18nT('common.tap_again_moves'));
           goA.disabled = !rc.free;
-          tzTip(goA, i18nT('cuts.takes_the_pointer_to_the_target', { v: outA ? i18nT('cuts.careful_the_target_is_outside_the') : "" }));
+          tzTip(goA, tzTx('cuts.takes_the_pointer_to_the_target', 'jog', { v: outA ? i18nT('cuts.careful_the_target_is_outside_the') : "" }));
           cra.appendChild(goA);
           cra.appendChild(
             tzTip(
@@ -330,7 +330,7 @@
             )
           );
           if (outA) cra.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('common.outside_the_cut_area')));
-        } else cra.appendChild(tzEl("span", "tz-muted", i18nT('cuts.tap_the_map_to_set_a')));
+        } else cra.appendChild(tzEl("span", "tz-muted", tzTx('cuts.tap_the_map_to_set_a', 'jog')));
         var cr1 = tzEl("div", "tz-row");
         cr1.style.gap = "4px";
         if (tc.centerMode !== "camera") ct.cc.appendChild(cr1);
@@ -473,7 +473,7 @@
             tzBtn(i18nT('cuts.save_as_position'), null, function () {
               tcCenterSaveYNotify(tc, rs.cr, tc.centerName);
             }),
-            i18nT('cuts.adds_it_to_the_saved_positions')
+            tzTx('cuts.adds_it_to_the_saved_positions', 'jog')
           )
         );
         rc.cr3.appendChild(
