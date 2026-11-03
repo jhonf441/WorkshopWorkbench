@@ -1,6 +1,6 @@
       // ---- Manual safety checklist of a job, by mode (F3-W, 2026-10-21; CNC list 2026-10-30) ----
       // Before a laser cut the person ticks: glasses on, lid closed, extraction on, nobody inside the area. Before a CNC job: spindle
-      // free and tool tight, workpiece clamped, extraction / ventilation on, nobody inside the area, Z zero set on the material. The
+      // free and tool tight, workpiece clamped, extraction / ventilation on, nobody inside the area (the Z zero is NOT a point: Start is locked by itself while the active work system is still at 0, and cncguard.g checks it too). The
       // ticks are shared by every place that starts a job of that mode (the cut of the editor, the cut in parts, the "Ready to cut" card,
       // the CNC toolpaths card): they hold for TZ_SAFETY_TTL_MS and are used up by the start (the next job asks again). The ticks of one
       // mode never count for the other (a tick in a new mode clears the previous ones). The start writes a safety_check event in the
@@ -24,7 +24,6 @@
           { id: "cnc_workpiece", key: "ready.safety_cnc_workpiece", hw: "" },
           { id: "cnc_extraction", key: "ready.safety_cnc_extraction", hw: "extraction_interlock" },
           { id: "cnc_clear", key: "ready.safety_clear", hw: "" },
-          { id: "cnc_z_zero", key: "ready.safety_cnc_z_zero", hw: "" },
         ],
       };
       // the note shown under the list when an interlock of the profile replaces a point

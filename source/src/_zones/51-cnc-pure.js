@@ -101,6 +101,26 @@
       function tzCncRect(x0, y0, x1, y1) {
         return { k: "poly", pts: [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]], closed: true };
       }
+      // The points of a polyline shape (path) as [[x, y]...] for the engine, or null when they cannot be cut as they are: a point that is not a number,
+      // too many points, fewer than 2 (open) or 3 (closed) different ones. Repeated neighbours are dropped; a closed path ends on its first point.
+      function tzCncPathPoints(f) {
+        var src = Array.isArray(f.pts) ? f.pts : [];
+        if (src.length > 60000) return null;
+        var out = [];
+        for (var i = 0; i < src.length; i++) {
+          var x = tzCncNum(src[i] && src[i].x), y = tzCncNum(src[i] && src[i].y);
+          if (x === null || y === null) return null;
+          var last = out[out.length - 1];
+          if (last && Math.hypot(x - last[0], y - last[1]) < 1e-6) continue;
+          out.push([x, y]);
+        }
+        if (!f.closed) return out.length >= 2 ? out : null;
+        if (out.length > 1 && Math.hypot(out[0][0] - out[out.length - 1][0], out[0][1] - out[out.length - 1][1]) < 1e-6) out.pop();
+        if (out.length < 3) return null;
+        out.push([out[0][0], out[0][1]]);
+        return out;
+      }
+
       // Tool center path of a shape: { ok, contornos, continuo, error }. continuo: the contours are chained at depth (pocket rings).
       function tzCncOutlines(shape, tool, material) {
         var a = tzCncSettings(material, tool);
@@ -142,6 +162,12 @@
             if (rings.length > 2000) return failure("geometry");
           }
           return { ok: true, outlines: rings, continuous: true };
+        }
+        if (f.kind === "path") {
+          // a polyline is cut along its own line only: inside / outside would need an offset of the polyline (not done: nothing is approximated)
+          if (side !== 0) return failure("path_side");
+          var pp = tzCncPathPoints(f);
+          return pp ? { ok: true, outlines: [{ k: "poly", pts: pp, closed: !!f.closed }], continuous: false } : failure("geometry");
         }
         if (f.kind === "circle") {
           var cx = tzCncNum(f.cx), cy = tzCncNum(f.cy), rr = tzCncPos(f.r);

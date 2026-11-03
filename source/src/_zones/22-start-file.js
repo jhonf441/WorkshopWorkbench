@@ -92,6 +92,20 @@
         });
       }
 
+      // The mode whose guard a job text calls in its first line of code ("Laser" for cutguard.g, "CNC" for cncguard.g), or null when the first line
+      // is another thing or there is no text (a file already on the machine). Comments and blank lines before it do not count.
+      function tzJobGuardKind(texto) {
+        if (texto === undefined || texto === null) return null;
+        var lines = String(texto).split("\n");
+        for (var i = 0; i < lines.length; i++) {
+          var code = lines[i].split(";")[0].trim();
+          if (!code) continue;
+          var m = /^M98\s+P"[^"]*\/(cutguard|cncguard)\.g"/i.exec(code);
+          return m ? (m[1].toLowerCase() === "cncguard" ? "CNC" : "Laser") : null;
+        }
+        return null;
+      }
+
       // Uploads the text (if there is one), arms the guard of that kind, starts the file (tzStartFile) and, when the start did not go through,
       // takes the permission back so it cannot serve the next file (it also expires by itself in 30 s). The permission is given AFTER the
       // upload, right before M32. When the job started the guard has used it up already: nothing is sent to the machine while a job runs.
@@ -99,6 +113,9 @@
       function tzStartArmed(kind, path, texto, deps) {
         var start = deps && deps.start ? deps.start : tzStartFile;
         var disarm = function () { return tzJobArm(kind, false, deps).catch(function () { /* it expires by itself */ }); };
+        // one job = one mode: a text that starts with the guard of ANOTHER mode is refused before anything reaches the machine
+        var found = tzJobGuardKind(texto);
+        if (found && found !== kind) return Promise.reject(new Error(i18nT('common.job_guard_mismatch', { kind: kind, found: found })));
         return tzPutJob(path, texto, deps).then(function () {
           return tzJobArm(kind, true, deps)
             .catch(function (e) { throw new Error(i18nT('common.not_armed', { err: e && e.message ? e.message : e })); })

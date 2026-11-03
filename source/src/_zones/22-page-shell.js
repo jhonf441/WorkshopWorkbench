@@ -64,6 +64,7 @@
         root.innerHTML = "";
         psh.page = tzEl("div", "tz-page workshop-theme");
         root.appendChild(psh.page);
+        // two rows by CSS order (33-space.js): badge, text and the Commands button; then the chips and the state. The children can be added in any order.
         psh.header = tzEl("div", "wf-bar tz-hd");
         psh.page.appendChild(psh.header);
       }

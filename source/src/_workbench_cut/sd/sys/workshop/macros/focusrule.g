@@ -38,5 +38,8 @@ var h = floor((global.focusTab - global.focusBoxEdge - var.lever) * 10 + 0.5) / 
 ; the same range as laserfocus.g and focushere.g (0.3 to 60 mm: the table gives 0.467 for 15 mm or more with the reference laser). A wrong geometry
 ; (focus.g) or a typo in T must not send the head to a height the laser is not focused for: nothing is moved here, the caller stops.
 if var.h < 0.3 || var.h > 60
-    abort {var.en ? ("focusrule: focus height H" ^ var.h ^ " for T" ^ param.T ^ " is out of range (0.3 to 60 mm): check the geometry (0:/sys/workshop/config/focus.g)") : ("focusrule: la altura de foco H" ^ var.h ^ " para T" ^ param.T ^ " esta fuera de rango (0.3 a 60 mm): revisa la geometria (0:/sys/workshop/config/focus.g)")}
+    ; RRF rejects an argument longer than 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? ("focusrule: focus height H" ^ var.h ^ " for T" ^ param.T) : ("focusrule: la altura de foco H" ^ var.h ^ " para T" ^ param.T)
+    var m2 = var.en ? "is out of range (0.3 to 60 mm): check the geometry (0:/sys/workshop/config/focus.g)" : "esta fuera de rango (0.3 a 60 mm): revisa la geometria (0:/sys/workshop/config/focus.g)"
+    abort {var.m1 ^ " " ^ var.m2}
 set global.focusRuleH = var.h

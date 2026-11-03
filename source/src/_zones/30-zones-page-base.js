@@ -85,7 +85,7 @@
           ["prepare", i18nT('common.prepare'), i18nT('zonesPage.step_by_step_to_get_a')],
           ["zones", i18nT('common.zones'), i18nT('zonesPage.work_zones_g55_editor_table_and')],
           ["area", i18nT('zonesPage.cut_area'), i18nT('zonesPage.the_cut_area_of_each_mode')],
-          ["cuts", "Editor laser", i18nT('zonesPage.draw_or_import_svg_shapes_sort')],
+          ["cuts", i18nT('cuts.editor_name'), i18nT('zonesPage.draw_or_import_svg_shapes_sort')],
           ["center", i18nT('cuts.find_centre'), i18nT('zonesPage.measure_a_hole_or_a_piece')],
           ["job", i18nT('zonesPage.job_in_progress'), i18nT('zonesPage.what_is_being_cut_now_or')],
           ["simulate", i18nT('tv.tab'), i18nT('tv.tab_tip')],

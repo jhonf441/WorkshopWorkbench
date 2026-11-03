@@ -21,12 +21,8 @@
           tc.ctx.map.redraw();
         }), i18nT('cuts.numbers_the_shapes_on_the_map')));
         lh.appendChild(tzTip(tzBtn(i18nT('cuts.layer'), null, function () {
-          var id = tc.data.layers.reduce(function (m, L) { return Math.max(m, L.id); }, 0) + 1;
-          var used = tc.data.layers.map(function (L) { return L.color; });
-          var color = TC_LAYER_COLORS.filter(function (c) { return used.indexOf(c) < 0; })[0] || TC_LAYER_COLORS[id % TC_LAYER_COLORS.length];
           var last = tc.data.layers[tc.data.layers.length - 1];
-          tc.data.layers.push({ id: id, name: i18nT('cuts.layer_3', { id: id }), color: color, power: last.power, speed: last.speed, passes: last.passes, air: last.air });
-          tc.data.activeLayer = id;
+          tc.data.activeLayer = tcLayerNew(tc, { power: last.power, speed: last.speed, passes: last.passes, air: last.air }).id;
           tcSave(tc);
           tcGo(tc);
         }), i18nT('cuts.new_layer_color_with_its_own')));
@@ -35,7 +31,7 @@
         var t = tzEl("div", "tc-layers");
         lc.appendChild(t);
         var cab = tzEl("div", "tc-layer tc-layer-cab");
-        ["", i18nT('job.layer'), i18nT('cuts.power'), "mm/min", i18nT('common.passes'), ""].forEach(function (x) { cab.appendChild(tzEl("span", null, x)); });
+        (tcCncOn(tc) ? ["", i18nT('job.layer'), i18nT('cnc.depth'), i18nT('cnc.side'), i18nT('cuts.cnc_operation'), ""] : ["", i18nT('job.layer'), i18nT('cuts.power'), "mm/min", i18nT('common.passes'), ""]).forEach(function (x) { cab.appendChild(tzEl("span", null, x)); });
         t.appendChild(cab);
         tc.data.layers.forEach(function (L, li) { return tcLayerRow(tc, t, has, L, li); });
       }
@@ -67,6 +63,7 @@
         nm.appendChild(nb);
         nm.appendChild(tzEl("span", "tz-muted", (ly.cnt === 1 ? i18nT('cuts.1_shape') : i18nT('cuts.shapes_4', { cnt: ly.cnt })) + (L.locked ? i18nT('cuts.locked') : "") + (L.hidden ? i18nT('cuts.not_cut') : "")));
         ly.row.appendChild(nm);
+        if (tcCncOn(tc)) return tcLayerCncInputs(tc, ly, L); // depth / side / operation (42-cuts-cnc.js)
         [["power", 1, 100], ["speed", 1, 30000], ["passes", 1, 20]].forEach(function (f) {
           var inp = document.createElement("input");
           inp.type = "text"; // text, not number: so the symbols of an account can be typed (see tzEval)
@@ -90,7 +87,7 @@
       function tcLayerRowActions(tc, ly, t, has, L, li) {
         var acc = tzEl("div", "tc-layer-acc");
         ly.row.appendChild(acc);
-        acc.appendChild(tzTip(tzBtn(L.air ? i18nT('job.air') : i18nT('cuts.no_air_2'), L.air ? "primary" : null, function () { L.air = !L.air; tcSave(tc); tcGo(tc); }), i18nT('cuts.air_assist_m42_p7_while_this')));
+        if (!tcCncOn(tc)) acc.appendChild(tzTip(tzBtn(L.air ? i18nT('job.air') : i18nT('cuts.no_air_2'), L.air ? "primary" : null, function () { L.air = !L.air; tcSave(tc); tcGo(tc); }), i18nT('cuts.air_assist_m42_p7_while_this')));
         acc.appendChild(tzTip(tzBtn(L.hidden ? i18nT('cuts.off') : i18nT('common.view'), L.hidden ? "warn" : null, function () { L.hidden = !L.hidden; tcSave(tc); tcGo(tc); }), i18nT('cuts.off_shown_faint_on_the_map')));
         acc.appendChild(tzTip(tzBtn(L.locked ? i18nT('cuts.locked_2') : i18nT('cuts.free_2'), L.locked ? "warn" : null, function () {
           L.locked = !L.locked;

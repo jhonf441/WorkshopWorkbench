@@ -1,4 +1,5 @@
       function tcCardCut(tc, rc) {
+        if (tcCncOn(tc)) return tcCardCutCnc(tc, rc); // the CNC editor (42-cuts-cnc.js): behind a flag that is off
         var cz = {};
           // == CORTAR ==
           cz.errs = tcValidate(tc);

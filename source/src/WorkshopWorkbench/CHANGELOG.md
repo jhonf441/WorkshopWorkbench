@@ -1,5 +1,45 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.17 -- 2026-11-03
+
+- The editor is called Cut editor (Editor de corte), not Laser editor
+
+## 2.22.16 -- 2026-11-03
+
+- Workbench: single editor E0-E6 (CNC editor behind a flag that is off, one-mode guard check on launch, designs v2 format, polyline in the CNC engine)
+
+## 2.22.15 -- 2026-11-02
+
+- Range picker split into small functions; cut area tip without naming the plugin
+
+## 2.22.14 -- 2026-11-02
+
+- Mesa cleanups: tab renamed Cut area, voseo to tuteo, CNC Z zero no longer a manual tick
+
+## 2.22.13 -- 2026-11-01
+
+- WorkshopWorkbench: nav scroll finds the new bar after a redraw
+
+## 2.22.12 -- 2026-11-01
+
+- WorkshopWorkbench: nav scroll second try; camera preview late photo
+
+## 2.22.11 -- 2026-11-01
+
+- WorkshopWorkbench: shared nav-scroll fix; job control stage 1 where applicable
+
+## 2.22.10 -- 2026-11-01
+
+- Workbench: Already measured only notes the step (no longer unlocks CUT), the palette button is one even if the page starts twice, two-row header
+
+## 2.22.9 -- 2026-11-01
+
+- Workbench: the abort messages of focusrule, cutguard, cncguard and zmeasure are built from two short expressions (RRF refuses an argument over 255 chars: Keyword argument too long hid the real reason)
+
+## 2.22.8 -- 2026-10-31
+
+- Workbench: a zone file in an older format says so instead of 'has no zone file'
+
 ## 2.22.7 -- 2026-10-31
 
 - Workbench: mount saved through the settings store, camera layer by camera id

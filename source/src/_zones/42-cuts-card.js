@@ -30,7 +30,7 @@
         // encabezado: nombre + deshacer/rehacer
         var h = tzEl("div", "tz-row");
         h.style.cssText += "align-items:center;gap:6px;";
-        var h3 = tzEl("h3", null, "Editor laser");
+        var h3 = tzEl("h3", null, i18nT('cuts.editor_name'));
         h3.style.margin = "0";
         h.appendChild(h3);
         var hs = tzEl("span", "tz-muted", i18nT('cuts.draw_or_import_organize_by_layers'));

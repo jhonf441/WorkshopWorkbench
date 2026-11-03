@@ -116,7 +116,7 @@
           r.appendChild(tzTip(tzBtn(i18nT('prepare.show_on_the_map'), null, function () { tp.ctx.map.show(); }), i18nT('prepare.scrolls_down_to_the_bed_map')));
           r.appendChild(tzTechOnly(tzTip(tzBtn(i18nT('prepare.open_zones_tab'), null, function () { tp.ctx.nav.go("zones"); }), i18nT('prepare.goes_to_the_zones_tab_editor'))));
           c.appendChild(r);
-          if (!pr.z) c.appendChild(tzEl("div", "tz-msg err", i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] })));
+          if (!pr.z) c.appendChild(tzEl("div", "tz-msg err", (tp.ctx.data.legacy(pr.wn) ? tzNoZoneText(tp.ctx, pr.wn) : i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] }))));
           pr.chk.forEach(function (k) {
             if (k.lvl === "info") return;
             c.appendChild(tzCheckEl(k));
@@ -185,7 +185,11 @@
             tzTip(b2, i18nT('prepare.the_probe_touches_at_x_y', { x: tzFmt(pr.zp.x), y: tzFmt(pr.zp.y), h: h, probe: tzProbeName(pr.probe) }));
             r.appendChild(b2);
           }
-          r.appendChild(tzBtn(i18nT('prepare.already_measured'), null, function () { mark(); tp.lastKey = ""; tpRender(tp); }));
+          // "Already measured" only notes the STEP. It does not say the laser is at its focus: nobody measured anything here, and a
+          // focus marked from the current Z would unlock CUT (22-focus-applied.js). The focus stays a real action: the macro of the
+          // material, "Focus here" or the paper.
+          r.appendChild(tzBtn(i18nT('prepare.already_measured'), null, function () { tzWorkPrepareMark(pr.wn, "measure"); tp.lastKey = ""; tpRender(tp); }));
+          if (pr.laser) r.appendChild(tzEl("div", "tz-muted", i18nT('prepare.already_measured_note')));
           c.appendChild(r);
           if (typeof pr.g === "number" && pr.g >= 0 && pr.ok4) {
             var bad = pr.mat && pr.mat.thickness > 0 && pr.g >= 0.3 && Math.abs(pr.g - pr.mat.thickness) > Math.max(0.6, pr.mat.thickness * 0.2);

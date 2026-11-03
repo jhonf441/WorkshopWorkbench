@@ -33,8 +33,7 @@
           base.forEach(function (sh) {
             var k = [sh.power, sh.speed, sh.passes].join("|");
             if (!tc.combos[k]) {
-              var L = { id: tc.data.layers.length + 1, name: i18nT('cuts.layer_2', { n: tc.data.layers.length + 1 }), color: TC_LAYER_COLORS[tc.data.layers.length % TC_LAYER_COLORS.length], power: sh.power, speed: sh.speed, passes: sh.passes, air: tc.data.air !== false };
-              tc.data.layers.push(L);
+              var L = tcLayerNew(tc, { power: sh.power, speed: sh.speed, passes: sh.passes, air: tc.data.air !== false });
               tc.combos[k] = L.id;
             }
             if (sh.id) sh.layer = tc.combos[k];
@@ -50,7 +49,7 @@
         tc.multiMode = false; // touch: each tap adds/removes from the selection
         tc.arrayDlg = null; // null | {kind:"grid"|"circ", ...campos}
         tc.undoStack = [], tc.redoStack = [];
-        tc.lastSnap = JSON.stringify({ shapes: tc.data.shapes, nextId: tc.data.nextId, archived: tc.data.archived || [] }); // formas al ultimo save() (base de Deshacer)
+        tc.lastSnap = tcSnapOf(tc); // shapes and layers at the last save() (the base of Undo)
         tc.lastW = 300; // width of the map view (for the handles' size)
         tc.tool = null; // null | {type, p1} -- creating a shape by tapping the map
         tc.centerMode = null; // null | "circle" | "rect" | "circ2" | "rect2" | "mid"

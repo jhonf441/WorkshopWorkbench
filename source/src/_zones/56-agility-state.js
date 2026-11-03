@@ -73,5 +73,10 @@
         A.button = tzBtn(i18nT('commands.search'), null, function () { tzAgilityOpenPalette(A); });
         A.button.setAttribute("aria-haspopup", "dialog");
         tzTip(A.button, i18nT('commands.search_tip', { shortcut: tzShortcutOf("palette") }));
-        if (A.header) A.header.appendChild(A.button);
+        A.button.setAttribute("data-tz-palette-btn", "1");
+        if (A.header) {
+          // the page can start twice on the same header (the plugin is reinstalled while the tab stays open and DWC does not reload): one button only
+          if (typeof A.header.querySelectorAll === "function") Array.prototype.forEach.call(A.header.querySelectorAll("[data-tz-palette-btn]"), function (old) { if (old !== A.button) old.remove(); });
+          A.header.appendChild(A.button);
+        }
       }

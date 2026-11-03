@@ -19,10 +19,8 @@
             var L = tc.data.layers.filter(function (x) { return x.color.toLowerCase() === hex; })[0];
             if (!L) {
               var base = tcLayerById(tc, tc.data.activeLayer);
-              var id = tc.data.layers.reduce(function (m, x) { return Math.max(m, x.id); }, 0) + 1;
-              L = { id: id, name: "SVG " + hex, color: hex === "#000000" ? base.color : hex, power: base.power, speed: base.speed, passes: base.passes, air: base.air };
               if (hex === "#000000" || Object.keys(byColor).length === 0 && items.every(function (x) { return tcRgbToHex(x.color) === hex; })) L = base; // a single color: to the active layer
-              else tc.data.layers.push(L);
+              else L = tcLayerNew(tc, { name: "SVG " + hex, color: hex, power: base.power, speed: base.speed, passes: base.passes, air: base.air });
             }
             byColor[hex] = L.id;
           }

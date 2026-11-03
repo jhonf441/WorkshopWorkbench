@@ -32,6 +32,10 @@
         if (tj.timer) return;
         tjTrLoad(tj);
         tj.timer = setInterval(function () {
+          // the timeline of the job (47-job-control.js) is kept even while this tab is not in front; the card is drawn again only when it changed
+          tjcSample(tj);
+          var sg = tjcSig(tj);
+          if (sg !== tj.cjSig) { tj.cjSig = sg; tj.lastKey = ""; tjTrRender(tj); }
           // hidden tab or on another DWC page (keep-alive): no call (the recorder falls asleep: nobody is watching)
           if (document.hidden || !tj.ctx.visible() || !workshopPageVisible(tj.ctx.card)) return;
           // The job is NOT followed sample by sample: while it runs only its new samples are asked every 10 s (they feed the report and
@@ -60,10 +64,11 @@
         if (!tj.ctx.visible()) return;
         tjTrStart(tj);
         var mm = (tj.trace && tj.trace.samples) || [];
-        var key = JSON.stringify([tj.feed.denied, tj.trace && tj.trace.start, tj.trace && tj.trace.active, mm.length, tj.err, !!tj.plan, tj.trace && tj.trace.plan, tjLaserWatts, tjTrHidden(tj), tj.viewId, tj.histOpen, tj.armed, tj.hist && tj.hist.map(function (e) { return e.id; }), tzLjSig()]);
+        var key = JSON.stringify([tj.feed.denied, tj.trace && tj.trace.start, tj.trace && tj.trace.active, mm.length, tj.err, !!tj.plan, tj.trace && tj.trace.plan, tjLaserWatts, tjTrHidden(tj), tj.viewId, tj.histOpen, tj.armed, tj.hist && tj.hist.map(function (e) { return e.id; }), tzLjSig(), tjcSig(tj)]);
         if (key === tj.lastKey) return;
         tj.lastKey = key;
         card.innerHTML = "";
+        tjcRender(tj, card); // state, live checks, controls and "What happened" (Laser / CNC, read only)
         tjTrRenderMain(tj, card, mm);
         tzLjJobLine(tj, card); // interrupted jobs: how many, and the button to their tab (52-livejob-tool.js)
         tjTrRenderHist(tj, card);

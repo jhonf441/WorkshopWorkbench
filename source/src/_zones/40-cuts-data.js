@@ -1,5 +1,17 @@
+      // What Undo / Redo bring back: the shapes AND the layers (name, color, power, speed, passes, air, hidden, locked, order).
       function tcSnapOf(tc) {
-        return JSON.stringify({ shapes: tc.data.shapes, nextId: tc.data.nextId, archived: tc.data.archived || [] });
+        return JSON.stringify({ shapes: tc.data.shapes, layers: tc.data.layers || [], nextId: tc.data.nextId, archived: tc.data.archived || [] });
+      }
+
+      // The only place that creates a layer. o: { name?, color?, power, speed, passes, air }; the id is the next free one; no name = "Layer <id>";
+      // no color = the first of the palette that no layer uses. Returns the layer (already in the list).
+      function tcLayerNew(tc, o) {
+        var id = tc.data.layers.reduce(function (m, L) { return Math.max(m, L.id); }, 0) + 1;
+        var used = tc.data.layers.map(function (L) { return L.color; });
+        var color = o.color || TC_LAYER_COLORS.filter(function (c) { return used.indexOf(c) < 0; })[0] || TC_LAYER_COLORS[id % TC_LAYER_COLORS.length];
+        var L = { id: id, name: o.name !== undefined ? o.name : i18nT('cuts.layer_3', { id: id }), color: color, power: o.power, speed: o.speed, passes: o.passes, air: o.air };
+        tc.data.layers.push(L);
+        return L;
       }
 
       // save() saves AND records the step for Undo (up to 60 steps).
@@ -17,6 +29,9 @@
       function tcRestoreSnap(tc, js) {
         var o = JSON.parse(js);
         tc.data.shapes = o.shapes;
+        if (Array.isArray(o.layers) && o.layers.length) tc.data.layers = o.layers;
+        if (!tc.data.layers.some(function (L) { return L.id === tc.data.activeLayer; })) tc.data.activeLayer = tc.data.layers[0].id;
+        tcSyncLayers(tc);
         tc.data.nextId = o.nextId;
         tc.data.archived = o.archived || [];
         tc.selIds = tc.selIds.filter(function (id) { return !!tcShapeById(tc, id); });

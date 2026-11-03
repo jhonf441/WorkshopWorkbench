@@ -20,6 +20,20 @@
         ".tz-state .tz-e-lock{display:inline-block;padding:1px 10px;border-radius:10px;font-weight:700;color:#fff;background:#c62828;}",
         ".tz-state .tz-e-job{display:inline-flex;gap:6px;margin-left:auto;}",
         ".tz-e-num{font-variant-numeric:tabular-nums;}",
+        // 2026-11-01 header in TWO fixed rows (the description was squeezed into ~224 px next to the chips, the state strip and the Commands
+        // button, all competing in one wrapping row). Row 1 = badge, title + description (takes the width), Commands button on the right;
+        // row 2 = chips and the state strip. The children come from several files in whatever order they are added, so the place of each is
+        // its CSS order (not its place in the DOM): 1 badge, 2 text, 3 Commands button, 4 the line break (::after), 5 the rest (chips, state).
+        ".tz-hd.wf-bar{row-gap:6px;column-gap:12px;}",
+        ".tz-hd.wf-bar > *{order:5;}",
+        ".tz-hd.wf-bar > .wf-badge{order:1;}",
+        ".tz-hd.wf-bar > .wf-bar-txt{order:2;flex:1 1 0;min-width:0;}",
+        ".tz-hd.wf-bar > [data-tz-palette-btn]{order:3;flex:0 0 auto;margin:0 0 0 auto;}",
+        ".tz-hd.wf-bar::after{content:\"\";order:4;flex:0 0 100%;height:0;}",
+        ".tz-hd.wf-bar .wf-lead{max-width:none;}",
+        ".tz-hd.wf-bar > .wf-bar-right{margin-left:0;}",
+        ".tz-hd.wf-bar > .tz-hdstate{flex:1 1 auto;min-width:0;}",
+        "@media (max-width:699px){.tz-hd.wf-bar > [data-tz-palette-btn]{flex:1 1 100%;margin:0;}.tz-hd.wf-bar > .wf-bar-txt{flex:1 1 calc(100% - 60px);}}",
         ".tz-hdstate{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px;font-size:13px;}",
         ".tz-hdstate .tz-hdcell{display:inline-flex;align-items:center;gap:5px;}",
         ".tz-hdstate .tz-hdstop{margin-left:auto;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}",

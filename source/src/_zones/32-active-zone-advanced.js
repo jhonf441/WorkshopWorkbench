@@ -15,7 +15,7 @@
       }
 
       function tzActPointSection(za, zr) {
-        if (!zr.zp) return tzActNote(za, zr.adv, i18nT('zoneActive.has_no_zone_file_create_it', { code: TZ_CODES[zr.wn] }));
+        if (!zr.zp) return tzActNote(za, zr.adv, tzNoZoneText(za.ctx, zr.wn));
         var pm = {};
         tzActPointRow(za, pm, zr);
         tzActPointButtons(za, pm, zr);

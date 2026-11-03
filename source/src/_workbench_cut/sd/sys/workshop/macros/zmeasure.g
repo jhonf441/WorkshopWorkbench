@@ -16,7 +16,10 @@ var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : f
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
     abort {var.en ? ("Measure Z: home all axes first") : ("Medir Z: primero hace homing de todos los ejes")}
 if #sensors.probes < 1 || sensors.probes[0] == null || sensors.probes[0].type == 0
-    abort {var.en ? ("Measure Z: the machine has no probe to touch the surface with. Lower the tool to a sheet of paper and use Z0 with paper") : ("Medir Z: la maquina no tiene sonda para tocar la superficie. Baja la herramienta hasta un papel y usa Z0 con papel")}
+    ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? "Measure Z: the machine has no probe to touch the surface with." : "Medir Z: la maquina no tiene sonda para tocar la superficie."
+    var m2 = var.en ? "Lower the tool to a sheet of paper and use Z0 with paper" : "Baja la herramienta hasta un papel y usa Z0 con papel"
+    abort {var.m1 ^ " " ^ var.m2}
 
 if sensors.probes[0].type == 9
     M280 P0 S160                                ; BLTouch: clear a possible alarm (raises the pin)

@@ -24,9 +24,15 @@ if exists(global.workshopCncArmed)
     set global.workshopCncArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
 if var.armed == 0
-    abort {var.en ? ("CNC: this file was not started from the Workbench page. Press Start in Workbench > CNC toolpaths (it checks the area, the clamps and the safety list). The spindle was not started.") : ("CNC: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa Iniciar en Mesa de trabajo > Trayectorias CNC (revisa el area, las mordazas y la lista de seguridad). No se encendio el husillo.")}
+    ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? "CNC: this file was not started from the Workbench page. Press Start in Workbench > CNC toolpaths" : "CNC: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa Iniciar en Mesa de trabajo > Trayectorias CNC"
+    var m2 = var.en ? "(it checks the area, the clamps and the safety list). The spindle was not started." : "(revisa el area, las mordazas y la lista de seguridad). No se encendio el husillo."
+    abort {var.m1 ^ " " ^ var.m2}
 if state.upTime > var.armed
-    abort {var.en ? ("CNC: the Start of the Workbench page expired (30 s) before the file began. Press Start again. The spindle was not started.") : ("CNC: el Iniciar de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa Iniciar otra vez. No se encendio el husillo.")}
+    ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? "CNC: the Start of the Workbench page expired (30 s) before the file began. Press Start again." : "CNC: el Iniciar de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa Iniciar otra vez."
+    var m2 = var.en ? "The spindle was not started." : "No se encendio el husillo."
+    abort {var.m1 ^ " " ^ var.m2}
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 if var.modo != "CNC"
     abort {var.en ? ("CNC: the machine is not in CNC mode. The spindle was not started.") : ("CNC: la maquina no esta en modo CNC. No se encendio el husillo.")}

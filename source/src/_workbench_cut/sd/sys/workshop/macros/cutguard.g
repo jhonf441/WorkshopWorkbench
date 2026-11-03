@@ -21,9 +21,15 @@ if exists(global.workshopLaserArmed)
     set global.workshopLaserArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
 if var.armed == 0
-    abort {var.en ? ("Cut: this file was not started from the Workbench page. Press CUT in Workbench > Simple cuts (it checks the zone, the focus, the area and the safety list). The laser was not turned on.") : ("Corte: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa CORTAR en Mesa de trabajo > Cortes simples (revisa la zona, el foco, el area y la lista de seguridad). No se encendio el laser.")}
+    ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? "Cut: this file was not started from the Workbench page. Press CUT in Workbench > Simple cuts" : "Corte: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa CORTAR en Mesa de trabajo > Cortes simples"
+    var m2 = var.en ? "(it checks the zone, the focus, the area and the safety list). The laser was not turned on." : "(revisa la zona, el foco, el area y la lista de seguridad). No se encendio el laser."
+    abort {var.m1 ^ " " ^ var.m2}
 if state.upTime > var.armed
-    abort {var.en ? ("Cut: the CUT of the Workbench page expired (30 s) before the file began. Press CUT again. The laser was not turned on.") : ("Corte: el CORTAR de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa CORTAR otra vez. No se encendio el laser.")}
+    ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
+    var m1 = var.en ? "Cut: the CUT of the Workbench page expired (30 s) before the file began. Press CUT again." : "Corte: el CORTAR de la pagina Mesa de trabajo caduco (30 s) antes de que empezara el archivo. Pulsa CORTAR otra vez."
+    var m2 = var.en ? "The laser was not turned on." : "No se encendio el laser."
+    abort {var.m1 ^ " " ^ var.m2}
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 if !exists(param.S)
     abort {var.en ? ("Cut: power missing (S%)") : ("Corte: falta la potencia (S%)")}

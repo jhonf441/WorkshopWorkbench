@@ -6,7 +6,7 @@
       function tzActHeight(za, zr) {
         var title = zr.laserMode ? i18nT('zoneActive.z_height_and_focus') : i18nT('zoneActive.z_height');
         zr.hb = tzActBlock(za, zr.card, title);
-        if (!zr.z) return tzActNote(za, zr.hb, i18nT('zoneActive.has_no_zone_file_create_it', { code: TZ_CODES[zr.wn] }));
+        if (!zr.z) return tzActNote(za, zr.hb, tzNoZoneText(za.ctx, zr.wn));
         tzActMaterialLine(za, zr);
         if (zr.laserMode) tzActFocusBlock(za, zr);
         else tzActLiftBlock(za, zr);
