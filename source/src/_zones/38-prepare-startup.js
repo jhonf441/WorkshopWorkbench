@@ -27,6 +27,9 @@
         function inMode(id) {
           return tzToolVisible(h.mode, id);
         }
+        // A machine that is in a mode another plugin serves (FFF: Printing) has nothing of the work table to set up now: every row is grey and
+        // none counts, so the summary of the service does not ask for zones or mode macros of a table the person is not using.
+        if (tzModeElsewhere(h.mode)) return { mode: "na", probe: "na", area: "na", zone: "na", material: "na" };
         return {
           mode: TZ_PROFILES[h.mode] ? "configured" : "missing",
           probe: h.probe ? "configured" : "na",
@@ -116,12 +119,13 @@
           el: card.el,
           refresh: function () {
             var conProbe = !!ctx.data.offsetProbe();
+            var away = !!tzModeElsewhere(ctx.machine.mode()); // FFF: the macros of the table do not apply either
             // the mode macros are rows only of a machine that switches between modes (2 or more answered, like the other cards)
             return workshopModes.load(false).then(function (info) {
               var on = workshopModesEnabled(info.state);
               rows.forEach(function (d) {
-                if (d.file) d.applies = conProbe;
-                if (d.id === "mode_laser" || d.id === "mode_cnc") d.applies = on.length >= 2 && on.indexOf(d.id === "mode_laser" ? "Laser" : "CNC") >= 0;
+                if (d.file) d.applies = conProbe && !away;
+                if (d.id === "mode_laser" || d.id === "mode_cnc") d.applies = !away && on.length >= 2 && on.indexOf(d.id === "mode_laser" ? "Laser" : "CNC") >= 0;
               });
               return card.refresh();
             });

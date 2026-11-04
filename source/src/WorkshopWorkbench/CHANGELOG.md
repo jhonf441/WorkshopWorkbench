@@ -1,5 +1,17 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.24 -- 2026-11-04
+
+- In FFF mode the start-up card asks nothing of the work table (every row grey): the service no longer lists pending zones or mode macros
+
+## 2.22.23 -- 2026-11-04
+
+- Session notice: latest shared copy
+
+## 2.22.22 -- 2026-11-04
+
+- Refusal banners marked by class too
+
 ## 2.22.21 -- 2026-11-03
 
 - Sesion: tarjeta de aviso estandar tipo consola

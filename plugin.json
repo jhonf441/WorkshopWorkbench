@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.22.21",
+  "version": "2.22.24",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -15,44 +15,6 @@
     "WorkshopService"
   ],
   "sbcRequired": true,
-  "sbcDsfVersion": "3.6",
-  "data": {},
-  "sdFiles": [
-    "sys/workshop/examples/WorkshopWorkbench/macros/probe/homezhere.g",
-    "sys/workshop/examples/WorkshopWorkbench/sys/workshop/config/focus.g",
-    "sys/workshop/examples/WorkshopWorkbench/sys/workshop/config/focus.json",
-    "sys/workshop/macros/cncguard.g",
-    "sys/workshop/macros/cutguard.g",
-    "sys/workshop/macros/focushere.g",
-    "sys/workshop/macros/focusref.g",
-    "sys/workshop/macros/focusrule.g",
-    "sys/workshop/macros/framecutarea.g",
-    "sys/workshop/macros/framerect.g",
-    "sys/workshop/macros/gotobed.g",
-    "sys/workshop/macros/handcorner.g",
-    "sys/workshop/macros/handfree.g",
-    "sys/workshop/macros/jobarm.g",
-    "sys/workshop/macros/laserfocus.g",
-    "sys/workshop/macros/laserguard.g",
-    "sys/workshop/macros/laseroffset.g",
-    "sys/workshop/macros/livemark.g",
-    "sys/workshop/macros/saveworkplace.g",
-    "sys/workshop/macros/workplaces.g",
-    "sys/workshop/macros/workzero.g",
-    "sys/workshop/macros/wpload.g",
-    "sys/workshop/macros/zbedref.g",
-    "sys/workshop/macros/zcal-goto.g",
-    "sys/workshop/macros/zcal-mark.g",
-    "sys/workshop/macros/zcal-probe.g",
-    "sys/workshop/macros/zcal-szp.g",
-    "sys/workshop/macros/zfocusgo.g",
-    "sys/workshop/macros/zhere0.g",
-    "sys/workshop/macros/zmeasure.g",
-    "sys/workshop/macros/zprobepoint.g",
-    "sys/workshop/macros/zsurface.g"
-  ],
-  "dwcFiles": [
-    "js/WorkshopWorkbench.1bad558b.js",
-    "js/WorkshopWorkbench.1bad558b.js.gz"
-  ]
+  "sbcDsfVersion": "3",
+  "data": {}
 }
