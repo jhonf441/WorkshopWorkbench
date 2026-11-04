@@ -1,5 +1,9 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.18 -- 2026-11-03
+
+- Mark a clamp from the editor (button switches the point assistant on); Mark clamp here always offered
+
 ## 2.22.17 -- 2026-11-03
 
 - The editor is called Cut editor (Editor de corte), not Laser editor

@@ -88,9 +88,10 @@
             i18nT('zonesPage.adds_it_to_the_saved_positions')
           )
         );
-        if (pmt.layerState.clampsOn()) row.appendChild(
+        row.appendChild(
           tzTip(
             tzBtn(i18nT('zonesPage.mark_clamp_here'), null, function () {
+              if (!pmt.layerState.clampsOn()) pmt.layerState.setClampsOn(true); // marking a clamp turns "Use clamps" on: it would not show otherwise
               var list = pmt.data.clamps().slice();
               list.push({ name: i18nT('zonesPage.clamp', { n: list.length + 1 }), x: Math.round((q.x - 15) * 10) / 10, y: Math.round((q.y - 10) * 10) / 10, w: 30, h: 20 });
               pmt.data.saveClamps(list)

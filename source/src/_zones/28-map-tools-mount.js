@@ -49,6 +49,7 @@
           asistBtn.classList.toggle("primary", pmt.wizardPoints);
           if (!pmt.wizardPoints) tzToolClosePosPop(pmt);
         }), i18nT('zonesPage.points_assistant_tip'));
+        pmt.asistBtn = asistBtn; // tzToolArmPoints switches it on from the editor ("Mark a clamp")
         pmt.shell.toolGrp().appendChild(asistBtn);
         // true while the camera layer is on only because the Camera tool needed it: leaving the tool turns it off again
         pmt.cameraLayerByTool = false;

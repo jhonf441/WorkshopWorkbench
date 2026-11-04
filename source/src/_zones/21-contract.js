@@ -8,7 +8,7 @@
         // machine state: st = last status read (readStatus)
         machine: ["getSt", "free", "jobInProgress", "mode", "read", "refresh"],
         // map drawing; svg, svgBox, ctm, capaActiva, barra, mostrar and camara are given by the page per module
-        map: ["redraw", "svg", "svgBox", "ctm", "layerActive", "bar", "show", "camera"],
+        map: ["redraw", "svg", "svgBox", "ctm", "layerActive", "bar", "show", "camera", "armPoints"],
         // ctx.map.camera.*
         camera: ["hasVision", "usable", "shown", "notice", "turnon"],
         // geometry of the machine
@@ -45,6 +45,7 @@
           },
           map: {
             redraw: function () { if (P.st()) P.renderMap(); },
+            armPoints: function () { P.armPoints(); }, // the point assistant on (the editor's "Mark a clamp")
             matrix: function () { return P.viewMat ? P.viewMat() : null; }, // rotation / mirror of the view: {a, b, c, d}
           },
           cut: {

@@ -140,6 +140,7 @@
           focusByZone: function () { return pz.data.focusByZone(); },
           layout: function () { return pz.nav.layout(); },
           renderMap: function () { pz.shell.renderMap(); },
+          armPoints: function () { pz.tools.armPoints(); },
           viewMat: function () { return pz.view.xfMat ? pz.view.xfMat() : null; },
           refreshAll: function () { return pz.data.refreshAll(); },
           readStatus: function () { return pz.data.readStatus(); },

@@ -123,6 +123,7 @@
         var jb = tzEl("div");
         rc.card.appendChild(jb);
         tcCncToolForm(tc, jb);
+        tcClampsRow(tc, jb);
         tcCncIssues(tc, jb, b);
         tcCncReview(tc, jb, b);
         tcCncCutStep(tc, rc, jb, b);

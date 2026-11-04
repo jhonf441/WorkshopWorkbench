@@ -5,11 +5,24 @@
           cz.errs = tcValidate(tc);
           rc.card = tcSection(rc.root, "cut", i18nT('cuts.cut'), cz.errs.length ? i18nT('cuts.thing_s_to_fix', { n: cz.errs.length }) : i18nT('cuts.ready_to_cut'), true, tzBind(tcGo, tc));
         tcCutOptions(tc, cz, rc);
+        tcClampsRow(tc, cz.jb);
         tcCutHistory(tc, cz, rc);
         tcCutButtons(tc, cz, rc);
         tcCutConfirm(tc, cz, rc);
       }
 
+
+      // "Clamps": the way to mark one from the editor. The point menu is off here (a long press moves shapes), so a tap on the map did nothing and nothing said why.
+      function tcClampsRow(tc, parent) {
+        var row = tzEl("div", "tz-row");
+        row.style.cssText += "gap:6px;align-items:center;margin:6px 0;flex-wrap:wrap;";
+        row.appendChild(tzTip(tzBtn(i18nT('cuts.mark_a_clamp'), null, function () {
+          tc.ctx.map.armPoints();
+          tcSetMsg(tc, i18nT('cuts.mark_a_clamp_how'), true);
+        }), i18nT('cuts.mark_a_clamp_tip')));
+        row.appendChild(tzEl("span", "tz-muted", i18nT('cuts.clamps_warn_you')));
+        parent.appendChild(row);
+      }
 
       function tcCardMessage(tc, rc) {
         if (tc.M.text) rc.msgBox.appendChild(tc.M.node());

@@ -27,6 +27,13 @@
       // The state pmt is private to 28-map-tools*.js (step 6 of the restructuring, docs-internal/INTERFACES.md).
       // deps: shell, nav (open tab and its map module), layerState, data, camera (the camera layer), view, snap (magnet),
       // table (the zone editor), cutArea (picking the area on the map), layers (the camera layer row).
+      // Switches the point assistant on (the point menu with "Mark clamp here", Z point, origin...): the editor and Find center keep it off so that a long
+      // press moves shapes; the editor offers a button for the person who needs to mark a clamp.
+      function tzToolArmPoints(pmt) {
+        pmt.wizardPoints = true;
+        if (pmt.asistBtn) pmt.asistBtn.classList.add("primary");
+      }
+
       function tzToolCreate(deps) {
         var pmt = {
           shell: deps.shell, nav: deps.nav, layerState: deps.layerState, data: deps.data, camera: deps.camera, view: deps.view,
@@ -48,6 +55,7 @@
           ptPick: function () { return pmt.ptPick; },
           zonePick: function () { return pmt.zonePick; },
           setTool: tzBind(tzToolSetTool, pmt),
+          armPoints: tzBind(tzToolArmPoints, pmt),
           paintTools: tzBind(tzToolPaintTools, pmt),
           paintStatus: tzBind(tzToolPaintStatus, pmt),
           placeMeasure: tzBind(tzToolPlaceMeasure, pmt),
