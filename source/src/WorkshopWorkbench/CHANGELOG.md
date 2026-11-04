@@ -1,5 +1,9 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.25 -- 2026-11-04
+
+- Rebuilt with the AWS-style session notice
+
 ## 2.22.24 -- 2026-11-04
 
 - In FFF mode the start-up card asks nothing of the work table (every row grey): the service no longer lists pending zones or mode macros
