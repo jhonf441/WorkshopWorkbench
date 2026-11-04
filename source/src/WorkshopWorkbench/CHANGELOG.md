@@ -1,5 +1,17 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.21 -- 2026-11-03
+
+- Sesion: tarjeta de aviso estandar tipo consola
+
+## 2.22.20 -- 2026-11-03
+
+- Sesion: el aviso tambien sale con un token caducado
+
+## 2.22.19 -- 2026-11-03
+
+- Sesion: un solo aviso para todo lo de sesion (parpadea, sin toast encima)
+
 ## 2.22.18 -- 2026-11-03
 
 - Mark a clamp from the editor (button switches the point assistant on); Mark clamp here always offered
