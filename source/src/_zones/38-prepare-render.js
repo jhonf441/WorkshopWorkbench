@@ -116,7 +116,7 @@
           r.appendChild(tzTip(tzBtn(i18nT('prepare.show_on_the_map'), null, function () { tp.ctx.map.show(); }), i18nT('prepare.scrolls_down_to_the_bed_map')));
           r.appendChild(tzTechOnly(tzTip(tzBtn(i18nT('prepare.open_zones_tab'), null, function () { tp.ctx.nav.go("zones"); }), i18nT('prepare.goes_to_the_zones_tab_editor'))));
           c.appendChild(r);
-          if (!pr.z) c.appendChild(tzEl("div", "tz-msg err", (tp.ctx.data.legacy(pr.wn) ? tzNoZoneText(tp.ctx, pr.wn) : i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] }))));
+          if (!pr.z) c.appendChild(tzEl("div", "tz-msg err", i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] })));
           pr.chk.forEach(function (k) {
             if (k.lvl === "info") return;
             c.appendChild(tzCheckEl(k));

@@ -11,7 +11,6 @@
         return {
           st: function () { return pzd.st; },
           zones: function () { return pzd.zones; },
-          legacyZones: function () { return pzd.legacyZones; },
           zoneSizes: function () { return pzd.zoneSizes; },
           focusByZone: function () { return pzd.focusByZone; },
           clamps: function () { return pzd.clamps; },

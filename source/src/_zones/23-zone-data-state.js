@@ -28,7 +28,6 @@
         pzd.machineMemo = { liveBusyTs: 0 };
         pzd.st = null; // ultimo estado resumido de /machine/status
         pzd.zones = []; // 0..8 -> {name, refX, refY, file:bool}
-        pzd.legacyZones = {}; // index -> true: p<N>.g in a format of an older version (shown in the table, never read)
         // Saved jog positions (sys/workshop/data/positions.json, machine coords =
         // where the pointer lands): cutting area corners, origin
         // of a zone and markers on the map (request 2026-10-08).

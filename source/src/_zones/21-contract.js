@@ -14,7 +14,7 @@
         // geometry of the machine
         cut: ["correction", "limits", "area", "bboxShapes"],
         // zones and materials (read only; writing stays in the page except the two guardar* calls)
-        data: ["zones", "legacy", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "clampsFile", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "sincFoco"],
+        data: ["zones", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "clampsFile", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "sincFoco"],
         // change of tab and editing (goOffsets and offsetsProbeVisible are given per module: the Mesh of WorkshopMachine)
         nav: ["go", "goOffsets", "offsetsProbeVisible", "openEditorAt", "goPointer", "onChange", "cleanWorkbench"],
         // formatting and panels
@@ -63,7 +63,6 @@
           },
           data: {
             zones: function () { return P.zones(); },
-            legacy: function (i) { return !!P.legacyZones()[i]; }, // p<N>.g in a format of an older version: it exists but is not read
             size: function (i) { return P.zoneSizes()[i] || null; },
             point: function (i) { return P.zonePoint(i); },
             savePoint: function (i, p) { return P.saveZonePoint(i, p); },

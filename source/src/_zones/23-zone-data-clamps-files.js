@@ -67,7 +67,6 @@
           pzd.zonePts = res[4];
           pzd.zoneExtra = res[5];
           pzd.zones = rf.newZones;
-          pzd.legacyZones = rf.newLegacy;
           pzd.focusByZone = rf.newFocus;
           pzd.savedPos = res[2];
           pzd.positionListeners.forEach(function (fn) { fn(); });
@@ -142,7 +141,6 @@
 
       function tzDataReadZones(pzd, rf) {
         rf.newZones = [];
-        rf.newLegacy = {}; // p<N>.g that exists but is not in the current format (an old correction inside): never read, only flagged
         rf.newFocus = {};
         rf.pZones = tzList("0:/sys/workshop/zones").then(function (list) {
           var files = list.filter(function (f) {
@@ -157,8 +155,6 @@
                   if (z) {
                     z.file = true;
                     rf.newZones[idx] = z;
-                  } else {
-                    rf.newLegacy[idx] = true; // the board still loads it as it is: the table says so instead of hiding the zone
                   }
                 })
                 .catch(function () {});

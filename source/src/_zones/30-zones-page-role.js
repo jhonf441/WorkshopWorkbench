@@ -16,17 +16,25 @@
         pz.sectionEls = {};
         pz.gate = tzEl("div", "tz-gate wf-card");
         pz.gate.style.display = "none";
-        pz.gate.appendChild(tzEl("h3", null, i18nT('role.technicians_only')));
-        pz.gate.appendChild(tzEl("div", "tz-muted", i18nT('role.technicians_only_tip')));
-        if (typeof workshopLogin === "function") pz.gate.appendChild(tzBtn(i18nT('role.log_in'), "primary", function () { workshopLogin(); }));
+        pz.gateTitle = tzEl("h3", null, "");
+        pz.gateTip = tzEl("div", "tz-muted", "");
+        pz.gate.appendChild(pz.gateTitle);
+        pz.gate.appendChild(pz.gateTip);
+        // the button only when the session is what is missing: with a role that is too low, signing in again cannot help
+        pz.gateLogin = typeof workshopLogin === "function" ? tzBtn(i18nT('role.log_in'), "primary", function () { workshopLogin(); }) : null;
+        if (pz.gateLogin) pz.gate.appendChild(pz.gateLogin);
         pz.page.insertBefore(pz.gate, pz.header.nextSibling);
-        pz.roChip = tzEl("span", "wf-pill tz-chip-ro", i18nT('role.read_only'));
+        // one quiet line when the view hides technical parts (the .tz-tech ones) so the person knows they exist and why they are not shown
+        pz.hiddenNote = tzEl("div", "tz-muted", "");
+        pz.hiddenNote.style.cssText = "display:none;font-size:11px;padding:2px 12px;";
+        pz.page.insertBefore(pz.hiddenNote, pz.gate.nextSibling);
+        pz.roChip = tzEl("span", "wf-pill tz-chip-ro", "");
         pz.roChip.style.display = "none";
         pz.headRight.insertBefore(pz.roChip, pz.modeChip);
         // a tab the role does not have cannot be opened (a stored last view, a link, a button of another tool)
         pz.nav.setGuard(function (l) {
           if (tzTabAllowed(pz.pag, tzViewNow(), l, "?")) return true;
-          tzAgilityNotice(pz.nav.notice(), i18nT('role.technicians_only'));
+          tzAgilityNotice(pz.nav.notice(), tzRoleNoteNow().gateTitle);
           return false;
         });
         tzWorkStart(pz); // the work state of the service (22-work-state.js): Prepare marks, focus applied
@@ -34,6 +42,13 @@
         if (typeof workshopIdentity === "function") tzSafetyScopeSet("who", tzSafetyWho(workshopIdentity()));
         pz.unRole = typeof workshopOnIdentity === "function" ? workshopOnIdentity(function (id) { tzSafetyScopeSet("who", tzSafetyWho(id)); if (pz.shell.alive()) tzRoleApply(pz); }) : null;
         tzRoleApply(pz);
+      }
+
+      // The words of the role view for this person: signed out or role too low (20-role-view.js tzRoleNote).
+      function tzRoleNoteNow() {
+        var role = typeof workshopRole === "function" ? workshopRole() : "";
+        var signedOut = typeof workshopSignedOut === "function" && workshopSignedOut();
+        return tzRoleNote(signedOut, typeof workshopApiT === "function" ? workshopApiT("role_" + (role || "viewer")) : role, i18nT);
       }
 
       // The identity is known or changed: classes of the page, tabs, gate and modules of the view.
@@ -45,6 +60,13 @@
         pz.page.classList.toggle("tz-gated", gated);
         pz.gate.style.display = gated ? "" : "none";
         pz.roChip.style.display = view === "viewer" && !gated ? "" : "none";
+        var note = tzRoleNoteNow();
+        pz.roChip.textContent = note.readOnly;
+        pz.gateTitle.textContent = note.gateTitle;
+        pz.gateTip.textContent = note.gateTip;
+        if (pz.gateLogin) pz.gateLogin.style.display = note.signIn ? "" : "none";
+        pz.hiddenNote.textContent = note.hidden;
+        pz.hiddenNote.style.display = view !== "technician" && !gated ? "" : "none";
         tzRoleSyncModules(pz, view);
         tzRoleFixLayout(pz, view);
         if (pz.data.st()) pz.tzMarkGroups(pz.data.st().mode);

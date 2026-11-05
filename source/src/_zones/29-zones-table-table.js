@@ -20,16 +20,15 @@
 
       function tzTableRowData(ptb, fl, i, free, t) {
         fl.z = ptb.data.zones()[i];
-        fl.legacy = !fl.z && !!ptb.data.legacyZones()[i]; // p<N>.g of an older format: listed so it is not lost without a word
         fl.offX = ptb.data.st().axes.X ? ptb.data.st().axes.X.workplaceOffsets[i] || 0 : 0;
         fl.offY = ptb.data.st().axes.Y ? ptb.data.st().axes.Y.workplaceOffsets[i] || 0 : 0;
         var hasOff = Math.abs(fl.offX) > 0.0005 || Math.abs(fl.offY) > 0.0005;
-        if (!fl.z && !fl.legacy && !hasOff && i !== 0 && i !== ptb.data.st().wn) return true;
+        if (!fl.z && !hasOff && i !== 0 && i !== ptb.data.st().wn) return true;
         fl.tr = tzEl("tr", (i === ptb.data.st().wn ? "active" : "") + (ptb.nav.selected() === i ? " sel" : ""));
         fl.tr.appendChild(tzEl("td", null, TZ_CODES[i] + (i === ptb.data.st().wn ? i18nT('zonesPage.active_4') : "")));
         // the name opens the editor: the Edit button is in the last column, which a narrow screen scrolls out of sight
         var tdNom = tzEl("td");
-        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : fl.legacy ? i18nT('zonesPage.old_format_name') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
+        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
         // the Edit / Create button sits under the name, on its own line: the action column is the last of eight and a narrow screen scrolls it out of sight
         (function (idx, zone) {
           var bEd = tzBtn(zone ? i18nT('tzTips.l_edit') : i18nT('tzTips.l_create'), null, function () { tzTableOpenEditor(ptb, idx); });
@@ -59,11 +58,6 @@
           if (Math.abs(fl.offX - (fl.z.refX + ax0)) > 0.01 || Math.abs(fl.offY - (fl.z.refY + ay0)) > 0.01) {
             stTd.appendChild(tzEl("span", "wf-state tz-badge info", i18nT('zonesPage.not_applied')));
           }
-        } else if (fl.legacy) {
-          // the board still loads this file with the correction an older version wrote INTO it: the zone is not the machine's one
-          var lb = tzEl("span", "wf-state tz-badge warn", i18nT('zonesPage.old_format_badge'));
-          lb.title = i18nT('zonesPage.old_format_tip', { code: TZ_CODES[i] });
-          stTd.appendChild(lb);
         } else {
           stTd.appendChild(tzEl("span", "wf-state tz-badge info", hasOff ? "volatile" : i18nT('zonesPage.empty')));
           if (hasOff) stTd.title = i18nT('zonesPage.it_has_an_offset_in_memory');

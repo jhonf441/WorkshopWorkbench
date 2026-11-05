@@ -92,6 +92,20 @@
         return el;
       }
 
+      // What the page says about a view that is not the Technician one, told by cause. signedOut: the person has no session (signing in may fix it);
+      // roleLabel: the name of their role; t = i18nT. Pure.
+      //   readOnly   the text of the "read only" pill (viewer view)
+      //   gateTitle / gateTip   the card of a page that is for technicians only
+      //   signIn     whether the card offers the sign-in button (only when the session is what is missing)
+      //   hidden     one quiet line for the technical parts an operator or a viewer does not get
+      function tzRoleNote(signedOut, roleLabel, t) {
+        var p = { role: roleLabel || "" };
+        if (signedOut) {
+          return { readOnly: t("role.read_only_signed_out"), gateTitle: t("role.signed_out_title"), gateTip: t("role.signed_out_tip"), signIn: true, hidden: t("role.hidden_signed_out") };
+        }
+        return { readOnly: t("role.read_only", p), gateTitle: t("role.technicians_only", p), gateTip: t("role.technicians_only_tip"), signIn: false, hidden: t("role.hidden_by_role", p) };
+      }
+
       // the view of this browser now (the identity may arrive after the page is mounted)
       function tzViewNow() {
         return tzRoleView(typeof workshopIdentity === "function" ? workshopIdentity() : null);

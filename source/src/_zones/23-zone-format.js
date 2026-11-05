@@ -65,10 +65,9 @@
         if (!m.replace(/\.g$/i, "").replace(/\./g, "")) m = tzSlug(zoneName);
         return /\.g$/i.test(m) ? m : m + ".g";
       }
-      // Why a zone has no usable file: the p<N>.g is not there, or it is there in the format of an older version (the table of zones says the same)
+      // Why a zone has no usable file: the p<N>.g is not there (or it is not understood)
       function tzNoZoneText(ctx, wn) {
-        var key = ctx.data.legacy(wn) ? "zoneActive.old_format_zone_file" : "zoneActive.has_no_zone_file_create_it";
-        return i18nT(key, { code: TZ_CODES[wn] });
+        return i18nT("zoneActive.has_no_zone_file_create_it", { code: TZ_CODES[wn] });
       }
 
       // Reads a zone from its file (null if it has none / it is not understood).

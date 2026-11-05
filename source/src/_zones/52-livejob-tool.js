@@ -7,7 +7,7 @@
       var TZ_LJ_TOOL_ID = "interrupted";
 
       TZ_CSS_EXTRA.push([
-        ".tzm-tabbadge{flex:none;margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#e65100;color:#fff;font-size:12px;font-weight:600;line-height:20px;text-align:center;letter-spacing:0;}",
+        ".tzm-tabbadge{flex:none;margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#bf360c;color:#fff;font-size:12px;font-weight:600;line-height:20px;text-align:center;letter-spacing:0;}",
         ".tz-nav.collapsed .tz-tab{position:relative;}",
         ".collapsed .tzm-tabbadge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;line-height:16px;padding:0 4px;font-size:10px;}",
       ].join("\n"));

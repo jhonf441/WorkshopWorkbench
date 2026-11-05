@@ -1,5 +1,13 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.27 -- 2026-11-04
+
+- Rebuilt with the readable text colours, the shared start-up card and the session notice
+
+## 2.22.26 -- 2026-11-04
+
+- Zones: no legacy/older-format path; an unreadable p<N>.g is a zone with no file (fixes legacyZones is not a function)
+
 ## 2.22.25 -- 2026-11-04
 
 - Rebuilt with the AWS-style session notice
