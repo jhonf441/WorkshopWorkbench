@@ -158,7 +158,7 @@
         cell("", null); cell("Y+", "Y", 1, "Y +" + pdk.dockStep + " mm"); cell("", null); pad.appendChild(tzEl("span")); cell("Z+", "Z", 1, i18nT('zonesPage.raises_z_mm', { pz: pz }));
         cell("X-", "X", -1, "X -" + pdk.dockStep + " mm"); cell("", null); cell("X+", "X", 1, "X +" + pdk.dockStep + " mm"); pad.appendChild(tzEl("span")); cell("", null);
         cell("", null); cell("Y-", "Y", -1, "Y -" + pdk.dockStep + " mm"); cell("", null); pad.appendChild(tzEl("span")); cell("Z-", "Z", -1, i18nT('zonesPage.lowers_z_mm_careful_with_the', { pz: pz }));
-        if (reason) box.appendChild(tzEl("div", "tz-msg err", reason));
+        if (reason) box.appendChild(workshopReasonEl("down", reason)); // the machine cannot move now (homing, busy): a stopped thing, not an error (N3)
         if (pdk.dockMsg) box.appendChild(tzEl("div", "tz-msg err", pdk.dockMsg));
         var s = tzDockDSec(pdk, box, i18nT('tzTips.l_go_to_the_point'));
         if (pdk.tools.lastTap()) {

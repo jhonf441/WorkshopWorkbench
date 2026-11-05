@@ -442,7 +442,7 @@
             var hit = el("circle", { cx: q[0], cy: q[1], r: 12, fill: "transparent", style: "cursor:pointer" });
             hit.addEventListener("click", function () { o.pick(i); });
           }
-          var cc = el("circle", { cx: q[0], cy: q[1], r: sig ? 8 : 6.5, fill: hecho ? "#00e5ff" : sig ? "#ffb300" : "#37474f", stroke: sig ? "#ffe082" : "#fff", "stroke-width": sig ? "2" : "1" });
+          var cc = el("circle", { cx: q[0], cy: q[1], r: sig ? 8 : 6.5, fill: hecho ? "#00e5ff" : sig ? "#ffb300" : "#37474f", stroke: sig ? "rgb(255,224,130)" : "#fff", "stroke-width": sig ? "2" : "1" });
           var t = el("text", { x: q[0], y: q[1] + 3.5, "text-anchor": "middle", "font-size": "9", "font-weight": "bold", fill: hecho ? "#003238" : "#fff" });
           t.textContent = String(i + 1);
           if (o && o.pick) {

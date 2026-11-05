@@ -15,9 +15,9 @@
         var pp = pmr.tools.ptPick();
         if (!pp) return;
         var pc = mp.w / 70;
-        mp.node("circle", { cx: pp.x, cy: -pp.y, r: pc, fill: "none", stroke: "#ffe082", "stroke-width": mp.w / 350 });
-        mp.node("line", { x1: pp.x - pc * 1.6, y1: -pp.y, x2: pp.x + pc * 1.6, y2: -pp.y, stroke: "#ffe082", "stroke-width": mp.w / 500 });
-        mp.node("line", { x1: pp.x, y1: -pp.y - pc * 1.6, x2: pp.x, y2: -pp.y + pc * 1.6, stroke: "#ffe082", "stroke-width": mp.w / 500 });
+        mp.node("circle", { cx: pp.x, cy: -pp.y, r: pc, fill: "none", stroke: "rgb(255,224,130)", "stroke-width": mp.w / 350 });
+        mp.node("line", { x1: pp.x - pc * 1.6, y1: -pp.y, x2: pp.x + pc * 1.6, y2: -pp.y, stroke: "rgb(255,224,130)", "stroke-width": mp.w / 500 });
+        mp.node("line", { x1: pp.x, y1: -pp.y - pc * 1.6, x2: pp.x, y2: -pp.y + pc * 1.6, stroke: "rgb(255,224,130)", "stroke-width": mp.w / 500 });
       }
 
       // Offcuts: dotted wood-coloured outline (not in focus mode)
@@ -97,11 +97,11 @@
           }
           mp.node("polygon", {
             points: [q.x, -q.y - d, q.x + d, -q.y, q.x, -q.y + d, q.x - d, -q.y].join(" "),
-            fill: "#ffcc80",
+            fill: "rgb(255,204,128)",
             stroke: sel ? "#fff" : "#000",
             "stroke-width": sel ? mp.w / 250 : mp.w / 700,
           }, pg);
-          var pt = mp.node("text", { x: q.x + d * 1.4, y: -q.y + d * 1.6, fill: "#ffcc80", "font-size": mp.fs * 0.85 }, pg);
+          var pt = mp.node("text", { x: q.x + d * 1.4, y: -q.y + d * 1.6, fill: "rgb(255,204,128)", "font-size": mp.fs * 0.85 }, pg);
           pt.textContent = q.name;
         });
       }

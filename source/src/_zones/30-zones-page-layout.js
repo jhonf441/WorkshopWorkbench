@@ -153,40 +153,19 @@
         pz.helpBox.innerHTML = "";
         pz.helpBox.style.display = a ? "" : "none";
         if (!a) return;
-        var cab = tzEl("button", "tz-help-cab");
-        cab.type = "button";
-        cab.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:none;color:inherit;cursor:pointer;padding:2px 0;font-size:13px;text-align:left;";
-        var ic = tzEl("span", "mdi mdi-help-circle-outline");
-        ic.style.cssText = "font-size:18px;color:#90caf9;";
-        cab.appendChild(ic);
-        cab.appendChild(tzEl("span", null, i18nT('zonesPage.how_to_use_2', { title: a.title })));
-        var fl = tzEl("span", "mdi mdi-chevron-" + (pz.helpOpen ? "up" : "down"));
-        fl.style.marginLeft = "auto";
-        cab.appendChild(fl);
-        cab.addEventListener("click", function () {
-          pz.helpOpen = !pz.helpOpen;
+        // H3 of the standard (AYUDAS.md): the "How it works" fold of the section, the shared piece (19-help-dom.js), closed unless the person left it open
+        var rows = (a.steps || []).map(function (s, i) { return [String(i + 1), s]; }).concat((a.notes || []).map(function (s) { return ["", s]; }));
+        var guide = workshopGuideEl(i18nT('zonesPage.how_to_use_2', { title: a.title }), rows);
+        guide.open = !!pz.helpOpen;
+        guide.addEventListener("toggle", function () {
+          pz.helpOpen = guide.open;
           try {
             localStorage.setItem(pz.TZ_HELP_KEY, pz.helpOpen ? "1" : "0");
           } catch (e) {
             /* no critico */
           }
-          tzPaintHelp(pz);
         });
-        pz.helpBox.appendChild(cab);
-        if (!pz.helpOpen) return;
-        var ol = document.createElement("ol");
-        ol.style.cssText = "margin:6px 0 2px 20px;padding:0;font-size:13px;line-height:1.45;";
-        (a.steps || []).forEach(function (s) {
-          var li = document.createElement("li");
-          li.textContent = s;
-          ol.appendChild(li);
-        });
-        pz.helpBox.appendChild(ol);
-        (a.notes || []).forEach(function (s) {
-          var n = tzEl("div", "tz-muted", s);
-          n.style.cssText = "font-size:12px;margin-top:4px;";
-          pz.helpBox.appendChild(n);
-        });
+        pz.helpBox.appendChild(guide);
       }
 
       function tzPaintZSub(pz) {

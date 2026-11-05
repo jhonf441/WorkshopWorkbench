@@ -26,7 +26,7 @@
         var av = ply.camera.map().notice();
         ld.textContent = "";
         var ldT = tzEl("div", null, av || i18nT('zonesPage.camera_video_under_the_map_it'));
-        ldT.style.color = av && ply.layerState.layers().camera ? "#ffb74d" : "";
+        ldT.style.color = av && ply.layerState.layers().camera ? "var(--wf-n-down-text,#ffb74d)" : "";
         ld.appendChild(ldT);
         // calibration in use and what the layer believes the camera sees now
         var ci = ply.camera.map().info ? ply.camera.map().info() : null;

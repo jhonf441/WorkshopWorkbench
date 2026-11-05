@@ -60,7 +60,7 @@
         var cur = null;
         function add(kind, x0, y0, x1, y1) {
           var a = tgApply(T, x0, y0), b = tgApply(T, x1, y1);
-          var col = kind === "done" ? "#90a4ae" : kind === "now" ? "#66bb6a" : "#ffb74d";
+          var col = kind === "done" ? "#90a4ae" : kind === "now" ? "#66bb6a" : "rgb(255,183,77)";
           if (cur && cur.kind === kind && Math.abs(cur.ux - a[0]) < 1e-6 && Math.abs(cur.uy - a[1]) < 1e-6) {
             cur.pts.push(b[0].toFixed(2) + "," + (-b[1]).toFixed(2));
           } else {

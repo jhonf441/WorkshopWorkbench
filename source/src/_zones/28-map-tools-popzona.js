@@ -8,7 +8,7 @@
         pmt.zonePick = i;
         pmt.posPop.innerHTML = "";
         var t = tzEl("div", null, TZ_CODES[i] + (z.name ? " " + z.name : "") + (i === pmt.data.st().wn ? i18nT('zonesPage.active_3') : ""));
-        t.style.cssText = "font-weight:500;color:#90caf9;margin-bottom:2px;max-width:280px;";
+        t.style.cssText = "font-weight:500;color:var(--wf-n-session-text,#90caf9);margin-bottom:2px;max-width:280px;";
         pmt.posPop.appendChild(t);
         var sz = pmt.data.zoneSizes()[i];
         var m = tmatById(pmt.data.zoneMaterial(i));
@@ -71,7 +71,7 @@
         pmt.zonePick = null;
         pmt.posPop.innerHTML = "";
         var t = tzEl("div", null, i18nT('zonesPage.there_are_overlapping_zones_here', { n: list.length }));
-        t.style.cssText = "font-weight:500;color:#90caf9;margin-bottom:4px;";
+        t.style.cssText = "font-weight:500;color:var(--wf-n-session-text,#90caf9);margin-bottom:4px;";
         pmt.posPop.appendChild(t);
         list.forEach(function (i) {
           var z = pmt.data.zones()[i];

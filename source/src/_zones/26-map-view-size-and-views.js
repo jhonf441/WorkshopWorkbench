@@ -215,7 +215,7 @@
         g.appendChild(pvw.miniHead);
         pvw.miniView = document.createElementNS(TZ_SVG_NS, "rect");
         pvw.miniView.setAttribute("fill", "rgba(255,224,130,0.12)");
-        pvw.miniView.setAttribute("stroke", "#ffe082");
+        pvw.miniView.setAttribute("stroke", "rgb(255,224,130)");
         pvw.miniView.setAttribute("stroke-width", W / 120);
         g.appendChild(pvw.miniView);
       }

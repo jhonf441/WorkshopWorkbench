@@ -167,7 +167,7 @@
         ed.mbox.style.cssText = "margin-top:10px;padding:8px 10px;border:1px solid rgba(255,255,255,0.12);border-radius:6px;";
         ptb.edCard.appendChild(ed.mbox);
         var mt = tzEl("div", null, i18nT('zonesPage.material_and_focus_optional_laser'));
-        mt.style.cssText = "font-weight:500;color:#90caf9;margin-bottom:2px;";
+        mt.style.cssText = "font-weight:500;color:var(--wf-n-session-text,#90caf9);margin-bottom:2px;";
         ed.mbox.appendChild(mt);
         ed.mbox.appendChild(
           tzEl(

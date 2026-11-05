@@ -84,7 +84,7 @@
             var t1 = mp.node("text", { x: z.refX + mp.w / 160, y: -(z.refY + sz.h) + mp.fs * 1.05, fill: col, "font-size": mp.fs * 0.9, "font-weight": "bold" }, g);
             t1.textContent = i18nT('zonesPage.active_5', { code: TZ_CODES[i], v: z.name ? " " + z.name : "" });
             if (!mp.focus) {
-              var t2 = mp.node("text", { x: z.refX + mp.w / 160, y: -(z.refY + sz.h) + mp.fs * 2.0, fill: nw ? "#ffb74d" : "#a5d6a7", "font-size": mp.fs * 0.7 }, g);
+              var t2 = mp.node("text", { x: z.refX + mp.w / 160, y: -(z.refY + sz.h) + mp.fs * 2.0, fill: nw ? "rgb(255,183,77)" : "#a5d6a7", "font-size": mp.fs * 0.7 }, g);
               t2.textContent = mp.activeMaterial + (nw ? "  ! " + nw + (nw === 1 ? i18nT('zonesPage.warning') : i18nT('zonesPage.warnings')) : "  OK");
             }
           });
@@ -106,7 +106,7 @@
             });
             var r = mp.w / (active ? 90 : 160);
             mp.node("circle", { cx: gr.x, cy: -gr.y, r: r, fill: active ? "#1e88e5" : "#78909c", "fill-opacity": active ? 1 : 0.7, stroke: "#fff", "stroke-width": mp.w / (active ? 600 : 1200) }, g);
-            var t = mp.node("text", { x: gr.x + r * 1.3, y: -gr.y - r * 0.4, fill: active ? "#90caf9" : "#cfd8dc", "font-size": mp.fs }, g);
+            var t = mp.node("text", { x: gr.x + r * 1.3, y: -gr.y - r * 0.4, fill: active ? "rgb(144,202,249)" : "#cfd8dc", "font-size": mp.fs }, g);
             var main = gr.main;
             if (main !== undefined) {
               var nw = mp.zoneNw[main];

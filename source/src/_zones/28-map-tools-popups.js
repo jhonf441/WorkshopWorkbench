@@ -34,7 +34,7 @@
         pmt.ptPick = q;
         pmt.posPop.innerHTML = "";
         var t = tzEl("div", null, q.name || i18nT('zonesPage.map_point'));
-        t.style.cssText = "font-weight:500;color:#ffe082;margin-bottom:2px;max-width:240px;";
+        t.style.cssText = "font-weight:500;color:var(--wf-n-down-text,#ffe082);margin-bottom:2px;max-width:240px;";
         pmt.posPop.appendChild(t);
         pmt.posPop.appendChild(tzEl("div", "tz-muted", i18nT('zonesPage.x_y_where_the_pointer_goes', { x: tzFmt(q.x), y: tzFmt(q.y) })));
         var lim = pmt.data.cutLimits();
@@ -199,7 +199,7 @@
         pmt.posPick = i;
         pmt.posPop.innerHTML = "";
         var t = tzEl("div", null, q.name || i18nT('zonesPage.position'));
-        t.style.cssText = "font-weight:500;color:#ffb74d;margin-bottom:2px;";
+        t.style.cssText = "font-weight:500;color:var(--wf-n-down-text,#ffb74d);margin-bottom:2px;";
         pmt.posPop.appendChild(t);
         pmt.posPop.appendChild(tzEl("div", "tz-muted", "X" + tzFmt(q.x) + " Y" + tzFmt(q.y) + (isFinite(q.z) && q.z !== null ? " Z" + tzFmt(q.z) : "")));
         var row = tzEl("div", "tz-row");

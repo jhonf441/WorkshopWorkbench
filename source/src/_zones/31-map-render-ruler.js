@@ -33,7 +33,7 @@
         st.top = tzMapRulerEdgeCreate(pmr, mp, true);
         st.left = tzMapRulerEdgeCreate(pmr, mp, false);
         if (!pmr.view.xfId()) {
-          var at = { fill: "#ffe082", "font-size": R.rfs, "font-weight": "bold" };
+          var at = { fill: "rgb(255,224,130)", "font-size": R.rfs, "font-weight": "bold" };
           st.letterT = mp.node("text", Object.assign(tzMapRulerLetterPos(R, vr, true), at));
           st.letterT.textContent = st.top.ax + " →";
           st.letterL = mp.node("text", Object.assign(tzMapRulerLetterPos(R, vr, false), at));

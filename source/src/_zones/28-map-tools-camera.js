@@ -142,7 +142,7 @@
         if (ifT) pmt.posPop.appendChild(tzEl("div", "tz-muted", "A Z" + tzFmt(tz) + ": " + tzToolCameraInfoTxt(pmt, ifT)));
         if (cp.z < pmt.CAMERA_ZMIN - 0.05) pmt.posPop.appendChild(tzEl("div", "tz-msg err", i18nT('zonesPage.raises_z_to_mm_the_minimum', { zmin: pmt.CAMERA_ZMIN })));
         var reason = !cp.homed ? (cp.carriage ? i18nT('zonesPage.x_y_and_z_need_homing') : i18nT('zonesPage.y_and_z_need_homing')) : !pmt.data.machineFree() ? i18nT('zonesPage.the_machine_is_busy_or_a') : "";
-        if (reason) pmt.posPop.appendChild(tzEl("div", "tz-msg err", reason));
+        if (reason) pmt.posPop.appendChild(workshopReasonEl("down", reason)); // homing or busy: N3, not an error
         var row = tzEl("div", "tz-row");
         row.style.cssText += "gap:4px;margin-top:6px;flex-wrap:wrap;";
         var bM = tzBtn(i18nT('zonesPage.move'), "primary", function () {
@@ -280,9 +280,9 @@
         if (vd) {
           var hd = pmt.camera.map().fingerprint(vd.x, vd.y, vd.z);
           if (hd) {
-            pol(hd.pts, 0, 0, { fill: "rgba(255,143,0,0.12)", stroke: "#ff8f00", "stroke-width": 2.5 * k, "stroke-dasharray": 10 * k + " " + 6 * k, class: "tzm-camdest" });
-            arrow(h, hd, "#ff8f00");
-            label(hd, i18nT('zonesPage.it_will_end_up_here_2', { v: Math.abs(vd.z - cp.z) >= 0.5 ? " (Z" + tzFmt(vd.z) + ")" : "" }), "#ffb74d");
+            pol(hd.pts, 0, 0, { fill: "rgb(255 143 0 / 0.12)", stroke: "rgb(255,143,0)", "stroke-width": 2.5 * k, "stroke-dasharray": 10 * k + " " + 6 * k, class: "tzm-camdest" });
+            arrow(h, hd, "rgb(255,143,0)");
+            label(hd, i18nT('zonesPage.it_will_end_up_here_2', { v: Math.abs(vd.z - cp.z) >= 0.5 ? " (Z" + tzFmt(vd.z) + ")" : "" }), "rgb(255,183,77)");
           }
         } else if (!dzp && pmt.cameraTool.noMoves && Date.now() < pmt.cameraTool.noMoves.until) {
           // request that could not be fulfilled (without homing or busy): in red, with the reason
@@ -297,9 +297,9 @@
           var zt = tzToolCameraZDestination(pmt, cp, dzp);
           var hz = pmt.camera.map().fingerprint(cp.x, cp.y, zt);
           if (hz) {
-            pol(hz.pts, 0, 0, { fill: "rgba(255,143,0,0.1)", stroke: "#ff8f00", "stroke-width": 2.5 * k, "stroke-dasharray": 10 * k + " " + 6 * k, class: "tzm-camdest" });
+            pol(hz.pts, 0, 0, { fill: "rgb(255 143 0 / 0.1)", stroke: "rgb(255,143,0)", "stroke-width": 2.5 * k, "stroke-dasharray": 10 * k + " " + 6 * k, class: "tzm-camdest" });
             var dzr = zt - Math.max(cp.z, pmt.CAMERA_ZMIN);
-            label(hz, "Z " + (dzr > 0 ? "+" : "") + tzFmt(dzr) + " mm -> Z" + tzFmt(zt), "#ffb74d");
+            label(hz, "Z " + (dzr > 0 ? "+" : "") + tzFmt(dzr) + " mm -> Z" + tzFmt(zt), "rgb(255,183,77)");
           }
         } else if (pmt.cameraTool.target) {
           var ht = pmt.camera.map().fingerprint(pmt.cameraTool.target.x, pmt.cameraTool.target.y, pmt.cameraTool.target.z);

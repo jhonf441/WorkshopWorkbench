@@ -85,7 +85,7 @@
         var de = pmr.tools.dragEdit();
         if (!de || !de.moved) return;
         var dd0 = de.since, dd1 = de.until;
-        var dcol = de.kind === "zone" ? "#90caf9" : "#ffffff";
+        var dcol = de.kind === "zone" ? "rgb(144,202,249)" : "#ffffff";
         mp.node("line", { x1: dd0.x, y1: -dd0.y, x2: dd1.x, y2: -dd1.y, stroke: dcol, "stroke-width": mp.w / 400, "stroke-dasharray": mp.w / 90 + " " + mp.w / 140 });
         mp.node("circle", { cx: dd1.x, cy: -dd1.y, r: mp.w / 120, fill: "none", stroke: dcol, "stroke-width": mp.w / 300 });
         var dtx = mp.node("text", { x: dd1.x + mp.w / 80, y: -dd1.y - mp.w / 80, fill: dcol, "font-size": mp.fs * 0.85 });

@@ -121,7 +121,7 @@
         }
         tcRotDrawDrag(tc, dv, node, w);
         if (tc.drag && (tc.drag.kind === "move" || tc.drag.kind === "scale") && tc.drag.info && pt0) {
-          var it = node("text", { x: pt0.xmax + w / 100, y: -pt0.ymax - w / 100, fill: "#ffe082", "font-size": w / 60, "font-weight": "bold", stroke: "#000", "stroke-width": w / 600, "paint-order": "stroke" });
+          var it = node("text", { x: pt0.xmax + w / 100, y: -pt0.ymax - w / 100, fill: "rgb(255,224,130)", "font-size": w / 60, "font-weight": "bold", stroke: "#000", "stroke-width": w / 600, "paint-order": "stroke" });
           it.textContent = tc.drag.info;
         }
         // recuadro de seleccion en curso

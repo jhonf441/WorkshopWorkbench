@@ -8,7 +8,7 @@
         pmt.ptPick = null; // {x, y, name} punto tocado en el mapa (referencia o libre)
         pmt.posPop = tzEl("div");
         pmt.posPop.style.cssText =
-          "position:absolute;z-index:5;display:none;background:#263238;border:1px solid #ffcc80;border-radius:8px;padding:8px;box-shadow:0 4px 14px rgba(0,0,0,0.6);min-width:180px;";
+          "position:absolute;z-index:5;display:none;background:#263238;border:1px solid var(--wf-n-down-text,#ffcc80);border-radius:8px;padding:8px;box-shadow:0 4px 14px rgba(0,0,0,0.6);min-width:180px;";
         pmt.shell.svgBox().appendChild(pmt.posPop);
       }
 

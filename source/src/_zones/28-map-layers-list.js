@@ -15,12 +15,12 @@
             ["areaCNC", "CNC", TZ_AREA_COLORS.CNC, i18nT('zonesPage.the_one_of_the_active_mode')],
           ]],
           [i18nT('common.zones'), [
-            ["zones", i18nT('common.zones'), "#90caf9", i18nT('zonesPage.rectangle_material_if_it_has_a')],
+            ["zones", i18nT('common.zones'), "rgb(144,202,249)", i18nT('zonesPage.rectangle_material_if_it_has_a')],
             ["zpoint", i18nT('zonesPage.z_point'), "#e040fb", i18nT('zonesPage.where_the_probe_measures_in_the')],
             ["clamps", i18nT('zonesPage.clamps'), "#ef5350", i18nT('zonesPage.clamps_screws_or_stops_warns_if')],
             ["offcuts", i18nT('zonesPage.offcuts'), "#c8a878", i18nT('zonesPage.leftover_material_pieces_the_laser_editor')],
             ["refs", i18nT('zonesPage.references'), "#80cbc4", i18nT('zonesPage.centres_and_corners_the_taps_snap')],
-            ["positions", i18nT('zonesPage.positions'), "#ffcc80", tzTx('zonesPage.saved_positions_of_the_jog', 'jog')],
+            ["positions", i18nT('zonesPage.positions'), "rgb(255,204,128)", tzTx('zonesPage.saved_positions_of_the_jog', 'jog')],
           ]],
           [i18nT('zonesPage.image'), [
             ["camera", i18nT('cuts.camera'), "#b39ddb", i18nT('zonesPage.camera_video_under_the_map_it')],

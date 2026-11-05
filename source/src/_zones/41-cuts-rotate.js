@@ -147,7 +147,7 @@
         if (!d || d.kind !== "rotate" || !d.c) return;
         var c = d.c, rr = Math.hypot(d.start.x - c.x, d.start.y - c.y) || w / 20;
         var a0 = Math.atan2(d.start.y - c.y, d.start.x - c.x), a1 = a0 + ((d.a || 0) * Math.PI) / 180;
-        var col = "#ffe082";
+        var col = "rgb(255,224,130)";
         node("line", { x1: c.x, y1: -c.y, x2: c.x + rr * Math.cos(a0), y2: -(c.y + rr * Math.sin(a0)), stroke: col, "stroke-width": dv.sw * 0.6, "stroke-dasharray": w / 150 + " " + w / 150 });
         node("line", { x1: c.x, y1: -c.y, x2: c.x + rr * Math.cos(a1), y2: -(c.y + rr * Math.sin(a1)), stroke: col, "stroke-width": dv.sw });
         var large = Math.abs(d.a || 0) > 180 ? 1 : 0, sweep = (d.a || 0) > 0 ? 0 : 1; // screen Y is down: counter-clockwise on the bed is sweep 0
@@ -161,9 +161,9 @@
       // the pivot: a ring with a cross (also shown with the selection when it is not the centre)
       function tcRotDrawPivot(dv, node, w, c) {
         var s = w / 110;
-        node("circle", { cx: c.x, cy: -c.y, r: s, fill: "none", stroke: "#ffe082", "stroke-width": dv.sw * 0.8 });
-        node("line", { x1: c.x - s * 1.6, y1: -c.y, x2: c.x + s * 1.6, y2: -c.y, stroke: "#ffe082", "stroke-width": dv.sw * 0.6 });
-        node("line", { x1: c.x, y1: -c.y - s * 1.6, x2: c.x, y2: -c.y + s * 1.6, stroke: "#ffe082", "stroke-width": dv.sw * 0.6 });
+        node("circle", { cx: c.x, cy: -c.y, r: s, fill: "none", stroke: "rgb(255,224,130)", "stroke-width": dv.sw * 0.8 });
+        node("line", { x1: c.x - s * 1.6, y1: -c.y, x2: c.x + s * 1.6, y2: -c.y, stroke: "rgb(255,224,130)", "stroke-width": dv.sw * 0.6 });
+        node("line", { x1: c.x, y1: -c.y - s * 1.6, x2: c.x, y2: -c.y + s * 1.6, stroke: "rgb(255,224,130)", "stroke-width": dv.sw * 0.6 });
       }
 
       // R / Shift+R in the editor (40-cuts-state.js): true when the key was used

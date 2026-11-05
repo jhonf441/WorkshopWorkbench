@@ -30,7 +30,7 @@
       }
 
       // colour of each level of the status bar
-      var TZ_COLOR_STATE = { sin: "#9e9e9e", off: "#9e9e9e", free: "#66bb6a", busy: "#ffb74d", blocked: "#ef5350" };
+      var TZ_COLOR_STATE = { sin: "#9e9e9e", off: "#9e9e9e", free: "#66bb6a", busy: "rgb(255,183,77)", blocked: "#ef5350" };
       // What the status bar shows, from the summarised state of the page (st of readStatus) and the zones (zones[i].name):
       //   modo: "Laser" | "CNC" | a mode served elsewhere ("FFF") | "?"     zona: {codigo, nombre} | null     cabezal: {x, y, z, homed} | null (machine coordinates)
       //   estado: status word of the machine      bloqueado: a job (file or live) is running or paused: nothing that moves the machine

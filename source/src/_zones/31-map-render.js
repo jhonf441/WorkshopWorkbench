@@ -5,7 +5,7 @@
 
       // colors of the map: the cut area of each mode (the accents of 20-mode-profile.js) and the zones by index
       var TZ_AREA_COLORS = { Laser: TZ_PROFILES.Laser.accent, CNC: TZ_PROFILES.CNC.accent };
-      var TZ_ZCOL = ["#90caf9", "#4fc3f7", "#81c784", "#ffb74d", "#ba68c8", "#f06292", "#4db6ac", "#dce775", "#a1887f"];
+      var TZ_ZCOL = ["rgb(144,202,249)", "#4fc3f7", "#81c784", "rgb(255,183,77)", "#ba68c8", "#f06292", "#4db6ac", "#dce775", "#a1887f"];
 
       // deps: every part it draws (shell, nav, layerState, data, camera, view, snap, jobFocus, cutArea, layers, tools)
       function tzMapCreate(deps) {
