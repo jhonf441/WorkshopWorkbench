@@ -31,7 +31,7 @@
       function tzActRun(za, codes, okText, after) {
         if (tzActSignedOut()) {
           tzActSetMsg(za, i18nT('zoneActive.why_signed_out'), false);
-          if (typeof workshopToast === "function") workshopToast(i18nT('zoneActive.why_signed_out'));
+          if (typeof workshopRefusalToast === "function") workshopRefusalToast("session");
           return Promise.resolve();
         }
         codes = Array.isArray(codes) ? codes : [codes];

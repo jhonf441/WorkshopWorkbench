@@ -724,7 +724,7 @@
 		"the_laser_hits": "; el láser pega en {xy}",
 		"the_laser_2": "el LÁSER",
 		"the_pointer_2": "el PUNTERO",
-		"why_signed_out": "Requiere iniciar sesión para usar esta acción: sin sesión solo puedes mirar.",
+		"why_signed_out": "Requiere iniciar sesión para usar esta acción.",
 		"why_busy": "La máquina está ocupada (hay un trabajo en curso o se está moviendo).",
 		"why_off": "La máquina está apagada (la fuente de poder está apagada): enciéndela para mover algo.",
 		"why_halted": "La máquina está en paro de emergencia: reinicia con M999 para mover algo.",
@@ -1922,7 +1922,7 @@
 		"job_resume": "Reanudar",
 		"job_cancel": "Cancelar trabajo",
 		"job_cancel_confirm": "Toca otra vez para cancelar el trabajo",
-		"block_signed_out": "Bloqueado: sin sesión (solo mirar).",
+		"block_signed_out": "Bloqueado: requiere iniciar sesión.",
 		"block_view_only": "Bloqueado: tu rol solo permite mirar.",
 		"block_off": "Bloqueado: máquina apagada.",
 		"block_halted": "Bloqueado: paro de emergencia (M999 para reiniciar).",
@@ -2164,15 +2164,15 @@
 		"section_work": "Trabajo",
 		"section_prepare": "Preparar",
 		"section_run": "Ejecutar",
-		"technicians_only": "Esta sección es para técnicos. Tu rol: {role}",
-		"technicians_only_tip": "Pide a un técnico que lo haga.",
+		"technicians_only": "Esta sección requiere el rol técnico. Tu rol: {role}",
+		"technicians_only_tip": "Requiere el rol técnico. Tu rol: {role}. Pide el acceso a un administrador.",
 		"log_in": "Iniciar sesión",
-		"signed_out_title": "Sin sesión: requiere una cuenta de técnico",
-		"signed_out_tip": "Esta sección es para técnicos y nadie ha iniciado sesión.",
+		"signed_out_title": "Sin sesión",
+		"signed_out_tip": "Requiere iniciar sesión.",
 		"read_only": "Solo lectura: tu rol es {role}",
-		"read_only_signed_out": "Solo lectura: sin sesión",
-		"hidden_signed_out": "Sin sesión: requiere una cuenta de técnico para ver las partes técnicas.",
-		"hidden_by_role": "Las partes técnicas están ocultas para tu rol ({role})."
+		"read_only_signed_out": "Solo lectura: requiere iniciar sesión",
+		"hidden_signed_out": "Requiere iniciar sesión para ver las partes técnicas.",
+		"hidden_by_role": "Las partes técnicas requieren el rol técnico. Tu rol: {role}. Pide el acceso a un administrador."
 	},
 	"ready": {
 		"title": "Listo para cortar",
@@ -2368,5 +2368,12 @@
 		"stop_wait": "Esperando a que la máquina termine las líneas que ya tenía…",
 		"stop_done": "Trabajo parado con seguridad: no entran más líneas.",
 		"hint": "Cancelar y parar piden un segundo toque. La parada de emergencia es la de DWC: no está aquí a propósito."
+	},
+	"helpTips": {
+		"zone_active_title": "Zona activa",
+		"zone_active_what": "La zona de trabajo (G54 a G59) que usa la máquina como origen de las coordenadas.",
+		"zone_active_why": "Los trabajos y los movimientos se miden desde el origen de la zona activa.",
+		"zone_active_missing": "Si la zona activa no es la que crees, el trabajo sale corrido de lugar.",
+		"zone_active_how": "Elige otra zona en la lista; cambiarla no mueve la máquina. Solo se puede cambiar con la máquina libre."
 	}
 }

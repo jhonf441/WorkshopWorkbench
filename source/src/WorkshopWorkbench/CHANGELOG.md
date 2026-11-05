@@ -1,5 +1,9 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.31 -- 2026-11-05
+
+- Session state, refusals and notices unified; errors kept as objects; 403 names the action
+
 ## 2.22.30 -- 2026-11-05
 
 - Session notices and help standard: one voice for sign-in and role refusals, shared help tips, identity change resets what the session showed

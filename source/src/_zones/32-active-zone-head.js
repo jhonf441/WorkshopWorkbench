@@ -6,6 +6,7 @@
         tl.appendChild(tzEl("div", "za-name", TZ_CODES[zr.wn] + (zr.z && zr.z.name ? " " + zr.z.name : zr.wn === 0 ? i18nT('zoneActive.general_paren') : "")));
         hd.appendChild(tl);
         hd.appendChild(tzActZoneSelect(za, zr));
+        hd.appendChild(workshopHelpTipOf("zone_active"));
         zr.card.appendChild(hd);
         if (zr.z) tzActNote(za, zr.card, i18nT('zoneActive.summary_origin', { xy: tzActFmtXY(za, zr.z.refX, zr.z.refY) }));
         tjNeedsRow(zr.card, { st: zr.s, free: zr.free, mode: null, focus: false, onMsg: tzBind(tzActSetMsg, za), after: function () { za.lastKey = ""; za.ctx.machine.refresh(); } });

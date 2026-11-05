@@ -103,7 +103,7 @@
         if (signedOut) {
           return { readOnly: t("role.read_only_signed_out"), gateTitle: t("role.signed_out_title"), gateTip: t("role.signed_out_tip"), signIn: true, hidden: t("role.hidden_signed_out") };
         }
-        return { readOnly: t("role.read_only", p), gateTitle: t("role.technicians_only", p), gateTip: t("role.technicians_only_tip"), signIn: false, hidden: t("role.hidden_by_role", p) };
+        return { readOnly: t("role.read_only", p), gateTitle: t("role.technicians_only", p), gateTip: t("role.technicians_only_tip", p), signIn: false, hidden: t("role.hidden_by_role", p) };
       }
 
       // the view of this browser now (the identity may arrive after the page is mounted)

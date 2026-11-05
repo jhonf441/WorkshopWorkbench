@@ -724,7 +724,7 @@
 		"the_laser_hits": "; the laser hits {xy}",
 		"the_laser_2": "the LASER",
 		"the_pointer_2": "the POINTER",
-		"why_signed_out": "Sign-in required to use this action: without a session you can only look.",
+		"why_signed_out": "Sign-in required to use this action.",
 		"why_busy": "The machine is busy (a job is running or it is moving).",
 		"why_off": "The machine is off (the power supply is off): switch it on to move anything.",
 		"why_halted": "The machine is in emergency stop: restart with M999 to move anything.",
@@ -1922,7 +1922,7 @@
 		"job_resume": "Resume",
 		"job_cancel": "Cancel job",
 		"job_cancel_confirm": "Tap again to cancel the job",
-		"block_signed_out": "Locked: not signed in (view only).",
+		"block_signed_out": "Locked: sign-in required.",
 		"block_view_only": "Locked: your role can only look.",
 		"block_off": "Locked: machine off.",
 		"block_halted": "Locked: emergency stop (M999 to reset).",
@@ -2164,15 +2164,15 @@
 		"section_work": "Job",
 		"section_prepare": "Prepare",
 		"section_run": "Run",
-		"technicians_only": "This section is for technicians. Your role: {role}",
-		"technicians_only_tip": "Ask a technician to do it.",
+		"technicians_only": "This section requires the technician role. Your role: {role}",
+		"technicians_only_tip": "Requires the technician role. Your role: {role}. Ask an administrator for access.",
 		"log_in": "Log in",
-		"signed_out_title": "Not signed in: a technician account is required",
-		"signed_out_tip": "This section is for technicians and nobody is signed in.",
+		"signed_out_title": "Not signed in",
+		"signed_out_tip": "Sign-in required.",
 		"read_only": "Read only: your role is {role}",
-		"read_only_signed_out": "Read only: not signed in",
-		"hidden_signed_out": "Not signed in: a technician account is required to see the technical parts.",
-		"hidden_by_role": "The technical parts are hidden for your role ({role})."
+		"read_only_signed_out": "Read only: sign-in required",
+		"hidden_signed_out": "Sign-in is required to see the technical parts.",
+		"hidden_by_role": "The technical parts require the technician role. Your role: {role}. Ask an administrator for access."
 	},
 	"ready": {
 		"title": "Ready to cut",
@@ -2368,5 +2368,12 @@
 		"stop_wait": "Waiting for the machine to finish the lines it already had…",
 		"stop_done": "Job stopped safely: no more lines get in.",
 		"hint": "Cancel and stop ask for a second tap. The emergency stop is DWC's: it is not here on purpose."
+	},
+	"helpTips": {
+		"zone_active_title": "Active zone",
+		"zone_active_what": "The work zone (G54 to G59) the machine uses as the origin of its coordinates.",
+		"zone_active_why": "Jobs and moves are measured from the origin of the active zone.",
+		"zone_active_missing": "If the active zone is not the one you think, the job comes out shifted.",
+		"zone_active_how": "Pick another zone in the list; changing it does not move the machine. It can only be changed while the machine is free."
 	}
 }

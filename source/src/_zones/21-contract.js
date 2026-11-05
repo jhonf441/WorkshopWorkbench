@@ -126,6 +126,22 @@
       // M.set(text, ok) stores the text and calls the callback; M.text / M.ok are read when drawing;
       // M.node() is the element of the card (class "tz-msg ok" or "tz-msg err"); M.paints(el, text, ok) paints a given element.
       // estricto = true: ok is only true when the caller passes a true value (the cuts module); otherwise ok is false only when passed false.
+      // A message that came from a refusal or a failure is not shown to the next person: one listener (started with the first message) clears them all when the
+      // person signs in, out or changes role (workshopOnSessionErrors: the twin of sessionErrors of role-mixin.js).
+      var TZ_MSG_LIVE = [];
+      var tzMsgOff = null;
+      function tzMsgWatch(m) {
+        TZ_MSG_LIVE.push(m);
+        if (TZ_MSG_LIVE.length > 200) TZ_MSG_LIVE.shift();
+        if (tzMsgOff || typeof workshopOnSessionErrors !== "function") return;
+        tzMsgOff = workshopOnSessionErrors(function () {
+          TZ_MSG_LIVE.forEach(function (x) {
+            if (x.text && !x.ok) x.set("", true); // only what a failure said (a "Saved" is not an error)
+          });
+        });
+        if (typeof workshopOnStop === "function") workshopOnStop(function () { if (tzMsgOff) tzMsgOff(); tzMsgOff = null; TZ_MSG_LIVE.length = 0; });
+      }
+
       function tzMsg(alChange, strict) {
         var m = {
           text: "",
@@ -141,5 +157,6 @@
             el.className = "tz-msg" + (text ? (ok ? " ok" : " err") : "");
           },
         };
+        tzMsgWatch(m);
         return m;
       }

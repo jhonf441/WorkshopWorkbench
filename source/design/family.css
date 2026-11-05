@@ -83,6 +83,7 @@
 .wf-state.warn::before, .wf-dot.warn { background: var(--wf-warn); }
 .wf-state.err::before, .wf-dot.err { background: var(--wf-err); }
 .wf-state.info::before, .wf-dot.info { background: var(--wf-info); }
+.wf-state.info { background-color: transparent !important; border-color: transparent !important; }
 .wf-pill { display: inline-flex; align-items: center; gap: 6px; padding: 1px 10px; border: 1px solid var(--wf-line); border-radius: 999px; font-size: 12px; font-weight: 500; opacity: 0.85; }
 .wf-bar .page-health { cursor: pointer; }
 /* old pages that still draw the bar as a v-card: the same look, so a page being migrated does not jump */

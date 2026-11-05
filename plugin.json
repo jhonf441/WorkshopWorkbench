@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.22.30",
+  "version": "2.22.31",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -52,7 +52,7 @@
     "sys/workshop/macros/zsurface.g"
   ],
   "dwcFiles": [
-    "js/WorkshopWorkbench.9b23d704.js",
-    "js/WorkshopWorkbench.9b23d704.js.gz"
+    "js/WorkshopWorkbench.53183a43.js",
+    "js/WorkshopWorkbench.53183a43.js.gz"
   ]
 }
