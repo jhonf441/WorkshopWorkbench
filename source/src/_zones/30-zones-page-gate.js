@@ -96,7 +96,8 @@
         var why = tzEl("div", "tz-note", i18nT("modes_gate.why_" + d.reason, { mode: tzPageMode(pz), modes: tzGateNames(g.info.state) }));
         why.style.marginTop = "8px";
         p.appendChild(why);
-        if (!g.info.viaService) p.appendChild(tzEl("div", "tz-muted", i18nT("modes_gate.local_note")));
+        // not saved in the service: without a session that is the cause (sign in and it is saved), not a service that is down
+        if (!g.info.viaService) p.appendChild(tzEl("div", "tz-muted", i18nT(typeof workshopSignedOut === "function" && workshopSignedOut() ? "modes_gate.local_note_signed_out" : "modes_gate.local_note")));
         if (g.guide) p.appendChild(tzGateGuideBox(pz, d));
         else tzGateSwitches(pz, p);
         tzGateActions(pz, p);

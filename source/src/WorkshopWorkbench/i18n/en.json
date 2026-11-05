@@ -7,6 +7,7 @@
     "why_off": "It is closed because this machine is set up for 3D printing only (laser and CNC are off). If you add a laser or a spindle, turn it on below.",
     "why_elsewhere": "The machine is in {mode} mode now and this page serves {modes}. Switch the machine to one of those modes and the page opens by itself.",
     "local_note": "The machine profile of the service could not be read or written, so your answer is kept in this browser only. Other pages will not see it.",
+    "local_note_signed_out": "Signed out: sign in to save this answer in the service. For now it is kept in this browser only and other pages will not see it.",
     "switches_title": "What does this machine do besides printing?",
     "row_laser": "Laser",
     "row_laser_what": "What it is: a laser head that cuts or engraves material.",
