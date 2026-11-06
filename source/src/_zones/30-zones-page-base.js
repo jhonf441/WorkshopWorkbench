@@ -262,10 +262,14 @@
 
       function tzAddTab(pz, it) {
         var b = tzEl("button", "wf-nav-item tz-tab");
-        b.appendChild(tzEl("span", "tz-tab-txt", it[1]));
+        var txt = tzEl("span", "st-text"); // the name, and under it who may open the tab when it is locked; not drawn when the bar is folded
+        txt.appendChild(tzEl("span", "tz-tab-txt", it[1]));
+        b.appendChild(txt);
+        var box = tzEl("span", "st-iconbox"); // the real icon; a locked tab gets a small lock on its corner (02-page-role.js)
         var ic = tzEl("span", "wf-nav-icon mdi mdi-" + pz.TZ_TAB_ICONS[it[0]]);
         ic.setAttribute("aria-hidden", "true");
-        b.insertBefore(ic, b.firstChild);
+        box.appendChild(ic);
+        b.insertBefore(box, b.firstChild);
         b.setAttribute("data-tip", it[2]);
         b.type = "button";
         b.addEventListener("click", function () {

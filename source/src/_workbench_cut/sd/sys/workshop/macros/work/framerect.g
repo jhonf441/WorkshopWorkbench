@@ -3,9 +3,9 @@
 ; the Zones page to trace the material of a zone before cutting.
 ; Like framecutarea.g: raises Z 5 mm, traces and lowers it again.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/framerect.g" A10 B310 C0 D200    (Xmin Xmax Ymin Ymax)
+; Use:  M98 P"0:/sys/workshop/macros/work/framerect.g" A10 B310 C0 D200    (Xmin Xmax Ymin Ymax)
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var feed = 3000
 
 if !exists(param.A) || !exists(param.B) || !exists(param.C) || !exists(param.D)

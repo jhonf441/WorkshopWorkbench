@@ -17,7 +17,7 @@
       //
       // Cutting = generated JOB (0:/sys/workshop/gcodes/cuts.gcode + M32):
       // DWC's Pause/Cancel work and the jog stays blocked. 1st line:
-      // sys/workshop/macros/cutguard.g (real Laser mode + homing + power 1..100 %).
+      // sys/workshop/macros/guard/cutguard.g (real Laser mode + homing + power 1..100 %).
 
       function tcMountCuts(ctx) {
         var tc = { ctx: ctx };

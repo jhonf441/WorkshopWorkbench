@@ -61,7 +61,7 @@
         pmt.cameraTool.inProgress = true;
         pmt.cameraTool.msg = "";
         tzToolPaintCameraZ(pmt);
-        tzCode('M98 P"0:/sys/workshop/macros/visionpose.g"' + (cp.carriage ? " X" + t.x : "") + " Y" + t.y + " Z" + t.z)
+        tzCode('M98 P"0:/sys/workshop/macros/probe/visionpose.g"' + (cp.carriage ? " X" + t.x : "") + " Y" + t.y + " Z" + t.z)
           .then(function (r) {
             if (/error|abort/i.test(r || "")) throw new Error(String(r).replace(/^\s*(Error:\s*)?/i, ""));
           })
@@ -148,7 +148,7 @@
         var bM = tzBtn(i18nT('zonesPage.move'), "primary", function () {
           bM.disabled = true;
           bM.textContent = i18nT('zonesPage.moving');
-          tzCode('M98 P"0:/sys/workshop/macros/visionpose.g"' + (cp.carriage ? " X" + tx : "") + " Y" + ty + " Z" + tz)
+          tzCode('M98 P"0:/sys/workshop/macros/probe/visionpose.g"' + (cp.carriage ? " X" + tx : "") + " Y" + ty + " Z" + tz)
             .then(function (r) {
               if (/error|abort/i.test(r || "")) throw new Error(String(r).replace(/^\s*(Error:\s*)?/i, ""));
               pmt.cameraTool.target = null;

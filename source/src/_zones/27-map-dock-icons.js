@@ -202,10 +202,10 @@
         if (correction && laserMode) {
           var s1 = tzTechOnly(tzDockDSec(pdk, box, i18nT('zonesPage.x0_y0_falls_where'))); // laser / pointer correction: the technician's
           var r1 = tzDockDRow(pdk, s1);
-          var bL = tzBtn("Laser", pdk.data.st().offsetOn ? "tzm-chip on" : "tzm-chip", function () { tzCode('M98 P"0:/sys/workshop/macros/laseroffset.g" S1').then(tzBind(tzDockDockPopPaint, pdk), tzBind(tzDockDockPopPaint, pdk)); });
+          var bL = tzBtn("Laser", pdk.data.st().offsetOn ? "tzm-chip on" : "tzm-chip", function () { tzCode('M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S1').then(tzBind(tzDockDockPopPaint, pdk), tzBind(tzDockDockPopPaint, pdk)); });
           bL.disabled = pdk.data.st().offsetOn || !free;
           tzTip(bL, i18nT('zonesPage.offset_applied_how_you_cut_x0'));
-          var bP = tzBtn(i18nT('zoneActive.pointer'), !pdk.data.st().offsetOn ? "tzm-chip on" : "tzm-chip", function () { tzCode('M98 P"0:/sys/workshop/macros/laseroffset.g" S0').then(tzBind(tzDockDockPopPaint, pdk), tzBind(tzDockDockPopPaint, pdk)); });
+          var bP = tzBtn(i18nT('zoneActive.pointer'), !pdk.data.st().offsetOn ? "tzm-chip on" : "tzm-chip", function () { tzCode('M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S0').then(tzBind(tzDockDockPopPaint, pdk), tzBind(tzDockDockPopPaint, pdk)); });
           bP.disabled = !pdk.data.st().offsetOn || !free;
           tzTip(bP, i18nT('zonesPage.offset_removed_to_locate_or_check'));
           r1.appendChild(bL);
@@ -216,7 +216,7 @@
         var target = correction && laserMode && pdk.data.st().offsetOn ? "laser" : "pointer";
         var go = tzBtn(i18nT('zonesPage.go_to_x0_y0_target', { target: target === "laser" ? "laser" : i18nT('zoneActive.pointer_lc') }), "primary", function () {
           go.disabled = true;
-          tzCode('M98 P"0:/sys/workshop/macros/workzero.g"').then(function () { tzDockDockPopClose(pdk); }, function () { tzDockDockPopPaint(pdk); });
+          tzCode('M98 P"0:/sys/workshop/macros/work/workzero.g"').then(function () { tzDockDockPopClose(pdk); }, function () { tzDockDockPopPaint(pdk); });
         }, i18nT('zonesPage.confirm_moves'), "dock-g0");
         go.disabled = !free || !tzDockDHomed(pdk, "XY");
         tzTip(go, !tzDockDHomed(pdk, "XY") ? i18nT('needs.home_first') : i18nT('zonesPage.raises_z_goes_to_x0_y0_tap', { code: TZ_CODES[wn], target: target === "laser" ? "LASER" : i18nT('zoneActive.pointer_uc') }));

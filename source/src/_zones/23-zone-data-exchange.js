@@ -53,7 +53,7 @@
         });
         return chain
           .then(function () {
-            return tzCode('M98 P"0:/sys/workshop/macros/workplaces.g"');
+            return tzCode('M98 P"0:/sys/workshop/macros/work/workplaces.g"');
           })
           .then(tzBind(tzDataRefreshAll, pzd))
           .then(function () {

@@ -4,12 +4,12 @@
 ; before the spindle is started (the abort of a macro called from a job
 ; cancels the job: checked live 2026-10-08 with cutguard.g).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/cncguard.g" D6 H5
+; Use:  M98 P"0:/sys/workshop/macros/guard/cncguard.g" D6 H5
 ;       D = deepest pass of the job below Z0 (mm, positive)   H = safe height above Z0 (mm)
 ; (never P for a value: in M98 the P is the file name.)
 ; Without the permission of the page (jobarm.g) it aborts: the spindle is not started and the job is cancelled.
 ;
-; The same pattern as sys/workshop/macros/cutguard.g (laser): what is checked
+; The same pattern as sys/workshop/macros/guard/cutguard.g (laser): what is checked
 ; is that the machine is ready: real CNC mode (M453), X/Y/Z homed, the Z0 of
 ; the active work system set on the material (its offset is not 0) and, with
 ; D / H, that the job fits in the Z travel at that Z0.
@@ -22,7 +22,7 @@
 var armed = exists(global.workshopCncArmed) ? global.workshopCncArmed : 0   ; uptime second until which the Start of the page allows ONE launch (0 = none, see jobarm.g)
 if exists(global.workshopCncArmed)
     set global.workshopCncArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if var.armed == 0
     ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
     var m1 = var.en ? "CNC: this file was not started from the Workbench page. Press Start in Workbench > CNC toolpaths" : "CNC: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa Iniciar en Mesa de trabajo > Trayectorias CNC"

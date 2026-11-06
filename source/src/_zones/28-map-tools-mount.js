@@ -57,7 +57,7 @@
         // image over the work zones; if necessary move the
         // machine"). The camera is on the BRIDGE: it only moves in Y (drag or
         // tap) and in Z (more area / more detail). Always with confirmation and
-        // through sys/workshop/macros/visionpose.g (Z goes up first, S0, never below Z40).
+        // through sys/workshop/macros/probe/visionpose.g (Z goes up first, S0, never below Z40).
         pmt.CAMERA_ZMIN = 40;
         pmt.cameraTool = { target: null, drag: null, swallow: false, msg: "", pinch: null, zAcc: 0, zTimer: null, wheelView: false };
         // Live (2026-10-10): drag / wheel / tap move the machine

@@ -1,14 +1,14 @@
 ; handfree.g -- "Release X/Y motors" to move the head BY HAND
-; (cut area measurement, see sys/workshop/macros/handcorner.g).
+; (cut area measurement, see sys/workshop/macros/work/handcorner.g).
 ;
 ; De-energises ONLY X and Y (Z stays firm, it does not fall). RRF marks X/Y as
-; "not homed": the position is recovered with sys/workshop/macros/handcorner.g, which measures
+; "not homed": the position is recovered with sys/workshop/macros/work/handcorner.g, which measures
 ; from where the head was left to the physical endstops.
 ;
 ; Move the head SLOWLY: turning a stepper fast by hand generates
 ; voltage that goes back to the driver.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if state.status == "processing" || state.status == "paused" || state.status == "pausing" || state.status == "resuming" || state.status == "simulating"
     abort {var.en ? ("Release motors: a job is running") : ("Soltar motores: hay un trabajo en curso")}
 

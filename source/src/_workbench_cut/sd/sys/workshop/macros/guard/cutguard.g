@@ -4,10 +4,10 @@
 ; before the laser is turned on (the abort of a macro called from a job
 ; cancels the job: checked live 2026-10-08).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/cutguard.g" S80      (S = MAXIMUM power of the job, in %)
+; Use:  M98 P"0:/sys/workshop/macros/guard/cutguard.g" S80      (S = MAXIMUM power of the job, in %)
 ; (S and not P: in M98 the P is the file name.)
 ;
-; Unlike sys/workshop/macros/laserguard.g (framing, 10 % cap), here the cap is
+; Unlike sys/workshop/macros/guard/laserguard.g (framing, 10 % cap), here the cap is
 ; 100 %: cutting needs real power. What is checked is that the machine
 ; is ready: real Laser mode (M452) and X/Y homed.
 ;
@@ -19,7 +19,7 @@
 var armed = exists(global.workshopLaserArmed) ? global.workshopLaserArmed : 0   ; uptime second until which the CUT of the page allows ONE launch (0 = none, see jobarm.g)
 if exists(global.workshopLaserArmed)
     set global.workshopLaserArmed = 0   ; used up (or not armed: nothing changes): the next launch asks the page again
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if var.armed == 0
     ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
     var m1 = var.en ? "Cut: this file was not started from the Workbench page. Press CUT in Workbench > Simple cuts" : "Corte: este archivo no se inicio desde la pagina Mesa de trabajo. Pulsa CORTAR en Mesa de trabajo > Cortes simples"

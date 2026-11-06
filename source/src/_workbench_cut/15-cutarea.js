@@ -3,8 +3,8 @@
       // Each mode's useful cutting area lives in sys/workshop/zones/cutarea.g as
       //   global.cutAreaLaser|CNC|FFF = {Xmin, Xmax, Ymin, Ymax}   (or null)
       // in BED coords (= where the POINTER lands; the same as the zones
-      // sys/workshop/zones/p<N>.g store). It is loaded by sys/workshop/macros/workplaces.g at startup and
-      // sys/workshop/macros/saveworkplace.g uses it to not save an origin outside.
+      // sys/workshop/zones/p<N>.g store). It is loaded by sys/workshop/macros/work/workplaces.g at startup and
+      // sys/workshop/macros/work/saveworkplace.g uses it to not save an origin outside.
       //
       // Measuring, drawing, walking AND saving the area is done by the service (machine.workarea.*, shown in Machine > Work area): it is the only
       // writer of this file (WorkshopVision saves its "use the material as the cutting area" through it too). What stays here are the laser power
@@ -13,10 +13,10 @@
       // ---- Laser power (the laser frame job moved away with the work area: Machine > Work area walks the area) ----
       // 10 W diode laser (M452 R255 -> S0..255). Limits agreed with
       // the user 2026-10-08: 4 % by default, warning above 3 %,
-      // hard cap 10 % (repeated in sys/workshop/macros/laserguard.g, which is the one in charge).
+      // hard cap 10 % (repeated in sys/workshop/macros/guard/laserguard.g, which is the one in charge).
       // It runs as a JOB (M32 of a generated .gcode), not as a macro: this way
       // Pause/Cancel of DWC work and the jog stays blocked while
-      // it lasts. The 1st line calls sys/workshop/macros/laserguard.g: if something does not comply, its
+      // it lasts. The 1st line calls sys/workshop/macros/guard/laserguard.g: if something does not comply, its
       // abort cancels the whole job before turning on the laser
       // (verified live 2026-10-08: not even the next line runs).
       // NOMINAL power of the diode in W: configurable (request 2026-10-08: "my
@@ -48,7 +48,7 @@
       }
       // The laser <-> pointer correction and the lens focus of the "laser" settings store are WRITTEN by Machine (Offsets) since 2026-10-21; the
       // Workbench only reads them (tjLaserFocus below, the correction through 14-laser-cfg.js of _workbench_base). The service mirrors the
-      // correction into sys/workshop/macros/lasercorrection.g, the one the zone files p<N>.g read: no zone keeps a number of its own.
+      // correction into sys/workshop/macros/laser/lasercorrection.g, the one the zone files p<N>.g read: no zone keeps a number of its own.
       // LENS focus (2026-10-10, "a zone only has one focus; the sensor
       // offset does not change"): focus distance above the surface, ONE for
       // the machine. Each material can focus a few mm INSIDE (Materials); each
@@ -64,9 +64,9 @@
       var TJ_LASER_FRAME_DEFAULT_PCT = 4;
       var TJ_LASER_FRAME_WARN_PCT = 3;
       var TJ_LASER_FRAME_MAX_PCT = 10;
-      // Takes the POINTER to a bed point (sys/workshop/macros/gotobed.g: G53, laser
+      // Takes the POINTER to a bed point (sys/workshop/macros/work/gotobed.g: G53, laser
       // off, raises Z 5 and lowers it on arrival). "From the map" mode.
       function tjGoToBed(x, y) {
-        return postCode('M98 P"0:/sys/workshop/macros/gotobed.g" X' + Number(x).toFixed(2) + " Y" + Number(y).toFixed(2));
+        return postCode('M98 P"0:/sys/workshop/macros/work/gotobed.g" X' + Number(x).toFixed(2) + " Y" + Number(y).toFixed(2));
       }
 

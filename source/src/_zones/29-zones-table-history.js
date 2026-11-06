@@ -54,7 +54,7 @@
                           return tzPutText("0:/sys/workshop/zones/p" + (idx + 1) + ".g", txt);
                         })
                         .then(function () {
-                          return tzCode('M98 P"0:/sys/workshop/macros/workplaces.g"');
+                          return tzCode('M98 P"0:/sys/workshop/macros/work/workplaces.g"');
                         })
                         .then(ptb.data.refreshAll)
                         .then(function () {

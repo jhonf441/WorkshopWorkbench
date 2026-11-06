@@ -180,7 +180,7 @@
         tjSetFocusH(p.h);
         tzActSetMsg(za, i18nT('zoneActive.measuring_at', { xy: tzActFmtXY(za, zr.zp.x, zr.zp.y) }), true);
         var tT = zr.mat && zr.mat.thickness > 0 && zr.mat.mode === zr.s.mode ? " T" + zr.mat.thickness : "";
-        tzActRun(za, 'M98 P"0:/sys/workshop/macros/zprobepoint.g" X' + zr.zp.x + " Y" + zr.zp.y + " H" + p.h + tT, i18nT('zoneActive.done_laser_mm_above_the_surface', { h: p.h, xy: tzActFmtXY(za, zr.zp.x, zr.zp.y) }), mark);
+        tzActRun(za, 'M98 P"0:/sys/workshop/macros/zcal/zprobepoint.g" X' + zr.zp.x + " Y" + zr.zp.y + " H" + p.h + tT, i18nT('zoneActive.done_laser_mm_above_the_surface', { h: p.h, xy: tzActFmtXY(za, zr.zp.x, zr.zp.y) }), mark);
       }
 
       // "Focus here": measures where the head is (no X/Y move) and leaves the laser at the height
@@ -189,7 +189,7 @@
         tjSetFocusH(h);
         tzActSetMsg(za, i18nT('zoneActive.focusing_the_probe_measures_the_surface', { h: h }), true);
         var tT = zr.mat && zr.mat.thickness > 0 && zr.mat.mode === "Laser" ? " T" + zr.mat.thickness : "";
-        tzActRun(za, 'M98 P"0:/sys/workshop/macros/focushere.g" H' + h + tT, i18nT('zoneActive.done_laser_mm_above_the_measured', { h: h }), function () { tzFocusAppliedMark(zr.wn); });
+        tzActRun(za, 'M98 P"0:/sys/workshop/macros/focus/focushere.g" H' + h + tT, i18nT('zoneActive.done_laser_mm_above_the_measured', { h: h }), function () { tzFocusAppliedMark(zr.wn); });
       }
 
       // CNC: the height Z ends up at after measuring, and the button that measures Z0 at the Z point
@@ -210,7 +210,7 @@
           if (!(h >= 1 && h <= 60)) return tzActSetMsg(za, i18nT('zoneActive.the_height_must_be_between_1'), false);
           tzActSetMsg(za, i18nT('zoneActive.measuring_at', { xy: tzActFmtXY(za, zr.zp.x, zr.zp.y) }), true);
           var tT = zr.mat && zr.mat.thickness > 0 && zr.mat.mode === zr.s.mode ? " T" + zr.mat.thickness : "";
-          tzActRun(za, 'M98 P"0:/sys/workshop/macros/zprobepoint.g" X' + zr.zp.x + " Y" + zr.zp.y + " H" + h + tT, i18nT('zoneActive.z0_measured_at_ended_up_at', { xy: tzActFmtXY(za, zr.zp.x, zr.zp.y), h: h }));
+          tzActRun(za, 'M98 P"0:/sys/workshop/macros/zcal/zprobepoint.g" X' + zr.zp.x + " Y" + zr.zp.y + " H" + h + tT, i18nT('zoneActive.z0_measured_at_ended_up_at', { xy: tzActFmtXY(za, zr.zp.x, zr.zp.y), h: h }));
         });
         zb.disabled = !!why;
         l5.appendChild(zb);

@@ -1,5 +1,5 @@
 ; handcorner.g -- measures WHERE the head was left (moved by hand, see
-; sys/workshop/macros/handfree.g) by going to the physical X and Y endstops and
+; sys/workshop/macros/work/handfree.g) by going to the physical X and Y endstops and
 ; measuring how far it travelled. Leaves the result in BED coordinates (= point
 ; where the POINTER was) in global.handCornerX / handCornerY, and leaves X/Y
 ; homed (G28 X Y) at the end.
@@ -22,7 +22,7 @@
 ; (G28 uses sys/homex.g / homey.g, which move with G1 H1 without S -- like
 ; any normal homing of the machine.)
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var fastF = 3000            ; mm/min towards the endstop (first pass)
 var slowF = 300             ; mm/min second pass (the one used to measure)
 var backoff = 5             ; mm of back-off between passes

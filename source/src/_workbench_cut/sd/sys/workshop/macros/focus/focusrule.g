@@ -1,6 +1,6 @@
 ; focusrule.g -- focus height by thickness (the maker table of the laser + the geometry of the machine).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/focusrule.g" T6        ->  global.focusRuleH = height H (mm above the surface)
+; Use:  M98 P"0:/sys/workshop/macros/focus/focusrule.g" T6        ->  global.focusRuleH = height H (mm above the surface)
 ;
 ; H = tab - edge - lever(T), rounded to 0.1 mm
 ;   tab    the tab of the lens box: with lever 0 the focus is that many mm under the edge of the box (8.0 on the reference laser)
@@ -10,7 +10,7 @@
 ; geometry.boxEdgeAboveReference), measured with focusref.g. RRF cannot read JSON, so this macro loads the same two numbers from
 ; 0:/sys/workshop/config/focus.g (global.focusTab, global.focusBoxEdge). Keep both files equal: the page reads the json and warns when they differ.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 
 if !exists(param.T)
     abort {var.en ? ("focusrule: T (thickness in mm) missing") : ("focusrule: falta T (grosor en mm)")}

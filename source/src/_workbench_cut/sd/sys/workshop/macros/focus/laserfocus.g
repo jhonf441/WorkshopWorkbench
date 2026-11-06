@@ -5,7 +5,7 @@
 ; So the height does not depend on what Z was homed on before
 ; (empty bed or another sheet thickness).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/laserfocus.g" W2 H7.5 N"MDF 3mm"
+; Use:  M98 P"0:/sys/workshop/macros/focus/laserfocus.g" W2 H7.5 N"MDF 3mm"
 ;   W = workplace: 1=G54 2=G55 3=G56 4=G57 5=G58 6=G59
 ;   H = focus distance in mm ABOVE the surface of the material, 0.3 to 60 (the same range as focusrule.g and focushere.g). Optional if T is
 ;       given: then it is calculated from the thickness (focusrule.g: the maker table + the measured geometry)
@@ -17,7 +17,7 @@
 ;         X30 Y30 if missing). The Zones page writes it when the measuring point
 ;         is chosen on the map (request 2026-10-09).
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var probeX = exists(param.X) ? param.X : 30     ; measuring point, relative to the zero of the material
 var probeY = exists(param.Y) ? param.Y : 30
 var clearZ = 15                                 ; minimum height to move in XY without touching the sheet
@@ -57,7 +57,7 @@ var name = exists(param.N) ? param.N : ("P" ^ param.W)
 ; focus height: given (H) or calculated from the thickness (T)
 var focusH = exists(param.H) ? param.H : 0
 if !exists(param.H)
-    M98 P"0:/sys/workshop/macros/focusrule.g" T{param.T}
+    M98 P"0:/sys/workshop/macros/focus/focusrule.g" T{param.T}
     set var.focusH = global.focusRuleH
 ; the height that G53 G0 Z will use below, whichever way it was given: never outside the range focusrule.g and focushere.g accept
 if var.focusH < 0.3 || var.focusH > 60
@@ -66,7 +66,7 @@ if var.focusH < 0.3 || var.focusH > 60
 if !exists(global.laserOffsetOn)
     global laserOffsetOn = true
 set global.laserOffsetOn = true                 ; a laser job is being prepared: offset always applied
-M98 P"0:/sys/workshop/macros/wpload.g"                          ; reapplies the saved origins (fast ~0.6 s; the full workplaces.g took ~2.9 s and the cut area is already loaded)
+M98 P"0:/sys/workshop/macros/work/wpload.g"                          ; reapplies the saved origins (fast ~0.6 s; the full workplaces.g took ~2.9 s and the cut area is already loaded)
 M400
 G90
 
@@ -97,8 +97,8 @@ set var.probeY = max(var.probeY, move.axes[1].min - var.wy + var.oy + 1)
 set var.probeX = min(var.probeX, move.axes[0].max - var.wx + var.ox - 1)
 set var.probeY = min(var.probeY, move.axes[1].max - var.wy + var.oy - 1)
 G0 X{var.probeX - var.ox} Y{var.probeY - var.oy}  ; head placed so that the PROBE is over the measuring point
-M98 P"0:/sys/workshop/macros/zmeasure.g"        ; measure: Z0 = surface of the material (by probe type)
-M98 P"0:/sys/workshop/macros/zsurface.g" T{exists(param.T) ? param.T : 0} N{var.name}   ; thickness (T = expected)
+M98 P"0:/sys/workshop/macros/zcal/zmeasure.g"        ; measure: Z0 = surface of the material (by probe type)
+M98 P"0:/sys/workshop/macros/zcal/zsurface.g" T{exists(param.T) ? param.T : 0} N{var.name}   ; thickness (T = expected)
 G53 G0 Z{var.focusH}                            ; focus distance above the surface
 
 var tmsg1 = var.name ^ ": superficie medida en X" ^ var.probeX ^ " Y" ^ var.probeY ^ ", laser a " ^ var.focusH ^ "mm sobre el material"

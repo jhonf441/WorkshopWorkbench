@@ -34,7 +34,7 @@
         tzTip(pz, zr.probe.measures ? i18nT('zoneActive.raises_5_mm_and_measures_z', { probe: tzProbeName(zr.probe) }) : i18nT('zoneActive.probe_z_here_without_probe'));
         l.appendChild(pz);
         var zz = tzBtn(i18nT('zoneActive.z0_here'), null, function () {
-          tzActRun(za, 'M98 P"0:/sys/workshop/macros/zhere0.g"', i18nT('zoneActive.z_0_at_the_current_position'));
+          tzActRun(za, 'M98 P"0:/sys/workshop/macros/zcal/zhere0.g"', i18nT('zoneActive.z_0_at_the_current_position'));
         }, i18nT('zoneActive.tap_again_z_0_here'), "az-zz");
         zz.disabled = !!whyAny;
         tzTip(zz, i18nT('zoneActive.g92_z0_the_current_position_becomes', { v: zr.cncMode ? i18nT('zoneActive.you_touched_the_material_with_the') : i18nT('zoneActive.you_touched_the_surface_by_hand') }));

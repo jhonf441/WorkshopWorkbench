@@ -4,12 +4,12 @@
 ; (WorkshopJog, Work zones page): a point is tapped on the map, the
 ; machine goes there, it is adjusted with the jog and captured.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/gotobed.g" X123.4 Y56.7
+; Use:  M98 P"0:/sys/workshop/macros/work/gotobed.g" X123.4 Y56.7
 ;
 ; Raises Z 5 mm before moving and lowers it again on arrival (same
 ; height it started with). LASER: every G1 carries S0.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var feed = 3000                     ; mm/min
 
 if state.status == "processing" || state.status == "paused" || state.status == "pausing" || state.status == "resuming" || state.status == "simulating"

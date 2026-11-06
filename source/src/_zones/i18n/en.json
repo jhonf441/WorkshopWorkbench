@@ -2175,6 +2175,7 @@
 		"read_only": "Read only: your role is {role}",
 		"read_only_signed_out": "Read only: sign-in required",
 		"hidden_signed_out": "Sign-in is required to see the technical parts.",
+		"section_technical": "Technician only",
 		"hidden_by_role": "The technical parts require the technician role. Your role: {role}. Ask an administrator for access."
 	},
 	"ready": {

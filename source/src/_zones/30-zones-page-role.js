@@ -25,15 +25,27 @@
         if (pz.gateLogin) pz.gate.appendChild(pz.gateLogin);
         pz.page.insertBefore(pz.gate, pz.header.nextSibling);
         // one quiet line when the view hides technical parts (the .tz-tech ones) so the person knows they exist and why they are not shown
-        pz.hiddenNote = tzEl("div", "tz-muted", "");
-        pz.hiddenNote.style.cssText = "display:none;font-size:11px;padding:2px 12px;";
+        // (the standard note of the cause, N2: gray for a role, blue without a session; it is drawn again whenever the role changes)
+        pz.hiddenNote = tzEl("div", "", "");
+        pz.hiddenNote.style.cssText = "display:none;padding:2px 12px;";
         pz.page.insertBefore(pz.hiddenNote, pz.gate.nextSibling);
         pz.roChip = tzEl("span", "wf-pill tz-chip-ro", "");
         pz.roChip.style.display = "none";
         pz.headRight.insertBefore(pz.roChip, pz.modeChip);
         // a tab the role does not have cannot be opened (a stored last view, a link, a button of another tool)
+        pz.lockCover = tzEl("div", "", "");
+        pz.lockCover.style.cssText = "display:none;padding:6px 12px;";
+        pz.page.insertBefore(pz.lockCover, pz.hiddenNote.nextSibling);
         pz.nav.setGuard(function (l) {
-          if (tzTabAllowed(pz.pag, tzViewNow(), l, "?")) return true;
+          if (tzTabAllowed(pz.pag, tzViewNow(), l, "?")) {
+            tzLockCoverClose(pz);
+            return true;
+          }
+          // a tab above the role stays in the bar, locked: opening it shows ONE cover that says why; the tool in use is not touched
+          if (tzLockedTabs(pz).indexOf(l) >= 0) {
+            tzLockCoverOpen(pz, l);
+            return false;
+          }
           tzAgilityNotice(pz.nav.notice(), tzRoleNoteNow().gateTitle);
           return false;
         });
@@ -57,16 +69,19 @@
         pz.roleViewName = view;
         TZ_VIEWS.forEach(function (v) { pz.page.classList.toggle("tz-view-" + v, v === view); });
         var gated = tzPageGated(pz.pag, view);
+        var note0 = tzRoleNoteNow();
         pz.page.classList.toggle("tz-gated", gated);
         pz.gate.style.display = gated ? "" : "none";
-        pz.roChip.style.display = view === "viewer" && !gated ? "" : "none";
-        var note = tzRoleNoteNow();
+        // the chip of the bar says "sign in" without a session and the note below says what is hidden: no third copy of the same cause
+        pz.roChip.style.display = view === "viewer" && !gated && !note0.signIn ? "" : "none";
+        var note = note0;
         pz.roChip.textContent = note.readOnly;
         pz.gateTitle.textContent = note.gateTitle;
         pz.gateTip.textContent = note.gateTip;
         if (pz.gateLogin) pz.gateLogin.style.display = note.signIn ? "" : "none";
-        pz.hiddenNote.textContent = note.hidden;
-        pz.hiddenNote.style.display = view !== "technician" && !gated ? "" : "none";
+        pz.hiddenNote.textContent = ""; // (no general note any more: the technical tabs are in the bar, locked, and each one says why when opened)
+        pz.hiddenNote.style.display = "none";
+        tzLockCoverClose(pz);
         tzRoleSyncModules(pz, view);
         tzRoleFixLayout(pz, view);
         if (pz.data.st()) pz.tzMarkGroups(pz.data.st().mode);
@@ -111,9 +126,44 @@
       }
 
       // Puts the tab buttons and the headers of the groups in the order of the plan of the view; what the plan does not have is hidden
+      // The tabs of the Technician view that this view does not have (AWS rule: what you cannot open stays in its place, locked, with the role that opens it).
+      function tzLockedTabs(pz) {
+        var view = tzViewNow();
+        if (view === "technician" || tzPageGated(pz.pag, view)) return [];
+        var have = {};
+        tzTabPlan(pz.pag, view, pz.modeSeen || "?").forEach(function (s) { s.tools.forEach(function (id) { have[id] = true; }); });
+        var out = [];
+        tzTabPlan(pz.pag, "technician", pz.modeSeen || "?").forEach(function (s) { s.tools.forEach(function (id) { if (!have[id]) out.push(id); }); });
+        return out;
+      }
+
+      function tzLockCoverOpen(pz, l) {
+        var out = typeof workshopSignedOut === "function" && workshopSignedOut();
+        pz.lockCover.textContent = "";
+        pz.lockCover.appendChild(workshopNoticeEl(out ? "session" : "role", "cover", { needed: "technician", action: "" }));
+        pz.lockCover.style.display = "";
+        Object.keys(pz.layoutButtons).forEach(function (k) { pz.layoutButtons[k].classList.toggle("on", k === l); });
+        if (typeof pz.lockCover.scrollIntoView === "function") pz.lockCover.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      function tzLockCoverClose(pz) {
+        if (pz.lockCover) pz.lockCover.style.display = "none";
+      }
+
       function tzPaintTabs(pz, mode, view) {
         var plan = tzTabPlan(pz.pag, view, mode);
         var inPlan = {};
+        // forget the locks of the last paint (the role or the mode may have changed)
+        Object.keys(pz.layoutButtons).forEach(function (k) {
+          var b = pz.layoutButtons[k];
+          if (!b.getAttribute("data-tz-locked")) return;
+          b.removeAttribute("data-tz-locked");
+          b.classList.remove("st-locked", "st-locked-session");
+          var tag = b.querySelector(".st-need");
+          if (tag) tag.remove();
+          var mark = b.querySelector(".st-lockmark");
+          if (mark) mark.remove();
+        });
         Object.keys(pz.tabGroupEls).forEach(function (k) { pz.tabGroupEls[k].style.display = "none"; });
         Object.keys(pz.sectionEls).forEach(function (k) { pz.sectionEls[k].style.display = "none"; });
         plan.forEach(function (s, gi) {
@@ -127,5 +177,29 @@
             pz.tabBar.appendChild(pz.layoutButtons[id]);
           });
         });
+        // the technician tabs this view does not have: after the others, under one head, locked
+        var lockedIds = tzLockedTabs(pz);
+        var out = typeof workshopSignedOut === "function" && workshopSignedOut();
+        if (lockedIds.length) {
+          if (!pz.lockedHead) pz.lockedHead = tzEl("div", "wf-nav-group tzn-group", "");
+          pz.lockedHead.textContent = i18nT("role.section_technical");
+          pz.lockedHead.setAttribute("data-group", "2");
+          pz.lockedHead.style.display = "";
+          pz.tabBar.appendChild(pz.lockedHead);
+          lockedIds.forEach(function (id) {
+            var b = pz.layoutButtons[id];
+            if (!b) return;
+            inPlan[id] = true;
+            b.setAttribute("data-group", "2");
+            b.setAttribute("data-tz-locked", "1");
+            b.classList.add("st-locked");
+            if (out) b.classList.add("st-locked-session");
+            var tag = tzEl("span", "st-need", out ? i18nT("notice.need_session_tag") : workshopNoticeRoleName("technician"));
+            (b.querySelector(".st-text") || b).appendChild(tag);
+            var box = b.querySelector(".st-iconbox");
+            if (box) box.appendChild(tzEl("span", "st-lockmark mdi " + (out ? "mdi-account-lock" : "mdi-lock")));
+            pz.tabBar.appendChild(b);
+          });
+        } else if (pz.lockedHead) pz.lockedHead.style.display = "none";
         Object.keys(pz.layoutButtons).forEach(function (k) { pz.layoutButtons[k].style.display = inPlan[k] ? "" : "none"; });
       }

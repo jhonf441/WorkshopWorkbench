@@ -4,9 +4,9 @@
 ; reports at what height it triggered. That height is the right G31 Z of the mode.
 ; It is left in global.workshopZcalMed (the page reads it and offers to save it).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zcal-probe.g" X120 Y80
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zcal-probe.g" X120 Y80
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if !exists(param.X) || !exists(param.Y)
     abort {var.en ? ("Calibrate: X and Y missing") : ("Calibrar: faltan X e Y")}
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed

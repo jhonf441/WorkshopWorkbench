@@ -5,9 +5,9 @@
 ; launched some other way (DWC Files, Jobs, the Send of Simulate job, a second M32) finds none and aborts before the laser or the
 ; spindle starts.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/jobarm.g" A1 K"Laser"     arm: the next cutguard.g within 30 s lets that job go
-;       M98 P"0:/sys/workshop/macros/jobarm.g" A1 K"CNC"       arm: the next cncguard.g within 30 s lets that job go
-;       M98 P"0:/sys/workshop/macros/jobarm.g" A0              disarm both (the page does it when its start did not go through)
+; Use:  M98 P"0:/sys/workshop/macros/guard/jobarm.g" A1 K"Laser"     arm: the next cutguard.g within 30 s lets that job go
+;       M98 P"0:/sys/workshop/macros/guard/jobarm.g" A1 K"CNC"       arm: the next cncguard.g within 30 s lets that job go
+;       M98 P"0:/sys/workshop/macros/guard/jobarm.g" A0              disarm both (the page does it when its start did not go through)
 ; (K = the kind of job, "Laser" or "CNC"; never P for a value: in M98 the P is the file name.)
 ;
 ; global.workshopLaserArmed / global.workshopCncArmed = the uptime second (state.upTime) until which the permission of that kind lasts;

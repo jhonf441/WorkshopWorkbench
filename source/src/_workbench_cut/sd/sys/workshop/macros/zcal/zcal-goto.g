@@ -3,9 +3,9 @@
 ; map) over the point X Y, without going down: it stays at Z max(current, 10). Then the
 ; user goes down in small steps until it brushes a sheet of paper (zcal-mark.g).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zcal-goto.g" X120 Y80
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zcal-goto.g" X120 Y80
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var clearZ = 10                                 ; minimum height before moving
 var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 

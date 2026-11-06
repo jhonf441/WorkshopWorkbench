@@ -40,14 +40,14 @@
           row.appendChild(bA);
         }
         var bG = tzBtn(i18nT('tzTips.l_go_to_x0_y0'), null, function () {
-          tzCode(TZ_CODES[i]).then(function () { return tzCode('M98 P"0:/sys/workshop/macros/workzero.g"'); }).then(done, fail);
+          tzCode(TZ_CODES[i]).then(function () { return tzCode('M98 P"0:/sys/workshop/macros/work/workzero.g"'); }).then(done, fail);
         }, i18nT('common.tap_again_moves'), "zp-go" + i);
         bG.disabled = !free || !homed;
         tzTip(bG, i18nT('zonesPage.activates_and_goes_to_its_x0', { code: TZ_CODES[i] }));
         row.appendChild(bG);
         if (sz && sz.w > 0) {
           var bF = tzBtn(i18nT('tzTips.l_frame'), null, function () {
-            tzCode('M98 P"0:/sys/workshop/macros/framerect.g" A' + z.refX + " B" + (z.refX + sz.w) + " C" + z.refY + " D" + (z.refY + sz.h)).then(done, fail);
+            tzCode('M98 P"0:/sys/workshop/macros/work/framerect.g" A' + z.refX + " B" + (z.refX + sz.w) + " C" + z.refY + " D" + (z.refY + sz.h)).then(done, fail);
           }, i18nT('zonesPage.tap_again_moves_pointer'), "zp-fr" + i);
           bF.disabled = !free || !homed;
           tzTip(bF, i18nT('zonesPage.goes_around_the_edge_of_the'));

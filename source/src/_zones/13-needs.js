@@ -9,7 +9,7 @@
       //   - mode          -> a notice (the mode change belongs to the bar)
       //   - machine busy  -> a notice
       //   - focus (optional) -> height H (shortcuts from the material macros)
-      //     + "Focus here" (sys/workshop/macros/focushere.g: measures with the probe where it is,
+      //     + "Focus here" (sys/workshop/macros/focus/focushere.g: measures with the probe where it is,
       //     without moving X/Y, and leaves the laser at H mm; a machine without a probe sets Z0 with a sheet of paper instead,
       //     12-probe-kind.js)
       //   - the BLTouch pin (stow it) only when the machine declares a BLTouch: no other probe has a pin
@@ -115,7 +115,7 @@
         var g = nr.s.globals || {}, c = tjLaserCorrection();
         r.appendChild(tzEl("span", "wf-state tz-badge err", nr.corr === "differs" ? i18nT('needs.correction_differs', { bx: tzFmt(g.workshopLaserCorrX), by: tzFmt(g.workshopLaserCorrY), sx: tzFmt(c.x), sy: tzFmt(c.y) }) : i18nT('needs.correction_board_missing')));
         var ab = tzBtn(i18nT('needs.apply_correction'), "primary", function () {
-          postCode('M98 P"0:/sys/workshop/macros/wpload.g"')
+          postCode('M98 P"0:/sys/workshop/macros/work/wpload.g"')
             .then(function (rs) { return rs.text(); })
             .then(function (t) {
               var bad = /error|abort/i.test(t || "");
@@ -189,7 +189,7 @@
           // already measured with this zone and Z was not homed again; the confirm text and the tip say so.
           var gb = tzBtn(i18nT('needs.go_height'), null, function () {
             var hg = tjFocusH();
-            postCode('M98 P"0:/sys/workshop/macros/zfocusgo.g" H' + hg)
+            postCode('M98 P"0:/sys/workshop/macros/focus/zfocusgo.g" H' + hg)
               .then(function (rs) { return rs.text(); })
               .then(function (t) {
                 var bad = /error|abort/i.test(t || "");

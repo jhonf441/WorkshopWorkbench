@@ -3,7 +3,7 @@
 ;
 ; Use (the person does the first step with the jog, then says "go"):
 ;   1. put the protective box of the lens touching the material (just touching, no pressure) and leave it there;
-;   2. M98 P"0:/sys/workshop/macros/focusref.g"      (optional: Z<machine Z where the box touches>)
+;   2. M98 P"0:/sys/workshop/macros/focus/focusref.g"      (optional: Z<machine Z where the box touches>)
 ;
 ; What it does (nothing here ever presses the box into the material):
 ;   - remembers Z where the box touches (zt), lifts 15 mm, deploys the probe (the pin of a BLTouch; other probes need nothing)
@@ -15,7 +15,7 @@
 ; The focus height for a thickness t is then  H = h0 - lever(t)  (lever of the table of the laser maker).
 ; The laser stays OFF the whole time (M5, every G1 with S0).
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var lift = 15                                   ; mm above the touching position to start from
 var coarse = 0.5                                ; coarse step down (mm)
 var fine = 0.05                                 ; fine step (mm)

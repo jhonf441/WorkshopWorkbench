@@ -69,7 +69,7 @@
           var tT = laserM && mat && mat.mode === "Laser" && mat.thickness > 0 ? " T" + mat.thickness : "";
           var say = tzEl("div", "tz-msg", i18nT('zonesPage.measuring_at', { x: tzFmt(q.x), y: tzFmt(q.y) }));
           pmt.posPop.appendChild(say);
-          tzCode('M98 P"0:/sys/workshop/macros/zprobepoint.g" X' + q.x + " Y" + q.y + " H" + h + tT)
+          tzCode('M98 P"0:/sys/workshop/macros/zcal/zprobepoint.g" X' + q.x + " Y" + q.y + " H" + h + tT)
             .then(function () { say.className = "tz-msg ok"; say.textContent = i18nT('zonesPage.measured_at', { x: tzFmt(q.x), y: tzFmt(q.y) }); })
             .catch(function (e) { say.className = "tz-msg err"; say.textContent = i18nT('zonesPage.could_not_measure', { err: e.message || e }); });
         }, i18nT('zonesPage.confirm_moves'));

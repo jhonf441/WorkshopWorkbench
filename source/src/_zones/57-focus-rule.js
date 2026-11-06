@@ -33,7 +33,7 @@
       // Reads the laserfocus.g line of a material macro. Returns {zona (1..6), h, t, nombre, px, py} or null.
       // H wins; a macro without H (the ones made after the thickness rule: W2 N"MDF 3mm" T3 ...) takes its height from T.
       function tzFocusReadLine(txt) {
-        var m = String(txt || "").match(/^\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/|taller\/)?laserfocus\.g"([^\n]*)/m);
+        var m = String(txt || "").match(/^\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/(?:focus\/)?|taller\/)?laserfocus\.g"([^\n]*)/m);
         if (!m) return null;
         var args = m[1].replace(/;.*/, "");
         var w = args.match(/\sW(\d)/);

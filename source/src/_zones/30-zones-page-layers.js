@@ -76,7 +76,7 @@
         //   laser:   ditto with the laser spot (converted with the
         //            active zone's correction: point = head - correction)
         //   by hand: release X/Y motors, move by hand, the machine measures
-        //            by itself against the end stops (sys/workshop/macros/handcorner.g)
+        //            by itself against the end stops (sys/workshop/macros/work/handcorner.g)
         // and also direct numeric editing. While measuring, the map
         // shows corner 1 and the rectangle up to the head (see
         // drawCutPreview, called from renderMap).

@@ -9,13 +9,13 @@
 ;   FFF:   the bed at that point (like homez.g but where one chooses); goes up to
 ;          H (or 5 mm). The mesh (G29) is still applied on top.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zprobepoint.g" X120 Y80 H7.5
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zprobepoint.g" X120 Y80 H7.5
 ;   X Y = point where the probe TOUCHES, in machine coordinates (the ones of the map,
 ;         where the pointer lands). The head goes to point - G31 offset.
 ;   H   = final height above the measured surface (optional, 5 mm if missing)
 ;   T   = expected thickness of the material (optional, see zsurface.g)
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 var clearZ = 10                                 ; minimum height before moving / deploying the probe
 var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
@@ -46,8 +46,8 @@ M400
 G90
 G53 G0 Z{max(move.axes[2].machinePosition, var.clearZ)}   ; raise before moving
 G53 G0 X{var.hx} Y{var.hy}
-M98 P"0:/sys/workshop/macros/zmeasure.g"        ; measure: Z0 = surface under the probe (by probe type)
-M98 P"0:/sys/workshop/macros/zsurface.g" T{exists(param.T) ? param.T : 0}   ; thickness (T = expected, optional)
+M98 P"0:/sys/workshop/macros/zcal/zmeasure.g"        ; measure: Z0 = surface under the probe (by probe type)
+M98 P"0:/sys/workshop/macros/zcal/zsurface.g" T{exists(param.T) ? param.T : 0}   ; thickness (T = expected, optional)
 G53 G0 Z{var.h}
 M400
 

@@ -12,7 +12,7 @@
 ; LASER: every G1 carries S0 (zero power in Laser mode; in CNC/FFF S
 ; is ignored): rule "every G1 carries S0".
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 var feed = 3000                     ; mm/min of the trace (50 mm/s)
 

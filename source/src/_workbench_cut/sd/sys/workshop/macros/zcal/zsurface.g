@@ -13,12 +13,12 @@
 ; If the reference is not valid (no Z homing, G92 Z by hand, etc.)
 ; nothing is computed (global.workshopThickness = -1).
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zsurface.g" T3 N"MDF 3mm"
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zsurface.g" T3 N"MDF 3mm"
 ;   T = expected thickness in mm (optional; 0 = do not compare)
 ;   N = name of the material for the warning (optional)
 ;   K = 1: compare also without bed compensation (mesh); by default it is only compared with the mesh on
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if !exists(global.workshopZBedOk)
     global workshopZBedOk = false
 if !exists(global.workshopZBed)
@@ -30,7 +30,7 @@ var s = sensors.probes[0].lastStopHeight - sensors.probes[0].triggerHeight
 
 ; Fine adjustment of the active ZONE (Zones > Active zone > Z height > Calibrate,
 ; request 2026-10-09 "calibrate the height of the zones by probe
-; type"): global.workshopZAdj[zone] is loaded by sys/workshop/macros/zcal.g for the current
+; type"): global.workshopZAdj[zone] is loaded by sys/workshop/macros/zcal/zcal.g for the current
 ; mode. +a = the real surface is a mm HIGHER than what the probe
 ; measured: Z0 goes up by a (the tool ends up a mm further away).
 if exists(global.workshopZAdj)

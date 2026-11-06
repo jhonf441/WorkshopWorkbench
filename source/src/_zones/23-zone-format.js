@@ -9,21 +9,21 @@
       //   - table with point, applied origin, focus macro and
       //     warnings; Use / Go / Edit / Copy / History / Delete.
       //   - editor and "New zone": writes sys/workshop/zones/p<N>.g in the SAME format
-      //     as sys/workshop/macros/saveworkplace.g (read by the jog and workplaces.g) and creates or
+      //     as sys/workshop/macros/work/saveworkplace.g (read by the jog and workplaces.g) and creates or
       //     updates the material macro macros/laser/<file>.g that calls
-      //     sys/workshop/macros/laserfocus.g (used by "Measure and focus" and live jobs).
+      //     sys/workshop/macros/focus/laserfocus.g (used by "Measure and focus" and live jobs).
       //   - history: each write first saves a copy in
       //     sys/workshop/zones/history/p<N>-<date>.g and it can be restored.
       //   - export / import all the zones as JSON.
       //
-      // Format of sys/workshop/zones/p<N>.g (see sys/workshop/macros/saveworkplace.g):
+      // Format of sys/workshop/zones/p<N>.g (see sys/workshop/macros/work/saveworkplace.g):
       //   ; G55 <name> -- <info> (... machine X<point> Y<point> ...)
       // (only the name before " --" and the G10 line are read back)
       //   G10 L2 P2 X{<pointX> + (global.laserOffsetOn ? global.workshopLaserCorrX : 0)} Y{<pointY> + (global.laserOffsetOn ? global.workshopLaserCorrY : 0)} Z0
       // "point" = where the POINTER lands on the material's corner (bed
       // coords); the laser lands at (head position - correction).
       // One source for the laser <-> pointer correction: the "laser" settings store (Machine > Offsets). A zone keeps no copy of it:
-      // the service mirrors the store into sys/workshop/macros/lasercorrection.g (the globals above), which workplaces.g / wpload.g
+      // the service mirrors the store into sys/workshop/macros/laser/lasercorrection.g (the globals above), which workplaces.g / wpload.g
       // run before the zones, so a new correction needs no zone rewritten. The page reads it with tzDataCutCorrection.
 
       var TZ_CODES = ["G54", "G55", "G56", "G57", "G58", "G59", "G59.1", "G59.2", "G59.3"];
@@ -181,7 +181,7 @@
         });
       }
 
-      // Same rules as sys/workshop/macros/saveworkplace.g: the point and the point+correction
+      // Same rules as sys/workshop/macros/work/saveworkplace.g: the point and the point+correction
       // inside the travel (the offset flag can be changed afterwards),
       // and the point inside the active mode's cutting area if it is measured.
       // corr = the machine's correction {cx, cy} (tzDataCutCorrection) or null when it was never measured (the board adds 0).

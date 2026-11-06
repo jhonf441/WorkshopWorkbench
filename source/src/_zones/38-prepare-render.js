@@ -179,7 +179,7 @@
           } else if (pr.zp) {
             var h = pr.laser ? plan.h : (pr.mat && pr.mat.mode === "CNC" && pr.mat.altSafe) || 5;
             var b2 = tzBtn(i18nT('prepare.at_the_z_point', { v: pr.laser ? i18nT('prepare.focus') : i18nT('prepare.measure_z0') }), "primary big", function () {
-              tpRun(tp, 'M98 P"0:/sys/workshop/macros/zprobepoint.g" X' + pr.zp.x + " Y" + pr.zp.y + " H" + h + tT, pr.laser ? i18nT('prepare.laser_mm_above_the_surface', { h: h }) : i18nT('prepare.z0_measured_ended_up_at_mm', { h: h }), mark);
+              tpRun(tp, 'M98 P"0:/sys/workshop/macros/zcal/zprobepoint.g" X' + pr.zp.x + " Y" + pr.zp.y + " H" + h + tT, pr.laser ? i18nT('prepare.laser_mm_above_the_surface', { h: h }) : i18nT('prepare.z0_measured_ended_up_at_mm', { h: h }), mark);
             });
             b2.disabled = !pr.free || !pr.homed;
             tzTip(b2, i18nT('prepare.the_probe_touches_at_x_y', { x: tzFmt(pr.zp.x), y: tzFmt(pr.zp.y), h: h, probe: tzProbeName(pr.probe) }));
@@ -207,7 +207,7 @@
           var mark = function () { tzWorkPrepareMark(pr.wn, "border"); };
           if (pr.sz && pr.sz.w > 0) {
             var b = tzBtn(i18nT('prepare.frame_the_material_x', { w: tzFmt(pr.sz.w), h: tzFmt(pr.sz.h) }), "primary", function () {
-              tpRun(tp, 'M98 P"0:/sys/workshop/macros/framerect.g" A' + pr.z.refX + " B" + (pr.z.refX + pr.sz.w) + " C" + pr.z.refY + " D" + (pr.z.refY + pr.sz.h), i18nT('prepare.material_traced_with_the_pointer'), mark);
+              tpRun(tp, 'M98 P"0:/sys/workshop/macros/work/framerect.g" A' + pr.z.refX + " B" + (pr.z.refX + pr.sz.w) + " C" + pr.z.refY + " D" + (pr.z.refY + pr.sz.h), i18nT('prepare.material_traced_with_the_pointer'), mark);
             }, i18nT('prepare.tap_again_moves_pointer_laser_off'), "tp-fr");
             b.disabled = !pr.free || !(pr.ax.X.homed && pr.ax.Y.homed);
             tzTip(b, i18nT('prepare.goes_around_the_edge_of_the', { code: TZ_CODES[pr.wn] }));
@@ -232,7 +232,7 @@
             var r0 = tzEl("div", "tz-row");
             r0.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('prepare.laser_offset_removed')));
             r0.appendChild(tzBtn(i18nT('prepare.apply_offset'), "primary", function () {
-              tpRun(tp, 'M98 P"0:/sys/workshop/macros/laseroffset.g" S1', i18nT('prepare.laser_offset_applied_x0_y0_where'));
+              tpRun(tp, 'M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S1', i18nT('prepare.laser_offset_applied_x0_y0_where'));
             }));
             c.appendChild(r0);
           }

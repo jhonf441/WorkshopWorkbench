@@ -347,8 +347,8 @@
       // The guard of the file: the first code line of every CNC job (the same pattern as cutguard.g of the laser cuts). The macro aborts,
       // and that cancels the whole job before the spindle starts, unless the machine is in CNC mode, X Y Z are homed and the Z0 of the
       // active work system is set; with the depth (D) and the safe height (H), both in mm below / above Z0, it also checks that they fit
-      // in the Z travel at the real Z0. The copy of the macro lives in src/_workbench_cut/sd/sys/workshop/macros/cncguard.g.
-      var TZ_CNC_GUARD = "0:/sys/workshop/macros/cncguard.g";
+      // in the Z travel at the real Z0. The copy of the macro lives in src/_workbench_cut/sd/sys/workshop/macros/guard/cncguard.g.
+      var TZ_CNC_GUARD = "0:/sys/workshop/macros/guard/cncguard.g";
       function tzCncGuardLine(plan) {
         var safe = plan.tool && plan.tool.altSafe ? plan.tool.altSafe : 0;
         return 'M98 P"' + TZ_CNC_GUARD + '" D' + tzCncN(tzCncDeepest(plan), "mm") + " H" + tzCncN(safe, "mm") + "   ; aborts and cancels the job unless the Start of the page armed it and the machine is ready (CNC mode, homed, Z0 set, Z travel)";

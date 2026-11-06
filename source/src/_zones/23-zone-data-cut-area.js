@@ -10,7 +10,7 @@
 
       // The laser <-> pointer correction: only the machine's, from the "laser" settings store (14-laser-cfg.js); null when it was never
       // measured (the board then adds 0). The zone files p<N>.g keep no copy: they add the globals that the service writes from this
-      // same store into sys/workshop/macros/lasercorrection.g.
+      // same store into sys/workshop/macros/laser/lasercorrection.g.
       function tzDataCutCorrection() {
         var mc = tjLaserCorrection();
         return mc ? { cx: mc.x, cy: mc.y } : null;

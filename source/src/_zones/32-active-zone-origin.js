@@ -9,7 +9,7 @@
         var target = zr.laserMode && zr.correction && zr.s.offsetOn ? "laser" : "pointer";
         var l2 = tzActLine(za, ob);
         var go = tzBtn(i18nT('zoneActive.go_to_x0_y0_target', { target: target === "laser" ? "laser" : i18nT('zoneActive.pointer_lc') }), "primary big", function () {
-          tzActRun(za, 'M98 P"0:/sys/workshop/macros/workzero.g"', i18nT('zoneActive.over_the_point_of', { v: target === "laser" ? "Laser" : i18nT('zoneActive.pointer'), code: TZ_CODES[zr.wn], v2: zr.z ? " (" + tzActFmtXY(za, zr.z.refX, zr.z.refY) + ")" : "" }));
+          tzActRun(za, 'M98 P"0:/sys/workshop/macros/work/workzero.g"', i18nT('zoneActive.over_the_point_of', { v: target === "laser" ? "Laser" : i18nT('zoneActive.pointer'), code: TZ_CODES[zr.wn], v2: zr.z ? " (" + tzActFmtXY(za, zr.z.refX, zr.z.refY) + ")" : "" }));
         }, i18nT('common.tap_again_moves'), "az-g0");
         go.disabled = !!why;
         tzTip(go, i18nT('zoneActive.raises_z_goes_to_x0_y0', { code: TZ_CODES[zr.wn], xy: tzActFmtXY(za, zr.offX, zr.offY), target: target === "laser" ? "LASER" : i18nT('zoneActive.pointer_uc') }));
@@ -27,13 +27,13 @@
         var seg = tzEl("div", "za-seg");
         var blocked = !zr.free || tzActSignedOut();
         var onB = tzBtn("Laser", zr.s.offsetOn ? "primary" : null, function () {
-          tzActRun(za, 'M98 P"0:/sys/workshop/macros/laseroffset.g" S1', i18nT('zoneActive.laser_offset_applied_x0_y0_where'));
+          tzActRun(za, 'M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S1', i18nT('zoneActive.laser_offset_applied_x0_y0_where'));
         });
         onB.disabled = zr.s.offsetOn || blocked;
         tzTip(onB, i18nT('zoneActive.offset_applied_how_it_cuts_the', { xy: tzActFmtXY(za, zr.z.refX + zr.correction.cx, zr.z.refY + zr.correction.cy), xy2: tzActFmtXY(za, zr.z.refX, zr.z.refY) }));
         seg.appendChild(onB);
         var offB = tzBtn(i18nT('zoneActive.pointer'), !zr.s.offsetOn ? "primary" : null, function () {
-          tzActRun(za, 'M98 P"0:/sys/workshop/macros/laseroffset.g" S0', i18nT('zoneActive.laser_offset_removed_x0_y0_where'));
+          tzActRun(za, 'M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S0', i18nT('zoneActive.laser_offset_removed_x0_y0_where'));
         });
         offB.disabled = !zr.s.offsetOn || blocked;
         tzTip(offB, i18nT('zoneActive.offset_removed_to_locate_check_x0', { xy: tzActFmtXY(za, zr.z.refX, zr.z.refY) }));

@@ -83,8 +83,8 @@
       // clamps, safety list. The first line of those files is a guard (cutguard.g, cncguard.g) that only lets the launch go when the page armed
       // it with jobarm.g right before its M32 (global.workshopLaserArmed / workshopCncArmed = uptime + 30 s) and uses the permission up.
       // kind = "Laser" | "CNC". A1 arms one launch of that kind, A0 disarms both. The macro ships with the plugin:
-      // src/_workbench_cut/sd/sys/workshop/macros/jobarm.g.
-      var TZ_JOB_ARM = "0:/sys/workshop/macros/jobarm.g";
+      // src/_workbench_cut/sd/sys/workshop/macros/guard/jobarm.g.
+      var TZ_JOB_ARM = "0:/sys/workshop/macros/guard/jobarm.g";
       function tzJobArmCode(kind, on) {
         return 'M98 P"' + TZ_JOB_ARM + '" A' + (on ? 1 : 0) + (on ? ' K"' + kind + '"' : "");
       }

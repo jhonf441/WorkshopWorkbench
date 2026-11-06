@@ -1,5 +1,17 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.35 -- 2026-11-06
+
+- Side bar and session: the bar follows the session, the real icon with a small lock, the needed role under the name; a page follows a sign-in made in another tab
+
+## 2.22.34 -- 2026-11-06
+
+- Roles: the JS client honors the allow and deny lists of custom roles
+
+## 2.22.33 -- 2026-11-06
+
+- Macros of sys/workshop/macros are now in folders (axis, zcal, focus, work, guard, laser, probe, system); install together with the service and the SD migration
+
 ## 2.22.32 -- 2026-11-05
 
 - QA batch: laser/CNC job does not start off or unhomed, mode gate, shared real-mode rule

@@ -79,7 +79,7 @@
           template: function (r) {
             var l = ["; Z from here (homezhere.g): Z0 with the probe where it stands", "; Made with the start-up assistant of the Workbench. Edit it whenever you need.", ";"];
             l.push("G91", "G1 H2 Z" + r.raise + " F" + r.speed + " S0   ; raise Z for safety", "G90", "G30 K" + r.probe);
-            if (r.thickness) l.push('M98 P"0:/sys/workshop/macros/zsurface.g"   ; thickness of what was measured (needs a bed reference)');
+            if (r.thickness) l.push('M98 P"0:/sys/workshop/macros/zcal/zsurface.g"   ; thickness of what was measured (needs a bed reference)');
             return l.join("\n");
           },
         };

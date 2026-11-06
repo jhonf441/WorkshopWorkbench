@@ -29,17 +29,17 @@
       // Without a probe: the tool is over the point, the person lowers it until it just drags a sheet of paper P mm thick, and this sets that
       // surface as Z0 and rises to H mm above it (zcal-mark.g: it is what Machine > Height uses to calibrate the probe)
       function tzProbePaperCode(h, paper) {
-        return 'M98 P"0:/sys/workshop/macros/zcal-mark.g" P' + paper + " H" + h;
+        return 'M98 P"0:/sys/workshop/macros/zcal/zcal-mark.g" P' + paper + " H" + h;
       }
 
       // The tool (not the probe) over the point X Y at a safe height, to lower it there (zcal-goto.g)
       function tzProbeGoCode(x, y) {
-        return 'M98 P"0:/sys/workshop/macros/zcal-goto.g" X' + x + " Y" + y;
+        return 'M98 P"0:/sys/workshop/macros/zcal/zcal-goto.g" X' + x + " Y" + y;
       }
 
       // "Focus here": with a probe focushere.g measures the surface where the head is (T = thickness to compare, optional); without one the
       // paper sets Z0 here. h = focus height above the surface, paper = thickness of the sheet (mm)
       function tzProbeFocusHereCode(info, h, thickness, paper) {
         if (!info.measures) return tzProbePaperCode(h, paper);
-        return 'M98 P"0:/sys/workshop/macros/focushere.g" H' + h + (thickness > 0 ? " T" + thickness : "");
+        return 'M98 P"0:/sys/workshop/macros/focus/focushere.g" H' + h + (thickness > 0 ? " T" + thickness : "");
       }

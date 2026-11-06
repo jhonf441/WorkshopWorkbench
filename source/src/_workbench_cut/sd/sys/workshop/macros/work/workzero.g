@@ -5,7 +5,7 @@
 ; work zero, and leaves it there (it does not go down to Z0 so the tool
 ; does not dig in / hit the part).
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var safeZ = 5                                   ; mm above the Z work zero
 
 if !move.axes[0].homed || !move.axes[1].homed

@@ -7,11 +7,11 @@
 ; on restart and every time a material macro runs (laserfocus.g).
 ; Zones without a file (e.g. G54 of DWC/CNC) are not affected.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/laseroffset.g" S1   apply
-;       M98 P"0:/sys/workshop/macros/laseroffset.g" S0   remove
-;       M98 P"0:/sys/workshop/macros/laseroffset.g"      toggle
+; Use:  M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S1   apply
+;       M98 P"0:/sys/workshop/macros/laser/laseroffset.g" S0   remove
+;       M98 P"0:/sys/workshop/macros/laser/laseroffset.g"      toggle
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 if !exists(global.laserOffsetOn)
     global laserOffsetOn = true
 
@@ -21,7 +21,7 @@ else
     set global.laserOffsetOn = !global.laserOffsetOn
 
 M400                                            ; do not change origins with a move running
-M98 P"0:/sys/workshop/macros/wpload.g"                          ; reapply the saved origins with the new flag (fast: ~0.6 s; workplaces.g took ~2.9 s)
+M98 P"0:/sys/workshop/macros/work/wpload.g"                          ; reapply the saved origins with the new flag (fast: ~0.6 s; workplaces.g took ~2.9 s)
 if var.en
     M118 P0 S{global.laserOffsetOn ? "Laser offset APPLIED: X0 Y0 = laser" : "Laser offset REMOVED: X0 Y0 = pointer"}
 else

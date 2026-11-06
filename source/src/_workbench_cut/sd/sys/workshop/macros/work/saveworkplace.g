@@ -5,11 +5,11 @@
 ;
 ; The file keeps the origin point in BED coordinates (= where the POINTER
 ; lands); the laser <-> pointer correction of the machine (global.workshopLaserCorrX / Y,
-; loaded from sys/workshop/macros/lasercorrection.g, which the service writes from the
+; loaded from sys/workshop/macros/laser/lasercorrection.g, which the service writes from the
 ; settings store "laser") is only added while the flag global.laserOffsetOn is ON
-; (see sys/workshop/macros/laseroffset.g). The zone file keeps no correction of its own.
+; (see sys/workshop/macros/laser/laseroffset.g). The zone file keeps no correction of its own.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/saveworkplace.g" W2 L0 S"MDF 3mm"
+; Use:  M98 P"0:/sys/workshop/macros/work/saveworkplace.g" W2 L0 S"MDF 3mm"
 ;   W = workplace: 1=G54 2=G55 3=G56 4=G57 5=G58 6=G59 7..9=G59.1..3
 ;   L = WHAT is over the origin point right now (2026-10-08, to avoid the
 ;       double offset):
@@ -33,7 +33,7 @@
 ;      global.cutArea<Mode> = {Xmin, Xmax, Ymin, Ymax} in bed coordinates),
 ;      the origin point has to be INSIDE it.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 if !exists(param.W) || param.W < 1 || param.W > 9
     abort {var.en ? ("Save origin: W missing (1..9)") : ("Guardar origen: falta W (1..9)")}
@@ -47,11 +47,11 @@ if !exists(global.workshopLaserCorrY)
     global workshopLaserCorrY = 0
 if !exists(global.workshopLaserCorrKnown)
     global workshopLaserCorrKnown = false       ; true only while lasercorrection.g says a correction was MEASURED: 0 0 with false is "unknown", not "zero"
-if fileexists("0:/sys/workshop/macros/lasercorrection.g")
-    M98 P"0:/sys/workshop/macros/lasercorrection.g"
+if fileexists("0:/sys/workshop/macros/laser/lasercorrection.g")
+    M98 P"0:/sys/workshop/macros/laser/lasercorrection.g"
 ; An origin is saved as a POINT of the pointer plus the machine's correction, so the correction has to be a MEASURED value: with the file missing or
 ; Known false, 0 0 is not a measure and the zone would be saved (and later cut) with the laser where the pointer is.
-if !fileexists("0:/sys/workshop/macros/lasercorrection.g") || !global.workshopLaserCorrKnown
+if !fileexists("0:/sys/workshop/macros/laser/lasercorrection.g") || !global.workshopLaserCorrKnown
     abort {var.en ? ("Save origin: the laser-pointer correction is not known (measure it in Machine > Offsets). Nothing was saved.") : ("Guardar origen: la correccion laser-puntero no se conoce (midela en Maquina > Offsets). No se guardo nada.")}
 
 M400                                            ; steady position before reading it

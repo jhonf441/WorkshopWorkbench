@@ -80,7 +80,7 @@
             function () {
               tzCode(TZ_CODES[idx])
                 .then(function () {
-                  return tzCode('M98 P"0:/sys/workshop/macros/workzero.g"');
+                  return tzCode('M98 P"0:/sys/workshop/macros/work/workzero.g"');
                 })
                 .then(ptb.data.refreshAll);
             },

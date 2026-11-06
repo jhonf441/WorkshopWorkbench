@@ -7,9 +7,9 @@
 ;        (the coefficients change with the temperature: they are NOT saved; the
 ;        guide recommends repeating it before every mesh)
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zcal-szp.g" X120 Y80 A1
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zcal-szp.g" X120 Y80 A1
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode
 if var.modo != "FFF"
     abort {var.en ? ("SZP: only in FFF mode") : ("SZP: solo en modo FFF")}

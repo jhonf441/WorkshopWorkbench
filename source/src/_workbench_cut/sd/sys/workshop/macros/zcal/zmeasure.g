@@ -8,10 +8,10 @@
 ;
 ; Not here: the touch plate (G38.2 against a plate on the material). It is pending, see the README of WorkshopWorkbench.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zmeasure.g"      (home all axes first; the caller already raised Z and put the probe over the point)
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zmeasure.g"      (home all axes first; the caller already raised Z and put the probe over the point)
 ; After it, zsurface.g can compare the thickness: sensors.probes[0].lastStopHeight is where the probe stopped.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
     abort {var.en ? ("Measure Z: home all axes first") : ("Medir Z: primero hace homing de todos los ejes")}

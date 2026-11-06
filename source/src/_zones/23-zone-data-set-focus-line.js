@@ -7,7 +7,7 @@
         if (!f) return Promise.resolve(false);
         var mp = "0:/macros/laser/" + f.macro;
         return tzGetText(mp).then(function (txt) {
-          var out = txt.replace(/^(\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/|taller\/)?laserfocus\.g"[^\n]*)$/m, function (ln) {
+          var out = txt.replace(/^(\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/(?:focus\/)?|taller\/)?laserfocus\.g"[^\n]*)$/m, function (ln) {
             var cm = "";
             var ci = ln.indexOf(";");
             if (ci >= 0 && ci > ln.lastIndexOf('"')) {
@@ -217,7 +217,7 @@
             return wantFocus ? tzDataWriteFocusMacro(pzd, idx, z, h, macroName) : null;
           })
           .then(function () {
-            return tzCode('M98 P"0:/sys/workshop/macros/workplaces.g"');
+            return tzCode('M98 P"0:/sys/workshop/macros/work/workplaces.g"');
           })
           .then(function () {
             return tzDataRefreshAll(pzd);
@@ -240,7 +240,7 @@
       // macro that calls laserfocus.g with this zone already exists, only the
       // laserfocus line is changed (the rest of the macro stays the same).
       function tzDataFocusMacroBody(pzd, idx, z, h, macroName) {
-        var line = 'M98 P"0:/sys/workshop/macros/laserfocus.g" W' + (idx + 1) + " H" + h + ' N"' + (z.name || TZ_CODES[idx]) + '"';
+        var line = 'M98 P"0:/sys/workshop/macros/focus/laserfocus.g" W' + (idx + 1) + " H" + h + ' N"' + (z.name || TZ_CODES[idx]) + '"';
         return (
           "; " + macroName + " -- " + (z.name || TZ_CODES[idx]) + " (created on the Work zones page)\n" +
           "; Selects " + TZ_CODES[idx] + ", measures the sheet with the probe at the Z point of the zone\n" +
@@ -248,7 +248,7 @@
           '; focus" of the jog or from the "Start GCode" of the program that sends the live job.\n' +
           line + "\n" +
           "; Last line: tells the G-code bridge about a LIVE job (does nothing when the job is a G-code file)\n" +
-          'M98 P"0:/sys/workshop/macros/livemark.g" N"' + (z.name || TZ_CODES[idx]) + '"\n'
+          'M98 P"0:/sys/workshop/macros/laser/livemark.g" N"' + (z.name || TZ_CODES[idx]) + '"\n'
         );
       }
 
@@ -262,7 +262,7 @@
             return tzPutText(
               p,
               // sets H; a macro that only had T (thickness) gets an H, which wins over T
-              txt.replace(/^(\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/|taller\/)?laserfocus\.g"\s+W\d)(?:\s+H-?[\d.]+)?/m, function (all, pre) {
+              txt.replace(/^(\s*M98\s+P"0:\/sys\/(?:workshop\/macros\/(?:focus\/)?|taller\/)?laserfocus\.g"\s+W\d)(?:\s+H-?[\d.]+)?/m, function (all, pre) {
                 return pre + " H" + h;
               })
             );

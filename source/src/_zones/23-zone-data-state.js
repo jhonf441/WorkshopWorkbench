@@ -9,7 +9,7 @@
         // adjust the focus position to reference points or to a
         // map coordinate"): {index: {dx, dy}} = where the probe TOUCHES,
         // relative to the zone's point (it moves with it). Valid for the 3
-        // modes (sys/workshop/macros/zprobepoint.g); in Laser it is also written as X/Y in
+        // modes (sys/workshop/macros/zcal/zprobepoint.g); in Laser it is also written as X/Y in
         // the laserfocus.g line of the material macro (live jobs).
         pzd.TZ_ZPT_FILE = "0:/sys/workshop/config/zone-zpoints.json";
         pzd.zonePts = {};

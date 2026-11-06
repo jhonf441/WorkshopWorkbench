@@ -2175,6 +2175,7 @@
 		"read_only": "Solo lectura: tu rol es {role}",
 		"read_only_signed_out": "Solo lectura: requiere iniciar sesión",
 		"hidden_signed_out": "Requiere iniciar sesión para ver las partes técnicas.",
+		"section_technical": "Solo para técnico",
 		"hidden_by_role": "Las partes técnicas requieren el rol técnico. Tu rol: {role}. Pide el acceso a un administrador."
 	},
 	"ready": {

@@ -3,11 +3,11 @@
 ; bed reference like zhere0.g (so the thickness can still be
 ; measured) and goes up to H mm above the surface.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zcal-mark.g" P0.1 H5
+; Use:  M98 P"0:/sys/workshop/macros/zcal/zcal-mark.g" P0.1 H5
 ;   P = thickness of the paper / feeler gauge (0 to 3 mm, default 0.1)
 ;   H = final height above the surface (optional, default 5)
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var p = exists(param.P) ? param.P : 0.1
 var h = exists(param.H) ? param.H : 5
 if var.p < 0 || var.p > 3

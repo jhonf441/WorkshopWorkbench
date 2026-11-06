@@ -3,7 +3,7 @@
 ; jobs: if anything is not right it aborts and the whole job is cancelled
 ; before the laser turns on.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/laserguard.g" S4      (S = power in % it is going to use)
+; Use:  M98 P"0:/sys/workshop/macros/guard/laserguard.g" S4      (S = power in % it is going to use)
 ;
 ; CAREFUL: do NOT use P for the power -- in M98, P is the file name and
 ; param.P never reaches the macro (real bug 2026-10-08: the guard
@@ -14,7 +14,7 @@
 ; 3 %, HARD CAP 10 % (this file). Change the cap ONLY here and in the UI
 ; (TJ_LASER_FRAME_MAX_PCT in 15-cutarea.js) and only if the user asks for it.
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var modo = exists(global.selectedMode) ? global.selectedMode : state.machineMode   ; machine mode (global.selectedMode if it exists; otherwise the RRF one)
 var maxPct = 10
 

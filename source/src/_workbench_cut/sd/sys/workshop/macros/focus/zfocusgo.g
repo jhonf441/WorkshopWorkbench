@@ -4,9 +4,9 @@
 ; as long as the material was measured with this zone and Z was not homed again afterwards.
 ; NOTHING is measured here: if that is not true the head ends up at the wrong height.
 ;
-; Use:  M98 P"0:/sys/workshop/macros/zfocusgo.g" H7.5      (H = focus height in mm, 1 to 60)
+; Use:  M98 P"0:/sys/workshop/macros/focus/zfocusgo.g" H7.5      (H = focus height in mm, 1 to 60)
 
-var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/language.g)
+var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 
 if !exists(param.H)
     abort {var.en ? ("Go to focus: H missing (focus height in mm)") : ("Ir a la altura de foco: falta H (altura en mm)")}
