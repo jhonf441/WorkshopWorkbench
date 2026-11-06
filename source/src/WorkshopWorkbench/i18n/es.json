@@ -23,8 +23,8 @@
     "guide": "Guíame paso a paso",
     "guide_close": "Cerrar la guía",
     "open_machine": "Abrir Máquina > Modos de la máquina",
-    "saved_service": "Guardado en el perfil de la máquina.",
-    "saved_local": "Guardado en este navegador (el servicio no lo aceptó).",
+    "saved_service": "Guardado en el perfil de la máquina: {modes}. Esto solo dice qué modos usa la máquina; no cambia el modo en que está ahora.",
+    "saved_local": "Guardado en este navegador (el servicio no lo aceptó): {modes}. Esto no cambia el modo de la máquina.",
     "guide_missing_title": "Lo que falta",
     "miss_answer": "Falta: indicar que esta máquina hace trabajo láser o CNC (Láser o CNC activados).",
     "miss_switch": "Falta: la máquina está en modo {mode} y tiene que estar en {modes}.",
@@ -44,6 +44,16 @@
     "pick_one": "Marca Láser o CNC, o pulsa \"No uso láser ni CNC\".",
     "not_using": "No uso láser ni CNC",
     "guide_check": "Ya lo hice - comprobar",
-    "still_missing": "Todavía no está en el modo correcto."
+    "still_missing": "Todavía no está en el modo correcto.",
+    "none": "ninguno",
+    "save_nochange": "Sin cambios: el perfil ya está así.",
+    "switch_title": "Falta cambiar la máquina de modo",
+    "switch_help": "Los modos ya están activados; lo que falta es que la máquina esté en uno de ellos. El botón corre la macro del modo con la máquina en reposo (no mueve ningún eje) y espera a que la máquina confirme el cambio.",
+    "switch_to": "Cambiar la máquina a {mode}",
+    "switch_confirm": "Toca otra vez para cambiar a {mode}",
+    "switching": "Cambiando a {mode}...",
+    "switched": "La máquina está en modo {mode}: la página se abre.",
+    "switch_failed": "La máquina no cambió a {mode} (sigue en {now}). Revisa la macro del modo (macros/mode/selectlaser.g o selectcnc.g).",
+    "switch_busy": "Hay un trabajo en curso: espera a que termine para cambiar de modo."
   }
 }

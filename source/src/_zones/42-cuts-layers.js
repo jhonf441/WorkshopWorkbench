@@ -48,12 +48,7 @@
       }
 
       function tcLayerRowFields(tc, ly, t, has, L, li) {
-        var ci = document.createElement("input");
-        ci.type = "color";
-        ci.value = L.color;
-        ci.className = "tc-color";
-        ci.title = i18nT('cuts.layer_color');
-        ci.addEventListener("change", function () { L.color = ci.value; tcSave(tc); tcGo(tc); });
+        var ci = workshopColorEl(L.color, function (v) { L.color = v; tcSave(tc); tcGo(tc); }, { event: "change", compact: true, title: i18nT('cuts.layer_color') }); // the color input of the family (19-help-dom.js)
         ly.row.appendChild(ci);
         var nm = tzEl("div", "tc-layer-nom");
         var nb = tzEl("button", "tc-layer-nb", L.name);

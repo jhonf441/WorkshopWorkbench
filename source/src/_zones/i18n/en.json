@@ -1,6 +1,8 @@
 {
 	"common": {
 		"laser_mode_only": "Laser mode only.",
+		"start_no_power": "The machine is off (no motor power): turn it on before starting.",
+		"start_not_homed": "{axes} not homed: home the machine before starting.",
 		"a_clamp": "a clamp",
 		"tap_again_moves": "Tap again: MOVES",
 		"x_and_y_need_homing": "X and Y need homing.",
@@ -1809,7 +1811,8 @@
 		"layer_laser": "Layer {n}: {p} % at {f} mm/min - {d} mm, {t}",
 		"by_depth": "Depth",
 		"by_power": "Power",
-		"by_layers": "Layers",
+		"by_layers": "Layers (power and feed)",
+		"one_layer": "The whole job uses the same power and feed, so it is drawn in one color. Layers are told apart by power and feed (by depth in CNC), not by the color of the design.",
 		"color_by": "Colour by",
 		"snap_outline": "outline",
 		"snap_centre": "centre",

@@ -109,6 +109,11 @@
             row.appendChild(tzEl("span", null, txt));
             tvs.card.appendChild(row);
           });
+        } else if (tvs.prev.groups && tvs.prev.groups.length === 1) {
+          // WB-2: one group = one color; say why instead of leaving the person to think the layers are not told apart
+          var one = tzEl("div", "tz-muted", i18nT('tv.one_layer'));
+          one.style.marginTop = "10px";
+          tvs.card.appendChild(one);
         }
         // chart of the job over time
         var gt = tzEl("div", "tz-muted", i18nT('tv.chart'));
@@ -238,6 +243,8 @@
         tvs.card.appendChild(en);
         tvs.card.appendChild(tzEl("div", "tz-muted", i18nT('tv.send_help', { zone: (tvs.ctx.data.nameActive && tvs.ctx.data.nameActive()) || "?" })));
         tzSafetyRender(tvs.card, function () { tvVisRender(tvs); }, tvs.prev.mode); // the safety list of the mode of the file (46-ready-safety.js)
+        // what the machine still needs (homing with its button, mode, free) like every other step that starts a job (13-needs.js)
+        tjNeedsRow(tvs.card, { st: tvs.ctx.machine.getSt() || {}, free: tvs.ctx.machine.free(), mode: tvs.prev.mode, focus: false, onMsg: function (t, ok) { tvs.msgOk = ok; tvs.msg = t; tvVisRender(tvs); }, after: function () { tvs.ctx.machine.refresh(); tvVisRender(tvs); } });
         var f3 = tzEl("div", "tz-row");
         f3.style.cssText += "gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;";
         var ini = tzBtn(i18nT('tv.send'), "primary", function () { tvVisStartJob(tvs); }, (tvVisNoticeArea(tvs).length ? i18nT('tv.send_confirm_outside', { f: tvs.sel }) : i18nT('tv.send_confirm', { f: tvs.sel })), "tv-send");

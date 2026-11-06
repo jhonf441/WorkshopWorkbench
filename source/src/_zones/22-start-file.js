@@ -63,6 +63,12 @@
         var before = null;
         return Promise.resolve()
           .then(function () { return read().then(function (s) { before = s; }, function () { before = null; }); })
+          .then(function () {
+            // a laser / CNC job (deps.kind, set by tzStartArmed) does not start on a machine that is off or not homed: the buttons were grey with the
+            // reason when drawn, but they can be stale, and a file started through the bridge first opens a live job and only then dies in its macro
+            var why = deps && deps.kind ? tzStartBlockOm(before) : "";
+            if (why) throw new Error(why);
+          })
           .then(function () { return tzPutJob(path, texto, deps); })
           .then(function () { return send('M32 "' + path + '"'); })
           .then(function (t) {
@@ -119,7 +125,7 @@
         return tzPutJob(path, texto, deps).then(function () {
           return tzJobArm(kind, true, deps)
             .catch(function (e) { throw new Error(i18nT('common.not_armed', { err: e && e.message ? e.message : e })); })
-            .then(function () { return start(path, null, deps); })
+            .then(function () { return start(path, null, Object.assign({ kind: kind }, deps)); })
             .catch(function (e) { return disarm().then(function () { throw e; }); });
         });
       }

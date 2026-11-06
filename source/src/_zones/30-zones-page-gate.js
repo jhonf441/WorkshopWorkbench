@@ -99,8 +99,9 @@
         // not saved in the service: without a session that is the cause (sign in and it is saved), not a service that is down
         if (!g.info.viaService) p.appendChild(tzEl("div", "tz-muted", i18nT(typeof workshopSignedOut === "function" && workshopSignedOut() ? "modes_gate.local_note_signed_out" : "modes_gate.local_note")));
         if (g.guide) p.appendChild(tzGateGuideBox(pz, d));
+        else if (d.reason === "elsewhere") tzGateSwitchBox(pz, p); // 30-zones-page-gate-switch.js: nothing to answer, the machine has to change mode
         else tzGateSwitches(pz, p);
-        tzGateActions(pz, p);
+        tzGateActions(pz, p, d);
         if (g.status) p.appendChild(tzEl("div", "tz-muted", g.status));
       }
 
@@ -123,7 +124,7 @@
           cb.type = "checkbox";
           cb.checked = !!pick[m];
           cb.setAttribute("data-mode", m);
-          cb.addEventListener("change", function () { pick[m] = cb.checked; });
+          cb.addEventListener("change", function () { pick[m] = cb.checked; tzGateSaveState(pz); });
           lab.appendChild(cb);
           lab.appendChild(tzEl("span", null, i18nT("modes_gate.row_" + k)));
           row.appendChild(lab);
@@ -135,14 +136,20 @@
         p.appendChild(box);
       }
 
-      function tzGateActions(pz, p) {
+      function tzGateActions(pz, p, d) {
         var g = pz.modesGate;
         var row = tzEl("div", "tz-row tz-actions");
         row.style.marginTop = "12px";
-        if (!g.guide) {
-          row.appendChild(tzBtn(i18nT("modes_gate.save"), "primary", function () { tzGateSave(pz, tzGatePick(pz)); }));
+        g.saveBtn = g.saveNote = null;
+        if (!g.guide && d.reason !== "elsewhere") {
+          // Save is grey while what is ticked is what the profile already has, and says so (it used to stay active and say "saved" for nothing)
+          g.saveBtn = tzBtn(i18nT("modes_gate.save"), "primary", function () { tzGateSave(pz, tzGatePick(pz)); });
+          row.appendChild(g.saveBtn);
           row.appendChild(tzBtn(i18nT("modes_gate.guide"), "", function () { g.guide = true; g.status = ""; tzGatePaint(pz); }));
-        } else {
+          g.saveNote = tzEl("span", "tz-muted", i18nT("modes_gate.save_nochange"));
+          row.appendChild(g.saveNote);
+          tzGateSaveState(pz);
+        } else if (g.guide) {
           row.appendChild(tzBtn(i18nT("modes_gate.guide_close"), "", function () { g.guide = false; g.status = ""; tzGatePaint(pz); }));
         }
         // optional enrichment: the same switches live in Machine > Modes, linked only when that plugin is there
@@ -170,7 +177,7 @@
         tzGatePaint(pz);
         return workshopModes.save(answer, g.info.profile).then(function (r) {
           g.busy = false;
-          g.status = r.viaService ? i18nT("modes_gate.saved_service") : i18nT("modes_gate.saved_local");
+          g.status = i18nT(r.viaService ? "modes_gate.saved_service" : "modes_gate.saved_local", { modes: tzGateAnswerText(answer) }); // says what was saved and where
           return tzGateLoad(pz, true);
         });
       }

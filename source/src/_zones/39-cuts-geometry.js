@@ -478,7 +478,6 @@
           ".tc-layer-nom{display:flex;flex-direction:column;min-width:0;}",
           ".tc-layer-nb{background:none;border:none;color:inherit;font:inherit;font-weight:500;text-align:left;padding:0;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
           ".tc-layer .tz-input{width:100%;box-sizing:border-box;min-width:0;}",
-          ".tc-color{width:28px;height:28px;padding:0;border:none;background:none;cursor:pointer;}",
           ".tc-layer-more{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 8px;margin:-2px 0 2px 0;border-radius:6px;background:rgba(255,255,255,0.05);}",
           ".theme--light .tc-layer{border-color:rgba(0,0,0,0.14);}",
           ".theme--light .tc-layer.active{border-color:#1976d2;background:rgba(25,118,210,0.08);}",

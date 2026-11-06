@@ -1,5 +1,9 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.32 -- 2026-11-05
+
+- QA batch: laser/CNC job does not start off or unhomed, mode gate, shared real-mode rule
+
 ## 2.22.31 -- 2026-11-05
 
 - Session state, refusals and notices unified; errors kept as objects; 403 names the action

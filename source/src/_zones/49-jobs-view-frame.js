@@ -83,6 +83,8 @@
         if (!tvs.prev) return "";
         var mode = tvs.prev.mode, machine = tvs.ctx.machine.mode();
         if (machine !== mode) return i18nT('tv.send_mode', { file: mode, machine: machine });
+        var notReady = tzStartBlock(tvs.ctx.machine.getSt()); // off / not homed (22-start-block.js)
+        if (notReady) return notReady;
         return tzSafetyDone(mode) ? "" : i18nT(mode === "CNC" ? 'ready.safety_needed_cnc' : 'ready.safety_needed');
       }
 

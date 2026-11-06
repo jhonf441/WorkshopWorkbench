@@ -1,6 +1,8 @@
 {
 	"common": {
 		"laser_mode_only": "Solo en modo Láser.",
+		"start_no_power": "La máquina está apagada (sin alimentación de los motores): enciéndela antes de iniciar.",
+		"start_not_homed": "Falta el homing de {axes}: haz homing antes de iniciar.",
 		"a_clamp": "una prensa",
 		"tap_again_moves": "Tocar otra vez: MUEVE",
 		"x_and_y_need_homing": "Falta homing de X e Y.",
@@ -1809,7 +1811,8 @@
 		"layer_laser": "Capa {n}: {p} % a {f} mm/min - {d} mm, {t}",
 		"by_depth": "Profundidad",
 		"by_power": "Potencia",
-		"by_layers": "Capas",
+		"by_layers": "Capas (potencia y avance)",
+		"one_layer": "Todo el trabajo usa la misma potencia y avance, por eso sale de un solo color. Las capas se separan por potencia y avance (por profundidad en CNC), no por el color del diseño.",
 		"color_by": "Color por",
 		"snap_outline": "contorno",
 		"snap_centre": "centro",

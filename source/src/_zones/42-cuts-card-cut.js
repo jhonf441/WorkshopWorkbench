@@ -202,8 +202,10 @@
             else
               tcFrameStart(tc, "laser", tc.jobStep.pct);
           });
-          goJ.disabled = !rc.free || !(isCut ? tzSafetyDone("Laser") : tc.jobStep.ack) || tcValidate(tc, { frame: !isCut }).length > 0;
+          var notReady = tzStartBlock(tc.ctx.machine.getSt()); // off / not homed (22-start-block.js): the button stays grey and the reason is written next to it
+          goJ.disabled = !rc.free || !!notReady || !(isCut ? tzSafetyDone("Laser") : tc.jobStep.ack) || tcValidate(tc, { frame: !isCut }).length > 0;
           rc.cr3.appendChild(goJ);
+          if (notReady) rc.cr3.appendChild(tzEl("span", "tz-muted", notReady));
           rc.cr3.appendChild(tzBtn(i18nT('zcal.cancel'), null, function () { tc.jobStep = null; tcGo(tc); }));
         }
       }

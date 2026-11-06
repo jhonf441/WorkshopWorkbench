@@ -30,7 +30,7 @@
               if (a && a.letter) axes[a.letter] = a;
             });
             var g = s.global || {};
-            var mode = g.selectedMode || (s.state && s.state.machineMode); // without the workshop's global: RRF's mode
+            var mode = workshopCurrentMode(s); // RRF's machineMode first (the macros write selectedMode before the M45x, which can fail)
             var area = TZ_WORK_MODES.indexOf(mode) >= 0 ? g["cutArea" + mode] : null; // a mode the Workbench does not serve has no area here
             pzd.st = {
               axes: axes,
@@ -40,6 +40,7 @@
               machineMode: (s.state && s.state.machineMode) || "", // RRF's (decides whether G1 turns the laser on)
               cutArea: Array.isArray(area) && area.length === 4 ? area : null,
               status: s.state && s.state.status,
+              atxPower: s.state ? s.state.atxPower : undefined, // false = the motor supply is off (only a machine with an ATX pin publishes it)
               globals: g, // the cutting area of every mode (cutAreaLaser/CNC/FFF)
               comp: s.move && s.move.compensation, // malla activa (Mesh)
               probes: (s.sensors && s.sensors.probes) || [], // offsets G31 (Mesh)
