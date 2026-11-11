@@ -29,6 +29,8 @@
         ".tz-hd.wf-bar > .wf-badge{order:1;}",
         ".tz-hd.wf-bar > .wf-bar-txt{order:2;flex:1 1 0;min-width:0;}",
         ".tz-hd.wf-bar > [data-tz-palette-btn]{order:3;flex:0 0 auto;margin:0 0 0 auto;}",
+        // the start-up chip (rocket) sits in row 1 next to the Commands button (owner 2026-11-06: alone on a second line it looked like a stray icon)
+        ".tz-hd.wf-bar > [data-workshop-startup-input]{order:3;flex:0 0 auto;}",
         ".tz-hd.wf-bar::after{content:\"\";order:4;flex:0 0 100%;height:0;}",
         ".tz-hd.wf-bar .wf-lead{max-width:none;}",
         ".tz-hd.wf-bar > .wf-bar-right{margin-left:0;}",

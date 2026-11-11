@@ -1,5 +1,17 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.22.39 -- 2026-11-10
+
+- Recipes relative to the G-code (Printing), session role switch and UI fixes (26), SD layout manifest
+
+## 2.22.38 -- 2026-11-09
+
+- SD layout: mode files move to sys/workshop/modes, hook macros, templates for air assist, status LEDs and CNC buttons, bar buttons with a missing macro locked, unmigrated modes notice
+
+## 2.22.37 -- 2026-11-07
+
+- UI fixes from the 18 screenshots: session and role locks, floating camera and Jog, Model colours, bed editor, calibration assistant
+
 ## 2.22.36 -- 2026-11-06
 
 - Refusals: the sign-in chip and only the note nearest to the touch blink; a reason fits its text so the blink rings the words

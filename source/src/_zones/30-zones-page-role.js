@@ -126,7 +126,7 @@
       }
 
       // Puts the tab buttons and the headers of the groups in the order of the plan of the view; what the plan does not have is hidden
-      // The tabs of the Technician view that this view does not have (AWS rule: what you cannot open stays in its place, locked, with the role that opens it).
+      // The tabs of the Technician view that this view does not have (locked-in-place rule: what you cannot open stays in its place, locked, with the role that opens it).
       function tzLockedTabs(pz) {
         var view = tzViewNow();
         if (view === "technician" || tzPageGated(pz.pag, view)) return [];

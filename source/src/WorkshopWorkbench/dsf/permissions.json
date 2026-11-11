@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "plugin": "WorkshopWorkbench",
+  "namespace": "workbench",
+  "prefixes": [
+    "bigpart",
+    "frame",
+    "job",
+    "livejob",
+    "trace",
+    "workstate"
+  ],
+  "ui": "ui:workbench:open",
+  "operations": [
+    "activity.log",
+    "bigpart.counts",
+    "bigpart.fit",
+    "bigpart.marks",
+    "bigpart.part",
+    "bigpart.read",
+    "camera.token",
+    "frame.start",
+    "frame.status",
+    "frame.stop",
+    "job.close",
+    "jobs.preview",
+    "livejob.interrupted.discard",
+    "livejob.interrupted.get",
+    "livejob.interrupted.hide",
+    "livejob.interrupted.list",
+    "livejob.resume.arm",
+    "livejob.resume.disarm",
+    "livejob.stop_safe",
+    "trace.since",
+    "vision.post",
+    "workstate.get",
+    "workstate.set"
+  ],
+  "shared": [
+    "activity.log",
+    "camera.token",
+    "jobs.preview",
+    "vision.post"
+  ],
+  "restricted": [],
+  "targets": [
+    "printing:file",
+    "vision:path",
+    "workbench:interrupted"
+  ],
+  "profiles": {
+    "readonly": {
+      "title": "WorkbenchReadOnly",
+      "capabilities": [
+        "activity.view",
+        "camera.view",
+        "jobs.view",
+        "machine.stop",
+        "machine.view"
+      ]
+    },
+    "operator": {
+      "title": "WorkbenchOperator",
+      "capabilities": [
+        "activity.view",
+        "camera.view",
+        "camera.vision",
+        "jobs.run",
+        "jobs.view",
+        "machine.move",
+        "machine.stop",
+        "machine.view",
+        "machine.workstate"
+      ]
+    },
+    "admin": {
+      "title": "WorkbenchAdmin",
+      "capabilities": [
+        "activity.view",
+        "camera.view",
+        "camera.vision",
+        "jobs.manage",
+        "jobs.run",
+        "jobs.view",
+        "machine.move",
+        "machine.stop",
+        "machine.view",
+        "machine.workstate"
+      ]
+    }
+  }
+}

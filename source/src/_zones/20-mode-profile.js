@@ -56,7 +56,7 @@
       var TZ_MODES_ELSEWHERE = {
         FFF: { accent: "#9e9e9e", label: "FFF", plugin: "WorkshopPrinting", path: "/Plugins/Printing", name: "zonesPage.other_mode_printing" },
       };
-      // macro that switches the machine to each mode (sys/modestate.g, run with the machine idle)
+      // macro that switches the machine to each mode (the mode state file of machine-modes.js, run with the machine idle)
       var TZ_MACROS_MODE = { Laser: "mode/selectlaser.g", CNC: "mode/selectcnc.g" };
 
       // profile of a mode; an unknown one (the state is not known yet) uses the Laser one so nothing disappears by mistake
