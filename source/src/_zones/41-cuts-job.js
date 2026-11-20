@@ -7,7 +7,7 @@
         var correction = tc.ctx.cut.correction();
         tcSyncLayers(tc);
         if (!tcShapesInCutOrder(tc).length) errs.push(i18nT('cuts.there_are_no_shapes_or_all'));
-        if (!st || st.mode !== "Laser") errs.push(i18nT('cuts.the_machine_is_not_in_laser'));
+        if (!st || st.mode !== "Laser") errs.push(st && st.mode === "?" ? i18nT('common.mode_unknown') : i18nT('cuts.the_machine_is_not_in_laser'));
         if (!(opts && opts.frame)) tcCutGuard(tcCutGuardInput(tc)).forEach(function (e) { errs.push(e); }); // zone, material and focus (41-cuts-job-guard.js); framing does not cut
         if (!correction) errs.push(i18nT('cuts.there_is_no_known_laser_correction'));
         if (!area) errs.push(i18nT('cuts.the_cut_area_of_this_mode'));

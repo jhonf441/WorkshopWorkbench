@@ -27,20 +27,25 @@
       }
 
       // The panel of the case "turned on, machine elsewhere": a button per work mode that is on.
-      function tzGateSwitchBox(pz, p) {
+      function tzGateSwitchBox(pz, p, compact) {
         var g = pz.modesGate;
         var box = tzEl("div", null);
-        box.style.marginTop = "12px";
-        box.appendChild(tzEl("div", "tz-gate-miss", i18nT("modes_gate.switch_title")));
-        box.appendChild(tzEl("div", "tz-gate-help", i18nT("modes_gate.switch_help")));
+        box.style.marginTop = compact ? "6px" : "12px";
+        if (!compact) {
+          box.appendChild(tzEl("div", "tz-gate-miss", i18nT("modes_gate.switch_title")));
+          box.appendChild(tzEl("div", "tz-gate-help", i18nT("modes_gate.switch_help")));
+        }
         var row = tzEl("div", "tz-row tz-actions");
         row.style.marginTop = "8px";
+        var reason = typeof workshopModeSwitchReason === "function" ? workshopModeSwitchReason() : "";
         workshopModesEnabled(g.info.state).filter(function (m) { return TZ_WORK_MODES.indexOf(m) >= 0; }).forEach(function (m) {
           var b = tzBtn(i18nT("modes_gate.switch_to", { mode: m }), "primary", function () { return tzGateSwitchMode(pz, m); }, i18nT("modes_gate.switch_confirm", { mode: m }), "gate-switch-" + m);
-          b.disabled = g.busy;
-          row.appendChild(tzTechOnly(b)); // it changes the machine's mode: the technician's (the page says so to the others)
+          // it changes the machine's mode: the same rule as the bar (workshopModeSwitchReason); the button stays and the reason is written under it
+          b.disabled = g.busy || !!reason;
+          row.appendChild(b);
         });
         box.appendChild(row);
+        if (reason) { var why = tzEl("div", "tz-note", reason); why.style.marginTop = "6px"; box.appendChild(why); }
         p.appendChild(box);
       }
 
@@ -48,6 +53,8 @@
       function tzGateSwitchMode(pz, mode) {
         var g = pz.modesGate;
         if (g.busy) return Promise.resolve(false);
+        var denied = typeof workshopModeSwitchReason === "function" ? workshopModeSwitchReason() : "";
+        if (denied) { g.status = denied; g.key = ""; tzGatePaint(pz); return Promise.resolve(false); }
         var st = pz.data.st();
         if (st && tzJobInProgress(st)) { g.status = i18nT("modes_gate.switch_busy"); g.key = ""; tzGatePaint(pz); return Promise.resolve(false); }
         g.busy = true;

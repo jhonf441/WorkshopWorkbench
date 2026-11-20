@@ -140,7 +140,7 @@
       function tzLockCoverOpen(pz, l) {
         var out = typeof workshopSignedOut === "function" && workshopSignedOut();
         pz.lockCover.textContent = "";
-        pz.lockCover.appendChild(workshopNoticeEl(out ? "session" : "role", "cover", { needed: "technician", action: "" }));
+        pz.lockCover.appendChild(workshopNoticeEl(out ? "session" : "role", "cover", { needed: "technician", action: "", subject: i18nT("subjects_zones.zones") }));
         pz.lockCover.style.display = "";
         Object.keys(pz.layoutButtons).forEach(function (k) { pz.layoutButtons[k].classList.toggle("on", k === l); });
         if (typeof pz.lockCover.scrollIntoView === "function") pz.lockCover.scrollIntoView({ block: "nearest", behavior: "smooth" });

@@ -103,7 +103,8 @@
         box.appendChild(tzLjRecordTitle(rec));
         if (rec.hidden) box.appendChild(tzEl("div", "tz-muted", i18nT('livejob.off_the_table')));
         box.appendChild(tzLjRecordWhere(rec));
-        tzLjRecordWhy(rec, box);
+        var whyRole = tzLjRecordWhy(rec, box);
+        if (!whyRole || tzLjCan("livejob.resume.arm")) box.appendChild(tzReasonInterrupted(rec)); // the line above already says a role that falls short
         box.appendChild(tzLjRecordButtons(s, rec));
         if ((s.asst && s.asst.id === rec.id) || rec.armed) tzLjRenderAssistant(box, s, rec);
         return box;

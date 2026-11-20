@@ -81,7 +81,7 @@
         card.innerHTML = "";
         tzReadyHeader(rd, card, checks);
         if (st.mode !== "Laser") {
-          card.appendChild(tzEl("div", "tz-muted", i18nT('ready.laser_only')));
+          card.appendChild(tzEl("div", "tz-muted", st.mode === "?" ? i18nT('common.mode_unknown') : i18nT('ready.laser_only')));
         } else {
           tjNeedsRow(card, { st: st, free: rd.ctx.machine.free(), mode: "Laser", focus: false, onMsg: tzBind(tzReadyMsg, rd), after: function () { rd.lastKey = ""; rd.ctx.machine.refresh(); } });
         }

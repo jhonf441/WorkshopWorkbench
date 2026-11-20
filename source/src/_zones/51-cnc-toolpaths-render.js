@@ -14,7 +14,7 @@
         rc.card.appendChild(h);
         rc.card.appendChild(tzEl("div", "tz-muted", i18nT('cnc.intro')));
         if (rc.s && rc.s.mode && rc.s.mode !== "CNC") {
-          rc.card.appendChild(tzEl("div", "tz-msg err", i18nT('cnc.disabled_mode', { mode: rc.s.mode })));
+          rc.card.appendChild(tzEl("div", "tz-msg err", rc.s.mode === "?" ? i18nT('common.mode_unknown_disabled') : i18nT('cnc.disabled_mode', { mode: rc.s.mode })));
           return;
         }
         // design: choose, name, new, delete

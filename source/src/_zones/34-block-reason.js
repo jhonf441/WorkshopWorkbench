@@ -6,21 +6,24 @@
       var TZ_BLOCK_STATUS = { off: "block_off", halted: "block_halted", disconnected: "block_disconnected", updating: "block_updating", starting: "block_starting", changingTool: "block_changing_tool" };
       // Why the machine is not free, from its status: "off" or "halted" is not "busy" (nothing moves, and the cause is another one). The key (zoneActive.*)
       // of the reason; the generic busy one (a job or a movement) when the status says nothing else.
-      function tzNotFreeWhy(status) {
+      // `mode` (optional): the machine mode; a known mode the Workbench does not serve (FFF) or an unknown one is the reason when the status says nothing else
+      function tzNotFreeWhy(status, mode) {
         if (status === "off") return "why_off";
         if (status === "halted") return "why_halted";
         if (status === "disconnected") return "why_disconnected";
         if (status === "updating") return "why_updating";
         if (status === "starting") return "why_starting";
+        if (mode !== undefined && TZ_WORK_MODES.indexOf(mode) < 0) return mode && mode !== "?" ? "why_mode_elsewhere" : "why_mode_unknown";
         return "why_busy";
       }
       // the same as a short text for the badge of the needs list
-      function tzNotFreeBadge(status) {
+      function tzNotFreeBadge(status, mode) {
         if (status === "off") return i18nT('needs.not_free_off');
         if (status === "halted") return i18nT('needs.not_free_halted');
         if (status === "disconnected") return i18nT('needs.not_free_disconnected');
         if (status === "updating") return i18nT('needs.not_free_updating');
         if (status === "starting") return i18nT('needs.not_free_starting');
+        if (mode !== undefined && TZ_WORK_MODES.indexOf(mode) < 0) return mode && mode !== "?" ? i18nT('needs.not_free_mode_elsewhere') : i18nT('common.mode_unknown');
         return i18nT('needs.machine_busy', { status: status || "?" });
       }
       function tzBlockReason(i) {

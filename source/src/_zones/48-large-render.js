@@ -11,9 +11,10 @@
         h.style.cssText = "font-size:16px;font-weight:500;";
         tg.card.appendChild(h);
         tg.card.appendChild(tzEl("div", "tz-muted", i18nT('large.cuts_in_parts_a_design_larger')));
+        tg.card.appendChild(tzReasonEl("large"));
         var stM = tg.ctx.machine.getSt();
         if (stM && stM.mode && stM.mode !== "Laser") {
-          tg.card.appendChild(tzEl("div", "tz-msg err", i18nT('large.disabled_the_machine_is_in_mode', { mode: stM.mode })));
+          tg.card.appendChild(tzEl("div", "tz-msg err", stM.mode === "?" ? i18nT('common.mode_unknown_disabled') : i18nT('large.disabled_the_machine_is_in_mode', { mode: stM.mode })));
           return;
         }
         if (!tgGrArea(tg)) {
@@ -226,6 +227,7 @@
             if (lists < 2) bcal.disabled = true;
             fb.appendChild(bcal);
             p4.appendChild(fb);
+            if (workshopPluginActive("vision")) p4.appendChild(tzReasonEl("vision"));
             if (tg.data.newT) {
               p4.appendChild(tzEl("div", "tz-msg " + (tg.data.errorMax <= TG_ERROR_OK ? "ok" : "err"), i18nT('large.rotation_degrees_differences_mm', { rotation: tzFmt(tg.data.newT.rotation), list: tg.data.errors.map(tzFmt).join(" / ") })));
               p4.appendChild(tgGrButton(tg, i18nT('large.use_this_location'), tg.data.errorMax <= TG_ERROR_OK ? "primary" : "", tzBind(tgGrUseMeasure, tg)));

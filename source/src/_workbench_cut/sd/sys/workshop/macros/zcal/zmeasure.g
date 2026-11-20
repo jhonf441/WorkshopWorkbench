@@ -28,3 +28,12 @@ if sensors.probes[0].type == 9
     G4 P300
 M400
 G30                                             ; measure: Z0 = surface under the probe
+; 2026-11-11: RRF does NOT stop a macro because G30 failed ("Probe was not triggered during probing move": no material under the probe, a
+; BLTouch alarm...): it prints the error and the next lines run as if Z0 had been measured (laserfocus.g went on to "surface measured", turned the
+; air on and set workshopFocusOk, so the job carried on with no focus). result is 0 only when G30 worked: here it stops, and workshopFocusOk stays
+; false so livemark.g stops the job.
+if result != 0
+    var f1 = var.en ? "Measure Z: the probe touched nothing. Is there material under the probe?" : "Medir Z: la sonda no toco nada. Hay material debajo de la sonda?"
+    var f2 = var.en ? "The focus was not set and the job was stopped." : "No se fijo el foco y el trabajo se detuvo."
+    abort {var.f1 ^ " " ^ var.f2}
+

@@ -288,6 +288,7 @@
           var bV = tzTip(tzBtn(i18nT('cuts.detect_in_the_video'), null, function () { tcCenterCameraDetect(tc, false); }), i18nT('cuts.faster_using_the_video_image_less'));
           bV.disabled = tc.centerCamera.busy;
           ccm.appendChild(bV);
+          ct.cc.appendChild(tzReasonEl("vision"));
           if (tc.centerCamera.notice) ct.cc.appendChild(tzEl("div", "tz-msg err", tc.centerCamera.notice));
           if (tc.centerCamera.items.length) {
             var lst = tzEl("div");

@@ -42,7 +42,7 @@
       function tcCncStartBlock(tc, b) {
         var s = tc.ctx.machine.getSt();
         if (!s || s.mode !== "CNC") return i18nT('cnc.mode_is_not_cnc');
-        if (!tc.ctx.machine.free()) return i18nT('zoneActive.' + tzNotFreeWhy(s.status));
+        if (!tc.ctx.machine.free()) return i18nT('zoneActive.' + tzNotFreeWhy(s.status, s.mode));
         if (tzStartBlock(s)) return tzStartBlock(s); // off / not homed (22-start-block.js)
         if (!b.plan.ok || !b.v.ok) return i18nT('cnc.fix_errors_first');
         if (!tc.cnc || tc.cnc.key !== b.key) return i18nT('cuts.cnc_not_reviewed');

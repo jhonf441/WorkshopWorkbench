@@ -142,7 +142,7 @@
         if (ifT) pmt.posPop.appendChild(tzEl("div", "tz-muted", "A Z" + tzFmt(tz) + ": " + tzToolCameraInfoTxt(pmt, ifT)));
         if (cp.z < pmt.CAMERA_ZMIN - 0.05) pmt.posPop.appendChild(tzEl("div", "tz-msg err", i18nT('zonesPage.raises_z_to_mm_the_minimum', { zmin: pmt.CAMERA_ZMIN })));
         var reason = !cp.homed ? (cp.carriage ? i18nT('zonesPage.x_y_and_z_need_homing') : i18nT('zonesPage.y_and_z_need_homing')) : !pmt.data.machineFree() ? i18nT('zonesPage.the_machine_is_busy_or_a') : "";
-        if (reason) pmt.posPop.appendChild(workshopReasonEl("down", reason)); // homing or busy: N3, not an error
+        if (reason) pmt.posPop.appendChild(workshopReasonEl("down", reason, i18nT("subjects_zones.camera_position"))); // homing or busy: N3, not an error
         var row = tzEl("div", "tz-row");
         row.style.cssText += "gap:4px;margin-top:6px;flex-wrap:wrap;";
         var bM = tzBtn(i18nT('zonesPage.move'), "primary", function () {

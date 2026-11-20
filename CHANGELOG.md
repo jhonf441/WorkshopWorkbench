@@ -1,5 +1,53 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.23.11 -- 2026-11-18
+
+- accessRev: the page asks whoami at once when the service says the access changed
+
+## 2.23.10 -- 2026-11-18
+
+- Access changes (users or roles switched off or on, a role changed) reach the page: it asks whoami again while in view
+
+## 2.23.9 -- 2026-11-18
+
+- Session sign-in buttons with their icon and a softer blink (shared notice); WorkshopWorkbench rebuilt
+
+## 2.23.8 -- 2026-11-13
+
+- Mode note in neutral Spanish (Puedes, not Podes)
+
+## 2.23.7 -- 2026-11-13
+
+- Access notices name what they lock (JS and Vue), locked covers say which section they cover
+
+## 2.23.6 -- 2026-11-13
+
+- Rebuilt with stable module ids: no local paths inside the bundle
+
+## 2.23.5 -- 2026-11-13
+
+- Access notices name what they lock (JS and Vue), locked covers say which section they cover
+
+## 2.23.4 -- 2026-11-13
+
+- Machine mode rule: other-mode card removed, FFF keeps the tabs and refuses what acts; unknown mode says so
+
+## 2.23.3 -- 2026-11-12
+
+- Session reconcile, access notices name what they lock, kiosk native number keyboard
+
+## 2.23.2 -- 2026-11-12
+
+- Kiosk PIN: read-only field and number pad only, no full keyboard
+
+## 2.23.1 -- 2026-11-11
+
+- zmeasure.g aborts when the probe touches nothing (no material under it): no more 'surface measured' with no focus
+
+## 2.23.0 -- 2026-11-11
+
+- Block with reason: the frame start, close job, interrupted jobs, large pieces, preview and vision controls say why they are blocked (auth.can, one call per screen); stop buttons are never asked or blocked
+
 ## 2.22.39 -- 2026-11-10
 
 - Recipes relative to the G-code (Printing), session role switch and UI fixes (26), SD layout manifest

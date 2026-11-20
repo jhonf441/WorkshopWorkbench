@@ -112,6 +112,7 @@
         cz.jb.appendChild(jr);
         var hasShapes = tc.data.shapes.length > 0;
         tcFrameOptions(tc, cz.jb);
+        cz.jb.appendChild(tzReasonEl("frame")); // why the frame buttons are blocked, when the service says so
         var fP = tzBtn(i18nT('cuts.frame_pointer'), null, function () { tcFrameStart(tc, "pointer", 0); }, i18nT('cuts.tap_again_frame'));
         fP.disabled = !rc.free || !hasShapes;
         jr.appendChild(fP);
@@ -197,6 +198,7 @@
           rc.cr3 = tzEl("div", "tz-row");
           rc.cr3.style.gap = "4px";
           conf.appendChild(rc.cr3);
+          if (!isCut) conf.appendChild(tzReasonEl("frame"));
           var goJ = tzBtn(isCut ? i18nT('cuts.cut_3') : i18nT('cuts.start_framing'), "danger", function () {
             if (isCut) tcCutStart(tc);
             else

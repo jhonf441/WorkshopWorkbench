@@ -31,6 +31,7 @@
         if (tvs.prev) row.appendChild(tzBtn(i18nT('tv.clear'), null, tzBind(tvVisRemove, tvs)));
         row.appendChild(tzTip(tzBtn(i18nT('tv.clean'), null, function () { if (tvs.ctx.nav.cleanWorkbench) tvs.ctx.nav.cleanWorkbench(); }), i18nT('tv.clean_tip')));
         tvs.card.appendChild(row);
+        tvs.card.appendChild(tzReasonPreview(tvs.sel));
         if (tvs.msg) {
           var m = tzEl("div", tvs.msgOk ? "tz-muted" : "tz-msg err", tvs.msg);
           m.style.marginTop = "6px";
@@ -237,6 +238,7 @@
           rv.f2.appendChild(tzEl("span", "tz-muted", i18nT('tv.machine_busy')));
         }
         tvs.card.appendChild(rv.f2);
+        tvs.card.appendChild(tzReasonEl("frame"));
         // send it: after looking at it, the same file starts as a normal job (M32), in the zone that is active now
         var en = tzEl("div", "tz-title", i18nT('tv.send_title'));
         en.style.marginTop = "12px";

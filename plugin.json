@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.22.39",
+  "version": "2.23.11",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -57,7 +57,7 @@
     "permissions.json"
   ],
   "dwcFiles": [
-    "js/WorkshopWorkbench.f8438448.js",
-    "js/WorkshopWorkbench.f8438448.js.gz"
+    "js/WorkshopWorkbench.5dc0087a.js",
+    "js/WorkshopWorkbench.5dc0087a.js.gz"
   ]
 }

@@ -302,12 +302,6 @@
         pz.modeChip.style.display = known ? "" : "none";
         // the groups and the tabs of the mode AND of the view (Operator: three sections; Technician: the groups of the page)
         tzPaintTabs(pz, mode, view);
-        // a mode another plugin serves: no tab to open, the inspector shows the card that sends there (30-zones-page-other-mode.js);
-        // coming back from one, the cards of the open tab are shown again
-        var away = !!tzModeElsewhere(mode), wasAway = !!pz.otherModeOn;
-        pz.otherModeOn = away;
-        if (away) return pz.applyLayout();
-        if (wasAway) pz.applyLayout();
         // if the open tab does not exist in this mode or view, go back to the first tab of the page (Zones on the Workbench)
         if (!tzTabAllowed(pz.pag, view, pz.nav.layout(), mode)) {
           var want = tzInitialTab(pz.pag, mode, pz.data.st(), null);

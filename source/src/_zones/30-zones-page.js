@@ -97,7 +97,6 @@
           tzPagLayersButtons,
           tzPagTable,
           tzPagModules,
-          tzPagOtherMode,
           tzPagHelpTexts,
           tzPagHelpPaint,
           tzPagApplyLayout,

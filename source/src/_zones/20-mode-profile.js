@@ -72,7 +72,6 @@
       function tzToolVisible(mode, id) {
         var m = TZ_TOOLS_MODES[id];
         if (id === "cuts" && mode === "CNC" && typeof tcCncFlag === "function" && tcCncFlag()) return true; // the single editor in CNC (42-cuts-cnc.js), behind a flag that is off
-        if (tzModeElsewhere(mode)) return !!m && m.indexOf(mode) >= 0;
         if (!m || !TZ_PROFILES[mode]) return true;
         return m.indexOf(mode) >= 0;
       }

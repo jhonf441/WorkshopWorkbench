@@ -59,10 +59,20 @@
         if (!g.info) { g.panel.style.display = ""; g.panel.textContent = ""; g.panel.appendChild(tzEl("div", "tz-muted", i18nT("modes_gate.checking"))); return; }
         var d = tzGateDecision(pz);
         var was = g.gated;
-        g.gated = !d.open;
+        // ELSEWHERE (a work mode is on in the profile, the machine is in another one now, FFF included): the page STAYS open for reading and editing
+        // and the panel shrinks to a note on top with the switch; what acts refuses with its own reason (tzDataMachineFree + tzNotFreeWhy).
+        // Unanswered / off keep the closed behaviour: the page has nothing to do there.
+        var note = !d.open && d.reason === "elsewhere";
+        g.gated = !d.open && !note;
+        g.note = note;
         pz.page.classList.toggle("tz-modes-closed", g.gated);
-        g.panel.style.display = g.gated ? "" : "none";
-        if (g.gated) {
+        g.panel.style.display = g.gated || note ? "" : "none";
+        if (note) {
+          if (pz.header && pz.header.parentNode === pz.page && g.panel.previousSibling !== pz.header && typeof pz.page.insertBefore === "function") pz.page.insertBefore(g.panel, pz.header.nextSibling); // on top, below the header
+          var nkey = ["note", tzPageMode(pz), g.info.state.source, JSON.stringify(g.info.state.answer), g.status, g.busy, workshopModeSwitchReason()].join("|");
+          if (nkey !== g.key) { g.key = nkey; tzGateRenderNote(pz); }
+          if (was) { g.guide = false; pz.wsLayout(); pz.applyLayout(); pz.shell.renderMap(); } // the map was hidden: measure it again
+        } else if (g.gated) {
           var key = [d.reason, tzPageMode(pz), g.info.state.source, JSON.stringify(g.info.state.answer), g.guide, g.status, g.busy, workshopPluginActive("machine")].join("|");
           if (key !== g.key) { g.key = key; tzGateRender(pz, d); }
         } else if (was) {
@@ -72,6 +82,16 @@
           pz.applyLayout();
           pz.shell.renderMap();
         }
+      }
+
+      // The thin panel of the ELSEWHERE case: one sentence and the switch button (30-zones-page-gate-switch.js); the rest of the page works
+      function tzGateRenderNote(pz) {
+        var g = pz.modesGate;
+        var p = g.panel;
+        p.textContent = "";
+        p.appendChild(tzEl("div", "tz-note", i18nT("modes_gate.note_elsewhere", { mode: tzPageMode(pz), modes: tzGateNames(g.info.state) })));
+        tzGateSwitchBox(pz, p, true);
+        if (g.status) p.appendChild(tzEl("div", "tz-muted", g.status));
       }
 
       // what the person has ticked in the panel (starts from the answer, or from what the board suggests)

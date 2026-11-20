@@ -156,7 +156,7 @@
       function tzActMeasureButtons(za, zr) {
         var p = zr.plan;
         var row = tzActLine(za, zr.hb);
-        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: p.action === "none", hasPoint: p.action !== "none" });
+        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, mode: zr.s.mode, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: p.action === "none", hasPoint: p.action !== "none" });
         var mf = tzBtn(i18nT('prepare.measure_and_focus_mm', { h: p.action === "stale" ? zr.f.h : p.h }), "primary big", function () { tzActFocusRun(za, zr); });
         mf.disabled = !!why || p.action === "none";
         tzTip(mf, p.action === "macro" ? i18nT('zoneActive.runs_macros_laser_the_same_as', { macro: zr.f.macro, code: TZ_CODES[zr.wn], h: p.h, probe: tzProbeName(zr.probe) }) : i18nT('zoneActive.goes_to_the_z_point_the', { xy: zr.zp ? tzActFmtXY(za, zr.zp.x, zr.zp.y) : "--", v: i18nT('zoneActive.the_focus_height'), v2: i18nT('zoneActive.does_not_change_the_zone_or'), probe: tzProbeName(zr.probe) }));
@@ -203,7 +203,7 @@
         l4.appendChild(hIn);
         l4.appendChild(tzEl("span", "tz-muted", i18nT('common.mm_above_the_surface_2')));
         if (!zr.probe.measures) return tzActPaperButtons(za, zr, function () { var h = parseFloat(hIn.value); return h >= 1 && h <= 60 ? h : null; }, i18nT('paper.z0_here'), null);
-        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: true, hasPoint: !!zr.zp });
+        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, mode: zr.s.mode, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: true, hasPoint: !!zr.zp });
         var l5 = tzActLine(za, zr.hb);
         var zb = tzBtn(i18nT('zoneActive.measure_z0_at_the_z_point'), "primary big", function () {
           var h = parseFloat(hIn.value);

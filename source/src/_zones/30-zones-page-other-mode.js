@@ -1,42 +1,11 @@
-      // ---- Workbench page: a machine mode that another plugin serves (2026-10-24) ----
-      // The Workbench serves Laser and CNC (TZ_PROFILES, 20-mode-profile.js). In a mode of TZ_MODES_ELSEWHERE (FFF: WorkshopPrinting) every
-      // tab is hidden (tzToolVisible) and the inspector shows only this card: which mode the machine is in, that this page does not serve
-      // it and a button to the page that does. Without that plugin (not installed or off) the card does not name it and has no button:
-      // it only says that this page does not serve the mode. The map stays: it still shows the bed and the head.
-
-      function tzPagOtherMode(pz) {
-        pz.otherModeCard = tzEl("div", "tz-card wf-card");
-        pz.otherModeCard.style.cssText = "margin-top:12px;display:none;";
-        pz.otherModeCard.setAttribute("data-other-mode", "");
-        pz.page.insertBefore(pz.otherModeCard, pz.mainCol.parentNode);
-        pz.otherModeSeen = "";
-      }
+      // ---- Workbench page: the mode of the machine now ----
+      // The card that used to replace every tab in a mode another plugin serves (FFF) is gone (2026-11-12, mode rule of vue/_shared36/mode-gate.js): with a
+      // work mode on in the profile and the machine elsewhere the page stays open for reading and editing, a thin note on top says so with the switch
+      // (30-zones-page-gate.js), and what acts refuses with its reason (tzDataMachineFree + tzNotFreeWhy). Without a work mode in the profile the page is
+      // closed by the gate panel, which names the plugin that serves the mode (tzGateActions).
 
       // the mode of the machine now, or "?" before the first status read
       function tzPageMode(pz) {
         var st = pz.data.st();
         return (st && st.mode) || "?";
-      }
-
-      // true when the mode is served by another plugin (the cards of the tabs stay hidden)
-      function tzOtherModePaint(pz) {
-        if (!pz.otherModeCard) return false; // applyLayout before the card exists
-        var mode = tzPageMode(pz);
-        var other = tzModeElsewhere(mode);
-        pz.otherModeCard.style.display = other ? "" : "none";
-        if (!other) { pz.otherModeSeen = ""; return false; }
-        var has = workshopPluginActive(other.plugin);
-        var key = mode + "|" + has;
-        if (key === pz.otherModeSeen) return true;
-        pz.otherModeSeen = key;
-        var card = pz.otherModeCard;
-        card.textContent = "";
-        var name = i18nT(other.name);
-        card.appendChild(tzEl("h3", null, i18nT('zonesPage.other_mode_title', { mode: other.label })));
-        card.appendChild(tzEl("div", "tz-note", tzTx('zonesPage.other_mode_text', 'printing', { mode: other.label, page: name })));
-        if (!has) return true;
-        var row = tzEl("div", "tz-row tz-actions");
-        row.appendChild(tzBtn(i18nT('zonesPage.other_mode_open', { page: name }), "primary", function () { pz.nav.goPath(other.path); }));
-        card.appendChild(row);
-        return true;
       }

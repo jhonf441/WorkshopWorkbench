@@ -46,7 +46,7 @@
       function tzCncTrayStartBlock(cnc, pl, v) {
         var s = cnc.ctx.machine.getSt();
         if (!s || s.mode !== "CNC") return i18nT('cnc.mode_is_not_cnc');
-        if (!cnc.ctx.machine.free()) return i18nT('zoneActive.' + tzNotFreeWhy(s.status));
+        if (!cnc.ctx.machine.free()) return i18nT('zoneActive.' + tzNotFreeWhy(s.status, s.mode));
         if (tzStartBlock(s)) return tzStartBlock(s); // off / not homed (22-start-block.js)
         if (!pl.ok || !v.ok) return i18nT('cnc.fix_errors_first');
         if (!cnc.file) return i18nT('cnc.no_file');

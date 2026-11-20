@@ -79,10 +79,10 @@
           tzTip(hb, i18nT('needs.g28_homes_all_axes_the_machine'));
           r.appendChild(hb);
         } else r.appendChild(tzEl("span", "wf-state tz-badge ok", "homing OK"));
-        if (!nr.modeOk) r.appendChild(tzEl("span", "wf-state tz-badge err", tzTx('needs.mode_needs_change_it_from_the', 'bar', { cur: nr.s.mode || "?", mode: o.mode })));
+        if (!nr.modeOk) r.appendChild(tzEl("span", "wf-state tz-badge err", nr.s.mode && nr.s.mode !== "?" ? tzTx('needs.mode_needs_change_it_from_the', 'bar', { cur: nr.s.mode, mode: o.mode }) : i18nT('common.mode_unknown')));
         else if (o.mode) r.appendChild(tzEl("span", "wf-state tz-badge ok", i18nT('needs.mode', { mode: o.mode })));
         if (!o.free)
-          r.appendChild(tzEl("span", "wf-state tz-badge err", nr.s.liveJob && nr.s.status === "busy" ? i18nT('needs.live_job_running', { name: nr.s.liveJob.name ? " (" + workshopDefaultName(nr.s.liveJob.name, ["svc.live_job_default_name"]) + ")" : "" }) : tzNotFreeBadge(nr.s.status)));
+          r.appendChild(tzEl("span", "wf-state tz-badge err", nr.s.liveJob && nr.s.status === "busy" ? i18nT('needs.live_job_running', { name: nr.s.liveJob.name ? " (" + workshopDefaultName(nr.s.liveJob.name, ["svc.live_job_default_name"]) + ")" : "" }) : tzNotFreeBadge(nr.s.status, nr.s.mode)));
         else if (nr.s.liveJob) r.appendChild(tzEl("span", "wf-state tz-badge err", i18nT('needs.live_job_open_paused', { name: nr.s.liveJob.name ? " (" + workshopDefaultName(nr.s.liveJob.name, ["svc.live_job_default_name"]) + ")" : "" })));
         // BLTouch pin out (marked by sys/deployprobe.g / retractprobe.g
         // in global.probePinOut). Request: "before focusing check that the

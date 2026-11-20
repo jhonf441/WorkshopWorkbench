@@ -83,7 +83,10 @@
       }
 
       function tzDataMachineFree(pzd) {
-        return tzMachineFree(pzd.st, pzd.machineMemo, Date.now(), workshopMotionBlock([PLUGIN_ID])); // owner of the movement (2026-10-13)
+        // owner of the movement (2026-10-13); and the machine must be in a mode this page serves: in FFF, or while the mode is not known, what acts is off
+        // (deny what is not known); the reason comes from tzNotFreeWhy(status, mode). Reading and navigation never ask for this.
+        if (pzd.st && TZ_WORK_MODES.indexOf(pzd.st.mode) < 0) return false;
+        return tzMachineFree(pzd.st, pzd.machineMemo, Date.now(), workshopMotionBlock([PLUGIN_ID]));
       }
 
       function tzDataJobRunning(pzd) {

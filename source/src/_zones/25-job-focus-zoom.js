@@ -147,6 +147,7 @@
           tzTip(bc, tzTx('zonesPage.closes_the_live_job_that_was', 'activity'));
           // the safe stop is in the header of the page (33-space-head.js), visible in every section
           pjf.banner.appendChild(bc);
+          pjf.banner.appendChild(tzReasonEl("close_job"));
         }
         if (bn.pHits.length) {
           var pw = tzEl("div", null, i18nT('zonesPage.the_path_goes_over_pause_if', { list: bn.pHits.map(function (k) { return pjf.data.clamps()[k].name || "prensa"; }).join(", ") }));

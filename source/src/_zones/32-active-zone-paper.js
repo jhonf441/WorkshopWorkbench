@@ -6,7 +6,7 @@
       // label: caption of the Z0 button; after: runs when the Z0 was set (the focus of the zone is applied)
       function tzActPaperButtons(za, zr, getH, label, after) {
         tzcLoad();
-        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: true, hasPoint: !!zr.zp });
+        var why = tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, mode: zr.s.mode, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: true, hasPoint: !!zr.zp });
         var row = tzActLine(za, zr.hb);
         var go = tzBtn(i18nT('paper.go_to_the_point'), null, function () {
           tzActSetMsg(za, i18nT('paper.going', { xy: tzActFmtXY(za, zr.zp.x, zr.zp.y) }), true);
@@ -20,7 +20,7 @@
           if (h === null || !(h >= 1 && h <= 60)) return tzActSetMsg(za, i18nT('zoneActive.the_height_must_be_between_1'), false);
           tzActRun(za, tzProbePaperCode(h, tzcPaper(tzc.data)), i18nT('paper.done', { h: h }), after);
         }, i18nT('paper.confirm'), "az-paper-z0");
-        z0.disabled = !!tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: false, hasPoint: true });
+        z0.disabled = !!tzActBlockedWhy({ signedOut: tzActSignedOut(), free: zr.free, status: zr.s.status, mode: zr.s.mode, homedXY: zr.homedXY, homedAll: zr.allHomed, needAll: true, needPoint: false, hasPoint: true });
         tzTip(z0, i18nT('paper.z0_tip', { paper: tzFmt(tzcPaper(tzc.data)) }));
         row.appendChild(z0);
         tzActWhy(za, zr.hb, why ? i18nT('zoneActive.' + why) : "");

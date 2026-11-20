@@ -33,8 +33,7 @@
       }
 
       function tzApplyLayout(pz) {
-        // in a mode another plugin serves no card of a tab is shown, only the card that sends there (30-zones-page-other-mode.js)
-        var lay = tzOtherModePaint(pz) ? "" : pz.nav.layout();
+        var lay = pz.nav.layout();
         var c = lay === "cuts";
         var ce = lay === "center";
         var tr = lay === "job";
