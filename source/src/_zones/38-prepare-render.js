@@ -47,10 +47,7 @@
       function tpRenderHeader(tp, pr) {
         pr.card = tp.ctx.card;
         pr.card.innerHTML = "";
-        var hd = tzEl("div", "tz-row");
-        hd.style.alignItems = "center";
-        hd.appendChild(tzEl("h3", null, i18nT('prepare.prepare_a_job')));
-        pr.card.appendChild(hd);
+        pr.card.appendChild(tzCardHead(tzEl("h3", null, i18nT('prepare.prepare_a_job')), "clipboard-check-outline"));
         pr.card.appendChild(tzEl("div", "tz-muted", i18nT('prepare.follow_the_steps_in_order_each')));
         if (tp.M.text) pr.card.appendChild(tp.M.node());
       }
@@ -103,7 +100,7 @@
             if (!q && i !== pr.wn) return;
             var o = document.createElement("option");
             o.value = String(i);
-            o.textContent = code + (q && q.name ? " " + q.name : q ? "" : i18nT('prepare.no_file'));
+            o.textContent = code + (q && q.name ? " " + q.name : q || tzZonesUnread(tp.ctx.data.filesRead) ? "" : i18nT('prepare.no_file'));
             sel.appendChild(o);
           });
           sel.value = String(pr.wn);
@@ -116,7 +113,7 @@
           r.appendChild(tzTip(tzBtn(i18nT('prepare.show_on_the_map'), null, function () { tp.ctx.map.show(); }), i18nT('prepare.scrolls_down_to_the_bed_map')));
           r.appendChild(tzTechOnly(tzTip(tzBtn(i18nT('prepare.open_zones_tab'), null, function () { tp.ctx.nav.go("zones"); }), i18nT('prepare.goes_to_the_zones_tab_editor'))));
           c.appendChild(r);
-          if (!pr.z) c.appendChild(tzEl("div", "tz-msg err", i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] })));
+          if (!pr.z) c.appendChild(tzZonesUnread(tp.ctx.data.filesRead) ? tzEl("div", "tz-muted", i18nT('zoneActive.zones_unread', { code: TZ_CODES[pr.wn] })) : tzEl("div", "tz-msg err", i18nT('prepare.has_no_zone_file_choose_another', { code: TZ_CODES[pr.wn] })));
           pr.chk.forEach(function (k) {
             if (k.lvl === "info") return;
             c.appendChild(tzCheckEl(k));

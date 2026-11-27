@@ -107,7 +107,7 @@
         if (m.st && m.st.active) {
           var act = tzEl("div", "tz-row");
           act.style.cssText += "gap:6px;align-items:center;margin-top:6px;";
-          var stp = tzBtn(i18nT('tv.stop'), "danger", function () { tcFrameStop(tc); });
+          var stp = tzBtn(i18nT('tv.stop'), "danger wf-btn--crit", function () { tcFrameStop(tc); }); // a stop: 48 (the family's critical size)
           stp.style.cssText += "background:#c62828;color:#fff;";
           act.appendChild(stp);
           act.appendChild(tzEl("span", "tz-muted", m.st.stopping ? i18nT('tv.stopping') : (m.st.repeat === 0 ? i18nT('tv.lap_cont', { n: m.st.turn || 1 }) : i18nT('tv.lap_of', { n: m.st.turn || 1, t: m.st.repeat || 1 }))));

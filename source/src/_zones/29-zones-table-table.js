@@ -28,7 +28,7 @@
         fl.tr.appendChild(tzEl("td", null, TZ_CODES[i] + (i === ptb.data.st().wn ? i18nT('zonesPage.active_4') : "")));
         // the name opens the editor: the Edit button is in the last column, which a narrow screen scrolls out of sight
         var tdNom = tzEl("td");
-        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
+        tdNom.appendChild(tzEl("div", null, fl.z ? fl.z.name || i18nT('zonesPage.unnamed') : tzZonesUnread(ptb.data.filesOk) ? i18nT('zonesPage.zones_unread') : i === 0 ? i18nT('zonesPage.general_no_file') : i18nT('zonesPage.no_file')));
         // the Edit / Create button sits under the name, on its own line: the action column is the last of eight and a narrow screen scrolls it out of sight
         (function (idx, zone) {
           var bEd = tzBtn(zone ? i18nT('tzTips.l_edit') : i18nT('tzTips.l_create'), null, function () { tzTableOpenEditor(ptb, idx); });

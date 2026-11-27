@@ -21,7 +21,7 @@
         }
         ptb.posArmed = k;
         clearTimeout(ptb.posArmTimer);
-        ptb.posArmTimer = setTimeout(function () { ptb.posArmed = ""; tzTableRenderPositions(ptb); }, 3000);
+        ptb.posArmTimer = setTimeout(function () { ptb.posArmed = ""; tzTableRenderPositions(ptb); }, 4000);
         tzTableRenderPositions(ptb);
         return false;
       }

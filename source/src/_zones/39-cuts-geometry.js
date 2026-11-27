@@ -388,7 +388,8 @@
         camera: { kind: "*", c: i18nT('cuts.camera'), t: i18nT('cuts.the_camera_measures_the_whole_part'), d: i18nT('cuts.takes_a_photo_detects_whole_holes'), n: i18nT('cuts.no_touches') },
       };
       // Small drawing of where to tap: the numbered points; the next one
-      // highlighted (n = points already captured; -1 = only the drawing).
+      // highlighted (n = points already captured; -1 = only the drawing). The numbers are 13 units in a 120 unit viewBox: 12 px or more at the
+      // smallest size the tiles show (>= 111 px wide), 16 px in the 150 px progress drawing.
       function tcCenterSvg(mode, n, o) {
         var NS = "http://www.w3.org/2000/svg";
         var svg = document.createElementNS(NS, "svg");
@@ -442,8 +443,8 @@
             var hit = el("circle", { cx: q[0], cy: q[1], r: 12, fill: "transparent", style: "cursor:pointer" });
             hit.addEventListener("click", function () { o.pick(i); });
           }
-          var cc = el("circle", { cx: q[0], cy: q[1], r: sig ? 8 : 6.5, fill: hecho ? "#00e5ff" : sig ? "#ffb300" : "#37474f", stroke: sig ? "rgb(255,224,130)" : "#fff", "stroke-width": sig ? "2" : "1" });
-          var t = el("text", { x: q[0], y: q[1] + 3.5, "text-anchor": "middle", "font-size": "9", "font-weight": "bold", fill: hecho ? "#003238" : "#fff" });
+          var cc = el("circle", { cx: q[0], cy: q[1], r: sig ? 10 : 9, fill: hecho ? "#00e5ff" : sig ? "#ffb300" : "#37474f", stroke: sig ? "rgb(255,224,130)" : "#fff", "stroke-width": sig ? "2" : "1" });
+          var t = el("text", { x: q[0], y: q[1] + 4.7, "text-anchor": "middle", "font-size": "13", "font-weight": "bold", fill: hecho ? "#003238" : "#fff" });
           t.textContent = String(i + 1);
           if (o && o.pick) {
             [cc, t].forEach(function (x) {
@@ -470,12 +471,17 @@
           ".tc-sec-body{padding:2px 10px 10px 10px;}",
           ".tc-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0;}",
           ".tc-layers{display:flex;flex-direction:column;gap:4px;}",
-          ".tc-layer{display:grid;grid-template-columns:28px minmax(60px,1fr) minmax(46px,64px) minmax(54px,78px) minmax(44px,58px);gap:4px;align-items:center;padding:4px 6px;min-width:0;box-sizing:border-box;border-radius:6px;border:1px solid rgba(255,255,255,0.12);border-left-width:3px;}",
+          ".tc-layer{display:grid;grid-template-columns:44px minmax(60px,1fr) minmax(46px,64px) minmax(54px,78px) minmax(44px,58px);gap:4px 8px;align-items:center;padding:4px 6px;min-width:0;box-sizing:border-box;border-radius:6px;border:1px solid rgba(255,255,255,0.12);border-left-width:3px;}",
           ".tc-layer.active{border-color:#1976d2;background:rgba(25,118,210,0.14);}",
-          ".tc-layer.apagada{opacity:0.6;}",
-          ".tc-layer-cab{border:none;padding:0 6px;font-size:11px;color:var(--tz-t2,rgba(255,255,255,0.7));}",
-          ".tc-layer-acc{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:4px;}",
+          // a layer that is off is dimmed but keeps the same grid and a readable text (2026-11-22)
+          ".tc-layer.apagada{opacity:0.75;}",
+          // the header row has the same borders (transparent) and padding as a layer row, so its labels sit over their columns
+          ".tc-layer-cab{border-color:transparent;background:none;padding:0 6px;font-size:12px;color:var(--tz-t2,rgba(255,255,255,0.7));}",
+          // the buttons of a layer share the width of the row: same width for Air / View / Free / Up / More
+          ".tc-layer-acc{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:4px;}",
+          ".tc-layer-acc .tzb{margin:0;max-width:none;width:100%;box-sizing:border-box;}",
           ".tc-layer-nom{display:flex;flex-direction:column;min-width:0;}",
+          ".tc-layer-nom .tz-muted{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
           ".tc-layer-nb{background:none;border:none;color:inherit;font:inherit;font-weight:500;text-align:left;padding:0;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
           ".tc-layer .tz-input{width:100%;box-sizing:border-box;min-width:0;}",
           ".tc-layer-more{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 8px;margin:-2px 0 2px 0;border-radius:6px;background:rgba(255,255,255,0.05);}",
@@ -483,10 +489,10 @@
           ".theme--light .tc-layer.active{border-color:#1976d2;background:rgba(25,118,210,0.08);}",
           ".theme--light .tc-layer-more{background:rgba(0,0,0,0.04);}",
           ".tc-group{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.05);}",
-          ".tc-glabel{font-size:11px;color:rgba(255,255,255,0.5);margin-right:2px;text-transform:uppercase;letter-spacing:0.04em;}",
+          ".tc-glabel{font-size:12px;color:rgba(255,255,255,0.5);margin-right:2px;text-transform:uppercase;letter-spacing:0.04em;}",
           ".tc-hint{font-size:12px;color:rgba(255,255,255,0.6);margin:4px 0;}",
           ".tc-inline{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;}",
-          ".tc-inline label{display:block;font-size:11px;color:rgba(255,255,255,0.6);}",
+          ".tc-inline label{display:block;font-size:12px;color:rgba(255,255,255,0.6);}",
           ".tc-inline input{width:84px;}",
           ".tc-floating{position:absolute;top:8px;left:8px;z-index:6;display:flex;flex-direction:column;gap:4px;padding:4px;border-radius:8px;background:rgba(30,39,44,0.92);border:1px solid rgba(255,255,255,0.18);box-shadow:0 2px 8px rgba(0,0,0,0.4);}",
           ".tc-ft{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid transparent;border-radius:6px;background:transparent;color:#eceff1;cursor:pointer;font-size:22px;line-height:1;padding:0;}",
@@ -497,6 +503,9 @@
           ".tc-floating-sel .tc-ft-sep{width:1px;height:28px;margin:0 4px;}",
           ".tc-ft-layer{max-width:150px;height:36px;}",
           ".tc-actions{position:sticky;bottom:0;z-index:4;margin-top:8px;padding:8px 0 4px;background:#1e272c;box-shadow:0 -8px 10px -6px rgba(0,0,0,0.45);}",
+          ".theme--light .tc-actions{background:#fff;box-shadow:0 -8px 10px -6px rgba(0,0,0,0.12);}",
+          ".theme--light .tc-next{color:#006064;}",
+          ".theme--light .tc-dot{border-color:#00838f;}",
           ".theme--light .tc-actions{background:#fff;box-shadow:0 -8px 10px -6px rgba(0,0,0,0.2);}",
           ".tc-guide{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;padding:8px 10px;border-radius:8px;background:rgba(230,81,0,0.08);border:1px dashed rgba(255,138,80,0.5);font-size:12px;}",
           ".tc-guide b{color:#ff8a50;}",
@@ -517,7 +526,7 @@
           ".tc-tile-t{font-size:14px;font-weight:600;}",
           ".tc-tile-d{font-size:12px;color:var(--tz-t2,rgba(255,255,255,0.7));line-height:1.3;}",
           ".tc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}",
-          ".tc-chip{font-size:11px;padding:1px 7px;border-radius:10px;background:rgba(255,255,255,0.08);color:var(--tz-t2,rgba(255,255,255,0.7));}",
+          ".tc-chip{font-size:12px;padding:1px 7px;border-radius:10px;background:rgba(255,255,255,0.08);color:var(--tz-t2,rgba(255,255,255,0.7));}",
           ".tc-chip.rec{background:rgba(0,229,255,0.16);color:#80deea;}",
           ".tc-back{background:none;border:none;color:#80deea;cursor:pointer;font:inherit;font-size:12px;padding:0;margin:2px 0;}",
           ".tc-run{display:flex;gap:10px;align-items:center;margin:6px 0;padding:8px;border-radius:8px;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.3);}",

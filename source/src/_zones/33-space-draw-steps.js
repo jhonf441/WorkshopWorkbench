@@ -105,6 +105,7 @@
         psp.inspHead.appendChild(tzEl("span", "tz-insp-tool", tzSpaceNameTool(psp, psp.nav.layout())));
         if (n) psp.inspHead.appendChild(tzEl("span", "tz-insp-sp", i18nT(TZ_STEPS[n - 1].key)));
         var tg = tzEl("button", "tz-insp-toggle");
+        tg.setAttribute("data-wf-hit", ""); // 30 px to the eye, 44 px to the finger
         tg.type = "button";
         tg.title = i18nT('space.inspector_tip');
         tg.appendChild(tzEl("span", "mdi mdi-chevron-" + (psp.inspAbierto ? "down" : "up")));

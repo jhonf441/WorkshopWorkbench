@@ -39,14 +39,32 @@
         };
       }
 
-      // A macro of 0:/macros/; null when the machine does not have it.
+      // Why the machine's data cannot be READ now, or "" when it can (2026-11-20). A thing that could not be read is never "missing" or "ready": its row
+      // is "unchecked" with this cause. The motor power being off (status "off") is NOT a cause: the board still answers and the SD is readable.
+      //   h = tpStartupKnow(): { hasStatus, status, files: {zones, ...} (true / false / missing = never read), materialsRead: "unread"|"ok"|"failed" }
+      //   Causes: "unread" (nothing was read yet), "disconnected", "starting", "updating" (the board), "files" / "files_off" (the SD could not be read).
+      // Returns { status: cause of what comes from the object model (mode, probe, area), zone: cause of the zone files, material: of the library }.
+      var TP_STATUS_CAUSES = { disconnected: "disconnected", starting: "starting", updating: "updating" };
+      function tpStartupWhy(h) {
+        var st = !h.hasStatus ? "unread" : TP_STATUS_CAUSES[h.status] || "";
+        var files = st || (h.status === "off" ? "files_off" : "files");
+        var zones = h.files && h.files.zones;
+        return {
+          status: st,
+          zone: st ? st : zones === undefined ? "unread" : zones === false ? files : "",
+          material: st ? st : h.materialsRead === "unread" ? "unread" : h.materialsRead === "failed" ? files : "",
+          files: files,
+        };
+      }
+
+      // A macro of 0:/macros/; null when the machine does not have it (404); false when it could not be read now.
       function tpStartupReadMacro(rel) {
         return fetch("/machine/file/" + encodeURIComponent("0:/macros/" + rel), { cache: "no-store" })
           .then(function (r) {
-            return r.ok ? r.text() : null;
+            return r.ok ? r.text() : r.status === 404 ? null : false;
           })
           .catch(function () {
-            return null;
+            return false;
           });
       }
 
@@ -54,6 +72,7 @@
       function tpStartupKnow(ctx) {
         var mats = window.__workshopMaterials;
         var zs = ctx.data.zones() || [];
+        var st = ctx.machine.getSt();
         return {
           mode: ctx.machine.mode(),
           probe: !!ctx.data.offsetProbe(),
@@ -62,7 +81,16 @@
             return !!z;
           }).length,
           materials: Array.isArray(mats) ? mats.length : 0,
+          hasStatus: !!st,
+          status: !st ? "" : TP_STATUS_CAUSES[st.status] || st.status === "off" ? st.status : "ok", // only the kinds that change what can be read (the page refreshes the card when this changes)
+          files: typeof ctx.data.filesRead === "function" ? ctx.data.filesRead() || {} : {},
+          materialsRead: typeof tmatReadState === "function" ? tmatReadState() : "ok",
         };
+      }
+
+      // The answer of a check row: the state the rules give, or "unchecked" with the sentence of the cause when the data could not be read.
+      function tpStartupAnswer(h, key, cause) {
+        return cause ? { state: "unchecked", text: "startup_workbench.unchecked_" + cause } : tpStartupStates(h)[key];
       }
 
       // Assistant of the example "Z from here" (macros/probe/homezhere.g, 2026-10-17): nothing assumes the owner's probe or heights.
@@ -86,15 +114,24 @@
       }
 
       // Rows of the card; ctx = contract. Each check reads the page when the card refreshes.
-      function tpStartupDefs(ctx) {
+      // shared = { modesUnknown: bool } is set by tpStartupCreate: the modes the machine switches between are not known (the service did not answer).
+      function tpStartupDefs(ctx, shared) {
+        shared = shared || {};
         function state(key) {
           return function () {
-            return tpStartupStates(tpStartupKnow(ctx))[key];
+            var h = tpStartupKnow(ctx);
+            var why = tpStartupWhy(h);
+            return tpStartupAnswer(h, key, key === "zone" || key === "material" ? why[key] : why.status);
           };
         }
         function macroMode(mode) {
           return function () {
-            return tpStartupReadMacro(TZ_MACROS_MODE[mode]).then(tpStartupStateMacro);
+            if (shared.modesUnknown) return { state: "unchecked", text: "startup_workbench.unchecked_service" };
+            var why = tpStartupWhy(tpStartupKnow(ctx));
+            if (why.status) return { state: "unchecked", text: "startup_workbench.unchecked_" + why.status };
+            return tpStartupReadMacro(TZ_MACROS_MODE[mode]).then(function (t) {
+              return t === false ? { state: "unchecked", text: "startup_workbench.unchecked_" + why.files } : tpStartupStateMacro(t);
+            });
           };
         }
         return [
@@ -113,19 +150,29 @@
       // The card shown at the top of the Prepare card. Its element is kept: the page redraws around it.
       // refrescar() decides which rows apply (the probe) and then lets the card ask the service and the page.
       function tpStartupCreate(ctx) {
-        var rows = tpStartupDefs(ctx);
+        var shared = { modesUnknown: false };
+        var rows = tpStartupDefs(ctx, shared);
         var card = workshopStartupInput({ plugin: "WorkshopWorkbench", rows: rows, createOnStart: true, up: "10px" }); // a strip; the card is in the dialog
         return {
           el: card.el,
           refresh: function () {
+            var know = tpStartupKnow(ctx);
+            var why = tpStartupWhy(know);
             var conProbe = !!ctx.data.offsetProbe();
             var away = !!tzModeElsewhere(ctx.machine.mode()); // FFF: the macros of the table do not apply either
             // the mode macros are rows only of a machine that switches between modes (2 or more answered, like the other cards)
             return workshopModes.load(false).then(function (info) {
               var on = workshopModesEnabled(info.state);
+              // the modes are not known when nobody answered AND the service did not either: the rows are unchecked, not "not applicable"
+              shared.modesUnknown = !info.viaService && !(info.state && info.state.answered);
               rows.forEach(function (d) {
-                if (d.file) d.applies = conProbe && !away;
-                if (d.id === "mode_laser" || d.id === "mode_cnc") d.applies = !away && on.length >= 2 && on.indexOf(d.id === "mode_laser" ? "Laser" : "CNC") >= 0;
+                if (d.file) {
+                  // the example needs the probe: with no reading of the board it is unchecked (not "does not apply")
+                  d.applies = why.status ? true : conProbe && !away;
+                  if (why.status) { d.state = "unchecked"; d.texts = { unchecked: "startup_workbench.unchecked_" + why.status }; }
+                  else { delete d.state; delete d.texts; }
+                }
+                if (d.id === "mode_laser" || d.id === "mode_cnc") d.applies = !away && (shared.modesUnknown || (on.length >= 2 && on.indexOf(d.id === "mode_laser" ? "Laser" : "CNC") >= 0));
               });
               return card.refresh();
             });

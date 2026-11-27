@@ -18,6 +18,7 @@
           svgBox: null,
           layerPanel: null,
           mapStatus: null,
+          mapStatusRow: null,
           ws: null,
           wsMap: null,
           wsSide: null,
@@ -39,6 +40,7 @@
           svgBox: function () { return psh.svgBox; },
           layerPanel: function () { return psh.layerPanel; },
           mapStatus: function () { return psh.mapStatus; },
+          mapStatusRow: function () { return psh.mapStatusRow; },
           ws: function () { return psh.ws; },
           wsMap: function () { return psh.wsMap; },
           wsSide: function () { return psh.wsSide; },
@@ -65,7 +67,9 @@
         psh.page = tzEl("div", "tz-page workshop-theme");
         root.appendChild(psh.page);
         // two rows by CSS order (33-space.js): badge, text and the Commands button; then the chips and the state. The children can be added in any order.
-        psh.header = tzEl("div", "wf-bar tz-hd");
+        // page-header: the family's compact bar (2026-11-23: 48 px, badge 32, the lead line is not drawn but still read; the description of the page
+        // is the first row of the help of each section, 30-zones-page-layout.js tzPaintHelp)
+        psh.header = tzEl("div", "page-header wf-bar tz-hd");
         psh.page.appendChild(psh.header);
       }
 
@@ -77,12 +81,19 @@
         // organized"): top bar (View/Point/Measure tools, zoom,
         // follow head, layers, full screen), the map with the grouped
         // LAYERS panel on the side (with its legend), minimap with zoom and a
-        // status bar below (cursor, head, laser, zone, measure).
+        // status line over it (head, cursor, cut point, zoom, measure).
         var mapBar = tzEl("div", "tzm-bar");
         psh.mapCard.appendChild(mapBar);
         mapBar.appendChild(tzEl("h3", "tzm-title", i18nT('zonesPage.bed_map')));
         psh.toolGrp = tzEl("div", "tzm-grp");
         mapBar.appendChild(psh.toolGrp);
+        // the status line (head, cursor, zoom, measure) is ONE line over the map, not under it (2026-11-22): the space under the graph is for the graph
+        // the line sits in a row of its own with the section picker of the full screen (30-zones-page-layout.js): both in the flow, the line gives way
+        // (ellipsis at its END) and nothing is ever drawn over its start (2026-11-22: the picker covered "Head")
+        psh.mapStatusRow = tzEl("div", "tzm-statusrow");
+        psh.mapStatus = tzEl("div", "tzm-status");
+        psh.mapStatusRow.appendChild(psh.mapStatus);
+        psh.mapCard.appendChild(psh.mapStatusRow);
         var mapRow = tzEl("div", "tzm-row");
         psh.mapCard.appendChild(mapRow);
         psh.svg = document.createElementNS(TZ_SVG_NS, "svg");
@@ -96,8 +107,6 @@
         mapRow.appendChild(psh.svgBox);
         psh.layerPanel = tzEl("div", "tzm-layers");
         mapRow.appendChild(psh.layerPanel);
-        psh.mapStatus = tzEl("div", "tzm-status");
-        psh.mapCard.appendChild(psh.mapStatus);
         return mapBar;
       }
 

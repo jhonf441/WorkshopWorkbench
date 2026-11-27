@@ -44,6 +44,8 @@
         title.setAttribute("role", "heading"); // QA-11: the page title was a plain div (no headings in the page)
         title.setAttribute("aria-level", "1");
         txt.appendChild(title);
+        // the description is hidden in the one-line header (33-space.js) and kept as the tooltip of the title (2026-11-22)
+        title.title = i18nT('zonesPage.workbench_lead');
         txt.appendChild(tzEl("div", "wf-lead", i18nT('zonesPage.workbench_lead')));
         pz.header.appendChild(txt);
         pz.headRight = tzEl("div", "wf-bar-right");
@@ -136,6 +138,7 @@
         pz.P = {
           st: function () { return pz.data.st(); },
           zones: function () { return pz.data.zones(); },
+          filesRead: function () { return pz.data.filesOk(); },
           zoneSizes: function () { return pz.data.zoneSizes(); },
           focusByZone: function () { return pz.data.focusByZone(); },
           layout: function () { return pz.nav.layout(); },
@@ -182,7 +185,7 @@
         // (request 2026-10-09: "the editor beside active zone and the
         // chart taking all the space").
         pz.mainCol = tzEl("div");
-        pz.mainCol.style.cssText = "flex:1 1 100%;min-width:300px;display:flex;flex-direction:column;gap:12px;";
+        pz.mainCol.style.cssText = "flex:1 1 100%;min-width:min(300px,100%);display:flex;flex-direction:column;gap:12px;"; // note 14: on a 320 px phone with the rail reserved the page is ~256 px: a fixed 300 px pushed the page sideways
         pz.topRow.appendChild(pz.mainCol);
         pz.mapBar = pz.shell.buildMap(pz.mainCol);
       }

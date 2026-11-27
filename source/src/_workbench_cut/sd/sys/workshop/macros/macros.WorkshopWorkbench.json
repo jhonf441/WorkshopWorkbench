@@ -1,0 +1,138 @@
+{
+ "version": 1,
+ "plugin": "WorkshopWorkbench",
+ "macros": [
+  {
+   "file": "focus/focushere.g",
+   "audience": "internal"
+  },
+  {
+   "file": "focus/focusref.g",
+   "audience": "internal"
+  },
+  {
+   "file": "focus/focusrule.g",
+   "audience": "internal"
+  },
+  {
+   "file": "focus/laserfocus.g",
+   "audience": "internal"
+  },
+  {
+   "file": "focus/zfocusgo.g",
+   "audience": "internal"
+  },
+  {
+   "file": "guard/cncguard.g",
+   "audience": "internal"
+  },
+  {
+   "file": "guard/cutguard.g",
+   "audience": "internal"
+  },
+  {
+   "file": "guard/jobarm.g",
+   "audience": "internal"
+  },
+  {
+   "file": "guard/laserguard.g",
+   "audience": "internal"
+  },
+  {
+   "file": "laser/laseroffset.g",
+   "audience": "internal"
+  },
+  {
+   "file": "laser/livemark.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/framecutarea.g",
+   "audience": "user",
+   "title": {
+    "es": "Enmarcar el area de corte",
+    "en": "Frame the cut area"
+   },
+   "description": {
+    "es": "Recorre el contorno del area de corte con el puntero (laser apagado) para ver donde esta. Sube Z 5 mm antes de moverse.",
+    "en": "Traces the outline of the cut area with the pointer (laser off) to see where it is. Raises Z 5 mm before moving."
+   }
+  },
+  {
+   "file": "work/framerect.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/gotobed.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/handcorner.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/handfree.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/saveworkplace.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/workplaces.g",
+   "audience": "internal"
+  },
+  {
+   "file": "work/workzero.g",
+   "audience": "user",
+   "title": {
+    "es": "Ir al cero de trabajo",
+    "en": "Go to the work zero"
+   },
+   "description": {
+    "es": "Lleva X e Y al cero del sistema de trabajo activo (G54 a G59). Sube Z a una altura segura y se queda ahi. Pide homing de X e Y antes.",
+    "en": "Takes X and Y to the zero of the active workplace (G54 to G59). Raises Z to a safe height and stays there. Needs X and Y homed first."
+   }
+  },
+  {
+   "file": "work/wpload.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zbedref.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zcal-goto.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zcal-mark.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zcal-probe.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zcal-szp.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zhere0.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zmeasure.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zprobepoint.g",
+   "audience": "internal"
+  },
+  {
+   "file": "zcal/zsurface.g",
+   "audience": "internal"
+  }
+ ]
+}

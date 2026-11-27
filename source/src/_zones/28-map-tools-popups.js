@@ -59,7 +59,7 @@
             .catch(function (e) { pmt.posPop.appendChild(tzEl("div", "tz-msg err", i18nT('common.not_saved_2', { err: e.message || e }))); });
         });
         bZ.disabled = !pmt.data.zones()[zw] || !pmt.data.machineFree();
-        tzTip(bZ, pmt.data.zones()[zw] ? i18nT('zonesPage.z_measuring_point_and_focus_in', { code: TZ_CODES[zw] }) : i18nT('zonesPage.has_no_zone_file_2', { code: TZ_CODES[zw] }));
+        tzTip(bZ, pmt.data.zones()[zw] ? i18nT('zonesPage.z_measuring_point_and_focus_in', { code: TZ_CODES[zw] }) : tzZonesUnread(pmt.data.filesOk) ? i18nT('zoneActive.zones_unread', { code: TZ_CODES[zw] }) : i18nT('zonesPage.has_no_zone_file_2', { code: TZ_CODES[zw] }));
         row.appendChild(bZ);
         // measure right there, without saving the point: the probe goes over it, touches, and leaves the laser at the focus (or Z0 in the other modes)
         var laserM = !!(pmt.data.st() && pmt.data.st().mode === "Laser");

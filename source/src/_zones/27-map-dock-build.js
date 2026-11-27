@@ -6,8 +6,9 @@
         // the map"): tools | view | layers and screen. The map
         // gains the width of the two columns that were on the sides.
         pdk.barD = tzEl("div", "tzm-dock");
-        pdk.shell.mapCard().insertBefore(pdk.barD, pdk.shell.mapStatus());
-        pdk.shell.mapCard().insertBefore(pdk.tools.cameraStrip(), pdk.shell.mapStatus());
+        // the status line is over the map now (22-page-shell.js): the dock and the camera strip close the card
+        pdk.shell.mapCard().appendChild(pdk.barD);
+        pdk.shell.mapCard().appendChild(pdk.tools.cameraStrip());
         var barL = pdk.barD;
         var barR = pdk.barD;
         // ---- Work bar v2 (2026-10-10: "the bar better and with more

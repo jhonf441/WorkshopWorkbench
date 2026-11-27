@@ -47,7 +47,7 @@
         pz.tableCard.style.marginTop = "12px";
         pz.page.appendChild(pz.tableCard);
         // title, then the note (what the laser offset is doing), then the buttons: text and controls never share a line
-        pz.tableCard.appendChild(tzEl("h3", null, i18nT('common.zones')));
+        pz.tableCard.appendChild(tzCardHead(tzEl("h3", null, i18nT('common.zones')), "vector-square"));
         pz.offsetInfo = tzEl("div", "tz-muted tz-note", "");
         pz.tableCard.appendChild(pz.offsetInfo);
         var tableHead = tzEl("div", "tz-row tz-actions");

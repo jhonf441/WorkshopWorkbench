@@ -27,6 +27,7 @@
         pzd.TZ_OFFCUTS_FILE = "0:/sys/workshop/data/scraps.json";
         pzd.machineMemo = { liveBusyTs: 0 };
         pzd.st = null; // ultimo estado resumido de /machine/status
+        pzd.filesOk = {};
         pzd.zones = []; // 0..8 -> {name, refX, refY, file:bool}
         // Saved jog positions (sys/workshop/data/positions.json, machine coords =
         // where the pointer lands): cutting area corners, origin

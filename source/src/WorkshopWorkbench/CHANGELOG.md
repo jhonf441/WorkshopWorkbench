@@ -1,5 +1,57 @@
 # WorkshopWorkbench -- historial de versiones
 
+## 2.26.0 -- 2026-11-23
+
+- redesign to the family scale (design decision of 23 Nov): the section menu has no boxes, entries of 32 visible and 8 apart with a 40 px touch area each; the open entry carries the section color (2 px line and a soft fill)
+- the fold and pin buttons of the menu are 32 with a 40 px touch area; the "Section" button under 640 px stays (36) and the rows of its sheet are 40
+- buttons inside the cards are 32 (36 the main one), 8 apart, with a 40 px touch area; danger and big buttons keep their size; fields are 36
+- the steps of Prepare are groups split by a divider instead of boxes inside the card; the icon of a card title takes the section color
+- the bed map and its tools are unchanged
+
+## 2.25.3 -- 2026-11-23
+
+- optional files are never requested when absent
+
+## 2.25.2 -- 2026-11-22
+
+- map status line and labels
+
+## 2.25.1 -- 2026-11-22
+
+- Map: the status line is never covered by the section picker of the full screen (it sits in the same row, cut at its end); map labels no longer write over each other (bed and area centres, travel label, X0 Y0, area corners)
+
+## 2.25.0 -- 2026-11-22
+
+- One-line header, light mode panels, cut editor wording
+
+## 2.24.3 -- 2026-11-22
+
+- Rebuild with shared update: start-up card split into modules, neutral Spanish texts, service texts resynced, unused .wf-index rule dropped
+
+## 2.24.2 -- 2026-11-22
+
+- Tuteo in texts (no voseo in es.json). Calibration markers 12 px.
+
+## 2.24.1 -- 2026-11-22
+
+- Visual review round: single hover and focus for inputs and controls (family styles), 44 px switch and checkbox rows, range picker field 44 px. Map labels never under 12 px on screen, 44 px map bar buttons, bar wraps on narrow windows, page keeps clear of the control bar rail, neutral wording in zone texts.
+
+## 2.24.0 -- 2026-11-21
+
+- Style unification: zone editor registers the unsaved-changes guard (tab changes and opening another zone ask first, a refused save is brought on screen), 44 px click areas on the small map controls, 12 px minimum text, no pointer media queries, shared family pieces.
+
+## 2.23.14 -- 2026-11-21
+
+- Help card readable (own text color and font), one session notice per page, no repeated asks for missing optional files; Jog pendant press feedback and tap-again confirmations; Vision silent on closed connection
+
+## 2.23.13 -- 2026-11-21
+
+- Focus flag set at the start of laserfocus.g and focushere.g and counted on every abort (the service stops the flow when the focus was not set)
+
+## 2.23.12 -- 2026-11-20
+
+- Unchecked state when the machine cannot be read, no false 'missing'; SD reads keep the last value; positions and materials refuse to save without reading; not-in-use setup items
+
 ## 2.23.11 -- 2026-11-18
 
 - accessRev: the page asks whoami at once when the service says the access changed

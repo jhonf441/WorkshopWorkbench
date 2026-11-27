@@ -1,4 +1,4 @@
-      // ---- Workbench page: the gate of the laser / CNC work (2026-10-26, owner report "Mesa de trabajo se ve muy mal") ----
+      // ---- Workbench page: the gate of the laser / CNC work (2026-10-26, user report "Mesa de trabajo se ve muy mal") ----
       // The page is for Laser and CNC work. When this machine does not do it (it only prints, or nobody said yet) the page used to show
       // its whole interface anyway: the bed map, the tabs, the bars. Now it shows ONE panel instead, like the Timelapse page does without
       // a camera (WorkshopCamera 18-no-camera.js): what the page is for, why it is closed now, the switches to turn it on and a guide
@@ -11,11 +11,18 @@
         ".tz-modes-closed > :not(.tz-hd):not([data-modes-gate]) { display: none !important; }" +
         ".tz-modes-closed .tz-hd > [data-tz-headinfo], .tz-modes-closed .tz-hd .tz-chip-mode { display: none !important; }" +
         "[data-modes-gate] { margin-top: 12px; width: 100%; box-sizing: border-box; }" +
-        "[data-modes-gate] .tz-gate-row { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-top: 1px solid rgba(128,128,128,0.3); }" +
-        "[data-modes-gate] .tz-gate-row label { display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; }" +
-        "[data-modes-gate] .tz-gate-help { font-size: 13px; line-height: 1.45; opacity: 0.85; margin-left: 26px; }" +
+        // redesign 2026-11-23: the head of the family (icon, title, 4 % band), under it ONE line that says why the page is closed; each switch is a row
+        // of the family, 48 high (name 14 + short phrase 12, the box at the right; the row is a label, so all of it is the touch area); the long texts
+        // (what the page is for, the four texts of each switch) live in ONE fold at the foot
+        "[data-modes-gate] .tz-gate-why { font-size: 13px; line-height: 1.4; opacity: 0.9; }" +
+        "@media (min-width: 900px) { [data-modes-gate] .tz-gate-why { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }" +
+        "[data-modes-gate] label.wf-row { cursor: pointer; }" +
+        "[data-modes-gate] .tz-gate-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }" +
+        "[data-modes-gate] .wf-row-control input[type=checkbox] { width: 18px; height: 18px; margin: 0; }" +
+        "[data-modes-gate] .tz-gate-help { font-size: 13px; line-height: 1.45; opacity: 0.85; }" +
         "[data-modes-gate] .tz-gate-guide { margin-top: 12px; padding: 10px 12px; border-radius: 6px; border: 1px solid rgba(25,118,210,0.6); }" +
-        "[data-modes-gate] .tz-gate-miss { font-weight: 500; }";
+        "[data-modes-gate] .tz-gate-miss { font-size: 13px; font-weight: 600; margin-bottom: 4px; }" +
+        "[data-modes-gate] .help-tip-list dd { white-space: pre-line; }";
 
       function tzPagGate(pz, root, opts) {
         if (!document.getElementById(TZ_GATE_CSS_ID)) {
@@ -108,21 +115,31 @@
         var g = pz.modesGate;
         var p = g.panel;
         p.textContent = "";
-        var h = tzEl("h3", null, i18nT("modes_gate.title"));
-        h.style.cssText = "display:flex;align-items:center;gap:8px;margin:0 0 8px 0;";
-        h.insertBefore(tzEl("span", "mdi mdi-" + String(pz.pag.icon || "vector-square").replace(/^mdi-/, "")), h.firstChild);
-        p.appendChild(h);
-        p.appendChild(tzEl("div", null, i18nT("modes_gate.what")));
-        var why = tzEl("div", "tz-note", i18nT("modes_gate.why_" + d.reason, { mode: tzPageMode(pz), modes: tzGateNames(g.info.state) }));
-        why.style.marginTop = "8px";
-        p.appendChild(why);
-        // not saved in the service: without a session that is the cause (sign in and it is saved), not a service that is down
-        if (!g.info.viaService) p.appendChild(tzEl("div", "tz-muted", i18nT(typeof workshopSignedOut === "function" && workshopSignedOut() ? "modes_gate.local_note_signed_out" : "modes_gate.local_note")));
+        // the family head (22-ui-base.js tzCardHead): the icon of the page in the section color, the title and the 4 % band
+        p.appendChild(tzCardHead(tzEl("h3", null, i18nT("modes_gate.title")), pz.pag.icon || "vector-square"));
+        // ONE secondary line under the head (13 px): why the page is closed now; everything else that explains (what the page is for, the texts of
+        // each switch) is in the fold at the foot (ux, 2026-11-23: nothing but that line before the question)
+        p.appendChild(tzEl("div", "tz-gate-why", i18nT("modes_gate.why_" + d.reason, { mode: tzPageMode(pz), modes: tzGateNames(g.info.state) })));
         if (g.guide) p.appendChild(tzGateGuideBox(pz, d));
         else if (d.reason === "elsewhere") tzGateSwitchBox(pz, p); // 30-zones-page-gate-switch.js: nothing to answer, the machine has to change mode
         else tzGateSwitches(pz, p);
         tzGateActions(pz, p, d);
+        // not saved in the service: said under Save, where it matters (without a session that is the cause: sign in and it is saved, not a service
+        // that is down)
+        if (!g.info.viaService) p.appendChild(tzEl("div", "tz-muted tz-gate-local", i18nT(typeof workshopSignedOut === "function" && workshopSignedOut() ? "modes_gate.local_note_signed_out" : "modes_gate.local_note")));
         if (g.status) p.appendChild(tzEl("div", "tz-muted", g.status));
+        p.appendChild(tzGateHelp());
+      }
+
+      // The ONE help of the panel, folded at its foot (family rule: one help per section): what the page is for, and for each switch its four
+      // texts (what it is, what it is for, if it is off, how), one per line
+      function tzGateHelp() {
+        var rows = [[i18nT("modes_gate.help_page"), i18nT("modes_gate.what")]];
+        TZ_WORK_MODES.forEach(function (m) {
+          var k = m.toLowerCase();
+          rows.push([i18nT("modes_gate.row_" + k), ["what", "why", "missing", "help"].map(function (part) { return i18nT("modes_gate.row_" + k + "_" + part); }).join("\n")]);
+        });
+        return workshopHelpFoldEl({ rows: rows });
       }
 
       // "Laser, CNC" (the work modes that are on) for the texts
@@ -130,27 +147,29 @@
         return workshopModesEnabled(state).filter(function (m) { return TZ_WORK_MODES.indexOf(m) >= 0; }).join(", ");
       }
 
-      // One row per mode of the page: switch + what / why / if missing / how (the help rule of every row)
+      // A group (family .wf-group: its title 13/600) with one family row of 48 per mode of the page (.wf-row: the name, the short phrase of what it
+      // is, and the box at the right); the row is a label, so a tap anywhere on it ticks the box. The four texts of the row (what / why / if missing /
+      // how, the help rule of every row) are in the fold at the foot of the panel (tzGateHelp).
       function tzGateSwitches(pz, p) {
         var pick = tzGatePick(pz);
-        var box = tzEl("div", null);
+        var box = tzEl("div", "wf-group");
         box.style.marginTop = "12px";
-        box.appendChild(tzEl("div", "tz-gate-miss", i18nT("modes_gate.switches_title")));
+        box.appendChild(tzEl("div", "wf-group-title", i18nT("modes_gate.switches_title")));
         TZ_WORK_MODES.forEach(function (m) {
           var k = m.toLowerCase();
-          var row = tzEl("div", "tz-gate-row");
-          var lab = tzEl("label", null);
+          var row = tzEl("label", "wf-row");
+          var name = tzEl("span", "tz-gate-name");
+          name.appendChild(tzEl("span", "wf-row-name", i18nT("modes_gate.row_" + k)));
+          name.appendChild(tzEl("span", "wf-row-text", i18nT("modes_gate.row_" + k + "_what")));
+          row.appendChild(name);
+          var ctl = tzEl("span", "wf-row-control");
           var cb = document.createElement("input");
           cb.type = "checkbox";
           cb.checked = !!pick[m];
           cb.setAttribute("data-mode", m);
           cb.addEventListener("change", function () { pick[m] = cb.checked; tzGateSaveState(pz); });
-          lab.appendChild(cb);
-          lab.appendChild(tzEl("span", null, i18nT("modes_gate.row_" + k)));
-          row.appendChild(lab);
-          ["what", "why", "missing", "help"].forEach(function (part) {
-            row.appendChild(tzEl("div", "tz-gate-help", i18nT("modes_gate.row_" + k + "_" + part)));
-          });
+          ctl.appendChild(cb);
+          row.appendChild(ctl);
           box.appendChild(row);
         });
         p.appendChild(box);

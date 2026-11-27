@@ -45,18 +45,20 @@
         return i18nT('zonesPage.measured_mm_dx_dy', { hypot: tzFmt(Math.hypot(dx, dy)), dx: tzFmt(dx), dy: tzFmt(dy), ang: ang.toFixed(1), v: pmt.measure.b ? "" : " ..." });
       }
 
-      // Barra de estado de abajo
+      // Status line over the map (one line, 28 px): head, cursor, laser point, zoom (2026-11-22: the head moved here from the page header)
       function tzToolPaintStatus(pmt) {
         if (!pmt.data.st() || !pmt.data.st().axes || !pmt.data.st().axes.X) return;
         var ax = pmt.data.st().axes;
         var parts = [];
-        if (pmt.lastCursor) parts.push("<b>Cursor</b> X" + tzFmt(pmt.lastCursor.x) + " Y" + tzFmt(pmt.lastCursor.y));
-        var hx = ax.X.machinePosition, hy = ax.Y.machinePosition; // the head and the zone are in the status bar of the page (33-espacio): not repeated here
+        var hx = ax.X.machinePosition, hy = ax.Y.machinePosition;
+        var hz = ax.Z ? ax.Z.machinePosition : null;
+        parts.push("<b>" + i18nT('zonesPage.status_head') + "</b> X" + tzFmt(hx) + " Y" + tzFmt(hy) + (hz === null || hz === undefined ? "" : " Z" + tzFmt(hz)));
+        if (pmt.lastCursor) parts.push("<b>" + i18nT('zonesPage.status_cursor') + "</b> X" + tzFmt(pmt.lastCursor.x) + " Y" + tzFmt(pmt.lastCursor.y));
         var hc = pmt.data.cutCorrection();
-        if (hc && pmt.data.st().mode === "Laser") parts.push("<b>Laser</b> X" + tzFmt(hx - hc.cx) + " Y" + tzFmt(hy - hc.cy));
-        parts.push("<b>Zoom</b> x" + (pmt.view.mapView() && pmt.view.mapFull() ? (pmt.view.mapFull().w / pmt.view.mapView().w).toFixed(1) : "1") + (pmt.view.mapFollow() ? i18nT('zonesPage.following') : ""));
+        if (hc && pmt.data.st().mode === "Laser") parts.push("<b>" + i18nT('zonesPage.status_laser') + "</b> X" + tzFmt(hx - hc.cx) + " Y" + tzFmt(hy - hc.cy));
+        parts.push("<b>" + i18nT('zonesPage.status_zoom') + "</b> x" + (pmt.view.mapView() && pmt.view.mapFull() ? (pmt.view.mapFull().w / pmt.view.mapView().w).toFixed(1) : "1") + (pmt.view.mapFollow() ? i18nT('zonesPage.following') : ""));
         var mt = tzToolMeasureText(pmt);
-        if (mt) parts.push("<span style='color:#00e5ff'>" + mt + "</span>");
+        if (mt) parts.push("<span class='tzm-meas-txt'>" + mt + "</span>");
         pmt.shell.mapStatus().innerHTML = parts.join("<span class='tzm-sep'>|</span>");
       }
 

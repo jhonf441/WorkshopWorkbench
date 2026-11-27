@@ -19,7 +19,10 @@
         var oy = mp.node("text", { x: az.refX - mp.fs * 0.3, y: -(az.refY + oL + mp.fs * 0.3), fill: oc, "font-size": mp.fs * 0.8, "font-weight": "bold", "text-anchor": "middle" }, og);
         oy.textContent = "Y";
         if (mp.rectZone[wn]) {
-          var o0 = mp.node("text", { x: az.refX + mp.fs * 0.4, y: -az.refY + mp.fs * 1.15, fill: oc, "font-size": mp.fs * 0.72 }, og);
+          // the "X0 Y0 of G54" label keeps away from the coordinates of the corners of the areas (the bottom left one sits right next to it)
+          var ofs = Math.max(mp.fs * 0.72, mp.minFs || 0);
+          var o0y = tzLblPlace(tzMapAreaLabelBoxes(pmr, mp), az.refX + mp.fs * 0.4, -az.refY + mp.fs * 1.15, i18nT('zonesPage.0_0_of_2', { code: TZ_CODES[wn] }), ofs, "start", ofs * 0.95);
+          var o0 = mp.node("text", { x: az.refX + mp.fs * 0.4, y: o0y, fill: oc, "font-size": mp.fs * 0.72 }, og);
           o0.textContent = i18nT('zonesPage.0_0_of_2', { code: TZ_CODES[wn] });
         }
       }

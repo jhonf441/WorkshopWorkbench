@@ -64,20 +64,32 @@
       }
 
       // Changes tab. false if the page has no such tab (a tab of the other plugin's page opens that page: tzNavGoOtherPage).
+      // NOTE (unsaved changes): goLayout answers false ALSO when it did not change the tab yet because an editor holds typed changes (workshopAnyDirty, the zone
+      // editor registers the family guard): the dialog "keep editing / save and leave / discard" is open and the tab changes when the person leaves. A caller that
+      // needs the tab changed right now (and reads `true` as "it is open") must not assume it: it waits for the apply listeners (nav.onApply) instead.
       // query: extra route query parameters for a tab that lives on the other plugin's page (e.g. {x, y} for Machine > Height)
       function tzNavGoLayout(pnv, l, query) {
         if (pnv.pag.layouts.indexOf(l) !== -1) {
           if (pnv.guard && !pnv.guard(l)) return false;
-          pnv.layout = l;
-          try {
-            localStorage.setItem(pnv.layoutKey, l);
-          } catch (e) {
-            /* no critico */
+          // an editor with typed changes (the zone editor registers the family guard): the person is asked first; the change is made when they leave, so this answers false now
+          if (l !== pnv.layout && workshopAnyDirty()) {
+            workshopConfirmLeave(function () { tzNavSetLayout(pnv, l); });
+            return false;
           }
-          pnv.applyListeners.forEach(function (fn) { fn(); });
+          tzNavSetLayout(pnv, l);
           return true;
         }
         return tzNavGoOtherPage(pnv, l, query);
+      }
+
+      function tzNavSetLayout(pnv, l) {
+        pnv.layout = l;
+        try {
+          localStorage.setItem(pnv.layoutKey, l);
+        } catch (e) {
+          /* no critico */
+        }
+        pnv.applyListeners.forEach(function (fn) { fn(); });
       }
 
       // A tab that lives on the page of the other plugin (TZ_PAGES, 30-zones-page.js): that page opens through the router with the
@@ -100,6 +112,14 @@
 
       // The inner tab of Zones chosen by the person: remembered (except the editor, which needs a zone) and shown
       function tzNavChooseZSub(pnv, k) {
+        if (k !== pnv.zSub && workshopAnyDirty()) {
+          workshopConfirmLeave(function () { tzNavApplyZSub(pnv, k); });
+          return;
+        }
+        tzNavApplyZSub(pnv, k);
+      }
+
+      function tzNavApplyZSub(pnv, k) {
         pnv.zSub = k;
         try {
           if (k !== "editor") localStorage.setItem(pnv.zSubKey, k);

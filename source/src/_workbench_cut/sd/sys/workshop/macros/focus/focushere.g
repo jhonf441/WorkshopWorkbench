@@ -6,15 +6,31 @@
 ;
 ; Use:  M98 P"0:/sys/workshop/macros/focus/focushere.g" H7.5      (H = focus in mm ABOVE the surface, 0.3 to 60 like laserfocus.g and focusrule.g)
 
+; 2026-11-20 (incident of the bridge): the focus flag is decided at the VERY START, before any check that can abort, so an abort anywhere leaves it false:
+;   global.workshopFocusOk    true only when this macro reached its end (the focus was set and verified)
+;   global.workshopFocusRun   +1 at every attempt (the bridge counts the attempts of ITS job with it)
+;   global.workshopFocusFail  +1 right before an abort this macro decides (the service watches it: laser and air off, file job cancelled)
+if !exists(global.workshopFocusOk)
+    global workshopFocusOk = true
+if !exists(global.workshopFocusRun)
+    global workshopFocusRun = 0
+if !exists(global.workshopFocusFail)
+    global workshopFocusFail = 0
+set global.workshopFocusOk = false
+set global.workshopFocusRun = global.workshopFocusRun + 1
+
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var clearZ = 10                                 ; minimum height before deploying the probe
 var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 
 if !exists(param.H)
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("Focus: H missing (focus height in mm)") : ("Enfocar: falta H (altura de foco en mm)")}
 if param.H < 0.3 || param.H > 60
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("Focus: H" ^ param.H ^ " out of range (0.3 to 60 mm)") : ("Enfocar: H" ^ param.H ^ " fuera de rango (0.3 a 60 mm)")}
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("Focus: home all axes first") : ("Enfocar: primero hace homing de todos los ejes")}
 
 ; The BLTouch pin has to be STOWED before moving (request
@@ -37,3 +53,4 @@ var tmsg1 = "Enfocado aqui: laser a " ^ param.H ^ " mm sobre la superficie (medi
 if var.en
     set var.tmsg1 = "Focused here: laser at " ^ param.H ^ " mm above the surface (measured at X" ^ (move.axes[0].machinePosition + sensors.probes[0].offsets[0]) ^ " Y" ^ (move.axes[1].machinePosition + sensors.probes[0].offsets[1]) ^ ")"
 M118 P0 S{var.tmsg1}
+set global.workshopFocusOk = true                  ; reached the end: the probe triggered and the laser is at its height

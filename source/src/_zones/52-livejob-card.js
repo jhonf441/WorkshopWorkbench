@@ -9,7 +9,7 @@
         ".tz-lj-why{color:#ffab91;margin:2px 0;font-size:12px;}",
         ".theme--light .tz-lj-row{background:rgba(0,0,0,0.04);}",
         ".theme--light .tz-lj-why{color:#bf360c;}",
-        "@media (pointer:coarse),(hover:none){.tz-lj .tz-btn{min-height:44px;}}",
+        ".tz-lj .tz-btn{min-height:44px;}", // 44 px always
       ].join("\n"));
 
       function tzLjRecordTitle(rec) {

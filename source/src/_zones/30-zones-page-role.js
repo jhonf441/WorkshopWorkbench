@@ -18,7 +18,7 @@
         pz.gate.style.display = "none";
         pz.gateTitle = tzEl("h3", null, "");
         pz.gateTip = tzEl("div", "tz-muted", "");
-        pz.gate.appendChild(pz.gateTitle);
+        pz.gate.appendChild(tzCardHead(pz.gateTitle, "lock-outline"));
         pz.gate.appendChild(pz.gateTip);
         // the button only when the session is what is missing: with a role that is too low, signing in again cannot help
         pz.gateLogin = typeof workshopLogin === "function" ? tzBtn(i18nT('role.log_in'), "primary", function () { workshopLogin(); }) : null;

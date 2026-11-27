@@ -252,6 +252,7 @@
         tcCenterDlgClose(tc);
         var d = tzEl("div", "tc-cdlg");
         d.setAttribute("data-workshop-i18n", "");
+        d.setAttribute("data-tp-panel", "1"); // a child of <body>: 03-theme.js moves it to the light palette with DWC's light theme (it was the one floating box left always dark)
         var i = tcCenterSig(tc);
         d.appendChild(tzEl("div", "t", i18nT('cuts.point', { n: i + 1 })));
         d.appendChild(tzEl("div", "tz-muted", "X" + tc.fmt(tc.centerAim.x) + " Y" + tc.fmt(tc.centerAim.y)));
@@ -389,6 +390,7 @@
         tcCenterDlgClose(tc);
         var d = tzEl("div", "tc-cdlg");
         d.setAttribute("data-workshop-i18n", "");
+        d.setAttribute("data-tp-panel", "1"); // a child of <body>: 03-theme.js moves it to the light palette with DWC's light theme (it was the one floating box left always dark)
         d.appendChild(tzEl("div", "t", i18nT('cuts.centre_found_title')));
         d.appendChild(tzEl("div", "tz-muted", "X" + tc.fmt(cr.cx) + " Y" + tc.fmt(cr.cy)));
         var lh = tcCenterLaserHead(tc, cr);

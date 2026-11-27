@@ -44,7 +44,7 @@
           tc.floating.setAttribute("role", "toolbar");
           // a tap or a wheel turn on the strip is not a tap on the map
           ["pointerdown", "pointerup", "click", "wheel", "dblclick"].forEach(function (ev) {
-            tc.floating.addEventListener(ev, function (e) { e.stopPropagation(); });
+            tc.floating.addEventListener(ev, function (e) { e.stopPropagation(); }, { passive: true }); // only stops it: passive, so the wheel never waits for it
           });
         }
         if (tc.floating.parentNode !== box) {

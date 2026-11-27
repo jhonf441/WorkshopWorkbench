@@ -19,12 +19,7 @@
         if (!tm2.ctx.visible()) return;
         var card = tm2.ctx.card;
         card.innerHTML = "";
-        var hd = tzEl("div", "tz-row");
-        hd.style.alignItems = "center";
-        hd.appendChild(tzEl("h3", null, i18nT('materials.materials')));
-        var sp = tzEl("span");
-        sp.style.flex = "1";
-        hd.appendChild(sp);
+        var hd = tzCardHead(tzEl("h3", null, i18nT('materials.materials')), "flask-outline"); // the family head: the title takes the free width, the buttons at the right
         hd.appendChild(tzTip(tzBtn(i18nT('materials.new_laser'), "primary", function () { tmatOpenEditor(tm2, { mode: "Laser" }); }), i18nT('materials.material_to_cut_engrave_with_the')));
         hd.appendChild(tzTip(tzBtn(i18nT('materials.new_cnc'), null, function () { tmatOpenEditor(tm2, { mode: "CNC" }); }), i18nT('materials.material_for_milling_thickness_safe_height')));
         var fz = tm2.ctx.data.focusPerZone();
@@ -113,9 +108,9 @@
 
       function tmatDrawEditor(tm2, card) {
         var e = tm2.editing;
-        var box = tzEl("div", "tz-card wf-card");
-        box.style.cssText += "margin-top:10px;background:rgba(255,255,255,0.03);";
-        box.appendChild(tzEl("h3", null, (e.id ? i18nT('materials.edit') : i18nT('materials.new_material')) + "(" + e.mode + ")"));
+        // a group inside the materials card (redesign 2026-11-23: no grey card inside a card): its title and a divider above
+        var box = tzEl("div", "wf-group wf-group-divided");
+        box.appendChild(tzEl("div", "wf-group-title", (e.id ? i18nT('materials.edit') : i18nT('materials.new_material')) + "(" + e.mode + ")"));
         var grid = tzEl("div");
         grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;";
         box.appendChild(grid);

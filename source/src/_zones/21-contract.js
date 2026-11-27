@@ -14,7 +14,7 @@
         // geometry of the machine
         cut: ["correction", "limits", "area", "bboxShapes"],
         // zones and materials (read only; writing stays in the page except the two guardar* calls)
-        data: ["zones", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "clampsFile", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "sincFoco"],
+        data: ["zones", "size", "point", "savePoint", "material", "saveMaterial", "saveFocus", "focusPerZone", "focusList", "active", "pieces", "clamps", "clampsFile", "nameActive", "controls", "pointsRef", "offsetProbe", "posSaved", "sincFoco", "filesRead"],
         // change of tab and editing (goOffsets and offsetsProbeVisible are given per module: the Mesh of WorkshopMachine)
         nav: ["go", "goOffsets", "offsetsProbeVisible", "openEditorAt", "goPointer", "onChange", "cleanWorkbench"],
         // formatting and panels
@@ -24,7 +24,7 @@
       // Builds the ctx of one module from the accessors of the page P (see tzMountPage) and the extras of that module.
       //   P     = { st, zones, zoneSizes, focusByZone, layout, renderMap, refreshAll, readStatus, machineFree, jobRunning,
       //             cutCorr, cutLimits, prensas, retazos, zonePoint, saveZonePoint, zoneMaterial, saveZoneMaterial,
-      //             saveFocus, zoneChecks, refPoints, savedPos, probeOffset, syncFoco, openEditor,
+      //             saveFocus, filesRead, zoneChecks, refPoints, savedPos, probeOffset, syncFoco, openEditor,
       //             goLayout, syncMaterialZones }
       //   id    = tab id of the module (visible() defaults to "the layout is id")
       //   extra = { card, visible, mapa: {...}, nav: {...}, ui: {...}, datos: {...} } overrides / additions of the module
@@ -103,6 +103,9 @@
             offsetProbe: function () { return P.probeOffset(); },
             posSaved: function () { return P.savedPos(); },
             sincFoco: function () { return P.syncFocus(); },
+            // which SD reads worked at the last refresh: {zones, focus, positions, sizes, zpoints, extra, clamps, offcuts}, each true / false (a key that is
+            // missing = not read yet). false = "could not read" (no connection, board off), which is not "there is none".
+            filesRead: function () { return P.filesRead(); },
           },
           nav: {
             go: function (l, query) { P.goLayout(l, query); },

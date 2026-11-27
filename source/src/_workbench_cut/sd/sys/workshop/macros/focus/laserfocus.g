@@ -17,6 +17,19 @@
 ;         X30 Y30 if missing). The Zones page writes it when the measuring point
 ;         is chosen on the map (request 2026-10-09).
 
+; 2026-11-20 (incident of the bridge): the focus flag is decided at the VERY START, before any check that can abort, so an abort anywhere leaves it false:
+;   global.workshopFocusOk    true only when this macro reached its end (the focus was set and verified)
+;   global.workshopFocusRun   +1 at every attempt (the bridge counts the attempts of ITS job with it)
+;   global.workshopFocusFail  +1 right before an abort this macro decides (the service watches it: laser and air off, file job cancelled)
+if !exists(global.workshopFocusOk)
+    global workshopFocusOk = true
+if !exists(global.workshopFocusRun)
+    global workshopFocusRun = 0
+if !exists(global.workshopFocusFail)
+    global workshopFocusFail = 0
+set global.workshopFocusOk = false
+set global.workshopFocusRun = global.workshopFocusRun + 1
+
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 var probeX = exists(param.X) ? param.X : 30     ; measuring point, relative to the zero of the material
 var probeY = exists(param.Y) ? param.Y : 30
@@ -24,19 +37,21 @@ var clearZ = 15                                 ; minimum height to move in XY w
 var servo = #sensors.probes > 0 && sensors.probes[0] != null && sensors.probes[0].type == 9   ; only a BLTouch (probe type 9) has a servo pin: a switch, piezo or other probe gets no M280 / M401 / M402
 
 if !exists(param.W) || (!exists(param.H) && !exists(param.T))
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("laserfocus: W (workplace) and H (focus) or T (thickness) missing") : ("laserfocus: faltan W (sistema de trabajo) y H (foco) o T (grosor)")}
 if param.W < 1 || param.W > 6
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("laserfocus: W must be 1..6 (G54..G59)") : ("laserfocus: W debe ser 1..6 (G54..G59)")}
 if exists(param.H) && (param.H < 0.3 || param.H > 60)
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("laserfocus: H" ^ param.H ^ " out of range (0.3 to 60 mm)") : ("laserfocus: H" ^ param.H ^ " fuera de rango (0.3 a 60 mm)")}
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("Laser focus: home all axes first") : ("Foco laser: primero hace homing de todos los ejes")}
 
 ; 2026-10-18: livemark.g (the last line of the material macros) refuses to open the job if this macro did not get to its end: a probe that did
 ; not trigger, a BLTouch alarm (M280) or any error here aborts THIS macro only, and the line that follows would carry on as if the focus was set.
-if !exists(global.workshopFocusOk)
-    global workshopFocusOk = true
-set global.workshopFocusOk = false
+; (the flag is set at the top of this macro since 2026-11-20)
 
 ; Q1 = ask first whether there is material on the table (the "Ask if there is material before focusing" box of the zone). Cancel aborts this
 ; macro before anything moves; workshopFocusOk stays false, so livemark.g stops the job too.
@@ -61,6 +76,7 @@ if !exists(param.H)
     set var.focusH = global.focusRuleH
 ; the height that G53 G0 Z will use below, whichever way it was given: never outside the range focusrule.g and focushere.g accept
 if var.focusH < 0.3 || var.focusH > 60
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("laserfocus: focus height H" ^ var.focusH ^ " is out of range (0.3 to 60 mm)") : ("laserfocus: la altura de foco H" ^ var.focusH ^ " esta fuera de rango (0.3 a 60 mm)")}
 
 if !exists(global.laserOffsetOn)

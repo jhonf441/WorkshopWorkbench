@@ -6,6 +6,22 @@
         return e;
       }
 
+      // The head of a card: the family piece .wf-card-head (design/family-plugins.css, the twin of vue/_shared36/CardHead.vue; redesign 2026-11-23):
+      // the icon of the card (20, in the color of the section, the only colored icon), the title (16/600) and a 4 % band of the section color.
+      // It takes the title the card already made (the code that keeps a reference to it keeps working); what the card adds at the right (a state,
+      // a button) is appended to the head after the title, which takes the free width.
+      function tzCardHead(title, icon) {
+        var head = tzEl("div", "wf-card-head");
+        if (icon) {
+          var ic = tzEl("span", "wf-card-head-icon mdi mdi-" + String(icon).replace(/^mdi-/, ""));
+          ic.setAttribute("aria-hidden", "true");
+          head.appendChild(ic);
+        }
+        title.classList.add("wf-card-head-title");
+        head.appendChild(title);
+        return head;
+      }
+
       // Button with double tap (3s) for actions that move the machine or delete.
       // Tooltip (mouse: hover; touch: hold -- see 12-tips.js).
       function tzTip(el, text) {
@@ -109,11 +125,13 @@
       // each state reading (1 s) and the armed button was lost. Now the
       // armed button keeps its WIDTH (it says "Confirm?" and the explanation
       // comes out in a tooltip, see 12-tips.js) and, with `armKey`, the arming
-      // survives the rebuild during the 3 s.
-      var TZ_ARM_MS = 3000;
+      // survives the rebuild during the arm time (4 s).
+      var TZ_ARM_MS = 4000; // = WORKSHOP_ARM_MS (src/_shared/00-arm.js); tests/arm-ms.test.js keeps them equal
       var tzArmed = null; // {key, until, w}
+      // The scale of the family (2026-11-23): a button is 32, the main one ("primary") 36 (wf-btn--main) and a stop 48 (the caller passes wf-btn--crit),
+      // each with the family's 40 px touch area.
       function tzBtn(label, cls, onClick, confirmLabel, armKey) {
-        var b = tzEl("button", "wf-btn tz-btn tzb" + (/(^| )primary( |$)/.test(cls || "") ? " wf-main" : "") + (/(^| )tz-armed( |$)/.test(cls || "") ? " wf-armed" : "") + (cls ? " " + cls : ""), label);
+        var b = tzEl("button", "wf-btn tz-btn tzb" + (/(^| )primary( |$)/.test(cls || "") ? " wf-main wf-btn--main" : "") + (/(^| )tz-armed( |$)/.test(cls || "") ? " wf-armed" : "") + (cls ? " " + cls : ""), label);
         b.type = "button";
         var tip = tzTipFor(label);
         if (tip) b.setAttribute("data-tip", tip);

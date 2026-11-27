@@ -24,7 +24,7 @@
         var raw = Math.max(vr.w, vr.h) / 8;
         var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
         var major = [1, 2, 5, 10].map(function (k) { return k * mag; }).filter(function (v) { return v >= raw; })[0] || 10 * mag;
-        var R = { minor: major / 5, tickL: Math.min(vr.w, vr.h) * 0.03, rfs: mp.fs * 0.8, rStroke: mp.w / 600, w: vr.w, h: vr.h };
+        var R = { minor: major / 5, tickL: Math.min(vr.w, vr.h) * 0.03, rfs: Math.max(mp.fs * 0.8, mp.minFs || 0), rStroke: mp.w / 600, w: vr.w, h: vr.h };
         R.bandT = R.tickL + R.rfs * 1.5;
         R.bandL = R.tickL + R.rfs * 3.6;
         var st = { R: R, letterT: null, letterL: null };

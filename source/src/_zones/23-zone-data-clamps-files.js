@@ -58,7 +58,7 @@
       }
 
       function tzDataReadFiles(pzd) {
-        var rf = {};
+        var rf = { ok: {} };
 
         tzDataReadZones(pzd, rf);
         tzDataReadPointsZ(pzd, rf);
@@ -67,8 +67,10 @@
           pzd.offcuts = res[8];
           pzd.zonePts = res[4];
           pzd.zoneExtra = res[5];
-          pzd.zones = rf.newZones;
-          pzd.focusByZone = rf.newFocus;
+          // a read that failed keeps what the page knew (the last value): it never empties a list it could not read
+          pzd.zones = rf.ok.zones || !pzd.zones.length ? rf.newZones : pzd.zones;
+          pzd.focusByZone = rf.ok.focus || !Object.keys(pzd.focusByZone).length ? rf.newFocus : pzd.focusByZone;
+          pzd.filesOk = rf.ok; // which reads worked at this refresh (a missing key = never read): ctx.data.filesRead()
           pzd.savedPos = res[2];
           pzd.positionListeners.forEach(function (fn) { fn(); });
           pzd.zoneSizes = res[3];
@@ -143,11 +145,15 @@
           .then(function () { return tzDataRefreshAll(pzd); });
       }
 
+      // rf.ok.<name> = false when that read could not be made (no connection, board off...): the page then keeps what it knew and says "not checked"
+      // instead of "there is none". A file or folder that is not there (404) is a real empty answer.
       function tzDataReadZones(pzd, rf) {
         rf.newZones = [];
         rf.newFocus = {};
-        rf.pZones = tzList("0:/sys/workshop/zones").then(function (list) {
-          var files = list.filter(function (f) {
+        rf.ok = rf.ok || {};
+        rf.pZones = tzListRead("0:/sys/workshop/zones").then(function (res) {
+          rf.ok.zones = res.ok;
+          var files = res.items.filter(function (f) {
             return f && f.type === "f" && /^p[1-9]\.g$/.test(f.name);
           });
           return Promise.all(
@@ -161,12 +167,16 @@
                     rf.newZones[idx] = z;
                   }
                 })
-                .catch(function () {});
+                .catch(function (e) {
+                  if (!e || e.status !== 404) rf.ok.zones = false;
+                });
             })
           );
         });
-        rf.pFocus = tzList("0:/macros/laser").then(function (list) {
-          pzd.laserFiles = list.filter(function (f) { return f && f.type === "f" && /\.g$/i.test(f.name); }).map(function (f) { return f.name; });
+        rf.pFocus = tzListRead("0:/macros/laser").then(function (res) {
+          rf.ok.focus = res.ok;
+          var list = res.items;
+          if (res.ok) pzd.laserFiles = list.filter(function (f) { return f && f.type === "f" && /\.g$/i.test(f.name); }).map(function (f) { return f.name; });
           return Promise.all(
             list
               .filter(function (f) {
@@ -184,52 +194,39 @@
                       rf.newFocus[lf.zone - 1] = fo;
                     }
                   })
-                  .catch(function () {});
+                  .catch(function (e) {
+                    if (!e || e.status !== 404) rf.ok.focus = false;
+                  });
               })
           );
         });
-        rf.pPos = workshopPosRead();
-        rf.pSizes = tzGetText(pzd.TZ_SIZES_FILE)
-          .then(function (txt) {
-            var o = JSON.parse(txt);
-            return o && typeof o === "object" ? o : {};
-          })
-          .catch(function () {
-            return {}; // todavia no hay medidas
-          });
+        rf.pPos = workshopPosReadChecked().then(function (r) {
+          rf.ok.positions = r.ok;
+          return r.ok ? r.list : pzd.savedPos;
+        });
+        rf.pSizes = tzReadJson(pzd.TZ_SIZES_FILE, {}, pzd.zoneSizes, tzObjectOrEmpty).then(function (r) {
+          rf.ok.sizes = r.ok;
+          return r.value;
+        });
+      }
+
+      function tzObjectOrEmpty(o) {
+        return o && typeof o === "object" ? o : {};
+      }
+      function tzBoxesOrEmpty(arr) {
+        return Array.isArray(arr) ? arr.filter(function (q) { return q && isFinite(q.x) && isFinite(q.y) && q.w > 0 && q.h > 0; }) : [];
       }
 
       function tzDataReadPointsZ(pzd, rf) {
-        rf.pZpt = tzGetText(pzd.TZ_ZPT_FILE)
-          .then(function (txt) {
-            var o = JSON.parse(txt);
-            return o && typeof o === "object" ? o : {};
-          })
-          .catch(function () {
-            return {}; // todavia no hay puntos elegidos
+        rf.ok = rf.ok || {};
+        function read(name, file, empty, previous, norm) {
+          return tzReadJson(file, empty, previous, norm).then(function (r) {
+            rf.ok[name] = r.ok;
+            return r.value;
           });
-        rf.pExtra = tzGetText(pzd.TZ_EXTRA_FILE)
-          .then(function (txt) {
-            var o = JSON.parse(txt);
-            return o && typeof o === "object" ? o : {};
-          })
-          .catch(function () {
-            return {};
-          });
-        rf.pPren = tzGetText(pzd.TZ_CLAMPS_FILE)
-          .then(function (txt) {
-            var arr = JSON.parse(txt);
-            return Array.isArray(arr) ? arr.filter(function (q) { return q && isFinite(q.x) && isFinite(q.y) && q.w > 0 && q.h > 0; }) : [];
-          })
-          .catch(function () {
-            return []; // todavia no hay prensas marcadas
-          });
-        rf.pRet = tzGetText(pzd.TZ_OFFCUTS_FILE)
-          .then(function (txt) {
-            var arr = JSON.parse(txt);
-            return Array.isArray(arr) ? arr.filter(function (q) { return q && isFinite(q.x) && isFinite(q.y) && q.w > 0 && q.h > 0; }) : [];
-          })
-          .catch(function () {
-            return [];
-          });
+        }
+        rf.pZpt = read("zpoints", pzd.TZ_ZPT_FILE, {}, pzd.zonePts, tzObjectOrEmpty);
+        rf.pExtra = read("extra", pzd.TZ_EXTRA_FILE, {}, pzd.zoneExtra, tzObjectOrEmpty);
+        rf.pPren = read("clamps", pzd.TZ_CLAMPS_FILE, [], pzd.clamps, tzBoxesOrEmpty);
+        rf.pRet = read("offcuts", pzd.TZ_OFFCUTS_FILE, [], pzd.offcuts, tzBoxesOrEmpty);
       }

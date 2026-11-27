@@ -116,13 +116,17 @@
             mp.node("rect", { x: z.refX, y: -(z.refY + sz.h), width: sz.w, height: sz.h, fill: "none", stroke: "#80cbc4", "stroke-width": mp.w / 700, "stroke-dasharray": mp.w / 150 + " " + mp.w / 200, "stroke-opacity": 0.7 });
           });
         var refG = mp.node("g", { "pointer-events": "none" });
+        // the short names (Bed centre, Area centre ...) of points that are close would be written one over the other: each goes where no other
+        // label is (the labels of the areas count too), see 31-map-render-labels.js
+        var taken = tzMapAreaLabelBoxes(pmr, mp);
         mp.refPoints.forEach(function (q) {
           var rr = mp.w / (q.short ? 130 : 190);
           mp.node("circle", { cx: q.x, cy: -q.y, r: rr, fill: "none", stroke: "#80cbc4", "stroke-width": mp.w / 600 }, refG);
           mp.node("line", { x1: q.x - rr * 1.6, y1: -q.y, x2: q.x + rr * 1.6, y2: -q.y, stroke: "#80cbc4", "stroke-width": mp.w / 900 }, refG);
           mp.node("line", { x1: q.x, y1: -q.y - rr * 1.6, x2: q.x, y2: -q.y + rr * 1.6, stroke: "#80cbc4", "stroke-width": mp.w / 900 }, refG);
           if (q.short) {
-            var rt = mp.node("text", { x: q.x + rr * 1.8, y: -q.y - rr * 1.2, fill: "#80cbc4", "font-size": mp.fs * 0.75 }, refG);
+            var rfs = Math.max(mp.fs * 0.75, mp.minFs || 0);
+            var rt = mp.node("text", { x: q.x + rr * 1.8, y: tzLblPlace(taken, q.x + rr * 1.8, -q.y - rr * 1.2, q.short, rfs, "start", rfs * 0.95), fill: "#80cbc4", "font-size": mp.fs * 0.75 }, refG);
             rt.textContent = q.short;
           }
         });

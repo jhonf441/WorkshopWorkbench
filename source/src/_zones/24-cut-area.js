@@ -27,11 +27,8 @@
         if (key === pca.cutLastKey) return;
         pca.cutLastKey = key;
         pca.cutCard.innerHTML = "";
-        var head = tzEl("div", "tz-row");
-        head.style.alignItems = "center";
         var h = tzEl("h3", null, i18nT('zonesPage.area_title_cut'));
-        h.style.margin = "0 auto 0 0";
-        head.appendChild(h);
+        var head = tzCardHead(h, "crosshairs-gps"); // the family head: icon, title and, at the right, the mode
         head.appendChild(tzEl("span", "wf-state tz-badge tz-modebadge", i18nT('zonesPage.mode_2', { mode: pca.data.st().mode })));
         pca.cutCard.appendChild(head);
         pca.cutCard.appendChild(tzEl("div", "tz-muted", i18nT('zonesPage.the_part_of_the_bed_you')));

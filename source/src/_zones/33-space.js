@@ -20,25 +20,24 @@
         ".tz-state .tz-e-lock{display:inline-block;padding:1px 10px;border-radius:10px;font-weight:700;color:#fff;background:#c62828;}",
         ".tz-state .tz-e-job{display:inline-flex;gap:6px;margin-left:auto;}",
         ".tz-e-num{font-variant-numeric:tabular-nums;}",
-        // 2026-11-01 header in TWO fixed rows (the description was squeezed into ~224 px next to the chips, the state strip and the Commands
-        // button, all competing in one wrapping row). Row 1 = badge, title + description (takes the width), Commands button on the right;
-        // row 2 = chips and the state strip. The children come from several files in whatever order they are added, so the place of each is
-        // its CSS order (not its place in the DOM): 1 badge, 2 text, 3 Commands button, 4 the line break (::after), 5 the rest (chips, state).
-        ".tz-hd.wf-bar{row-gap:6px;column-gap:12px;}",
-        ".tz-hd.wf-bar > *{order:5;}",
+        // 2026-11-22 header in ONE line (requested: "limit everything to a single line"): badge, title, mode chip, the live state of the machine
+        // (state, zone, lock), the start-up chip and the Commands button. Nothing wraps: what does not fit is cut with an ellipsis (the full
+        // text is in the title attribute); the head position (X Y Z) moved to the bar over the map (28-map-tools-measure.js); the size, the title and the
+        // one lead line are the bar of the family (design/family.css), the same as every plugin (2026-11-22, lote 10). The place of each child is its CSS order (they are added from several files).
+        ".tz-hd.wf-bar{flex-wrap:nowrap;align-items:center;overflow:hidden;}",
+        ".tz-hd.wf-bar > *{order:5;flex:0 0 auto;min-width:0;}",
         ".tz-hd.wf-bar > .wf-badge{order:1;}",
-        ".tz-hd.wf-bar > .wf-bar-txt{order:2;flex:1 1 0;min-width:0;}",
-        ".tz-hd.wf-bar > [data-tz-palette-btn]{order:3;flex:0 0 auto;margin:0 0 0 auto;}",
-        // the start-up chip (rocket) sits in row 1 next to the Commands button (owner 2026-11-06: alone on a second line it looked like a stray icon)
-        ".tz-hd.wf-bar > [data-workshop-startup-input]{order:3;flex:0 0 auto;}",
-        ".tz-hd.wf-bar::after{content:\"\";order:4;flex:0 0 100%;height:0;}",
-        ".tz-hd.wf-bar .wf-lead{max-width:none;}",
-        ".tz-hd.wf-bar > .wf-bar-right{margin-left:0;}",
-        ".tz-hd.wf-bar > .tz-hdstate{flex:1 1 auto;min-width:0;}",
-        "@media (max-width:699px){.tz-hd.wf-bar > [data-tz-palette-btn]{flex:1 1 100%;margin:0;}.tz-hd.wf-bar > .wf-bar-txt{flex:1 1 calc(100% - 60px);}}",
-        ".tz-hdstate{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px;font-size:13px;}",
-        ".tz-hdstate .tz-hdcell{display:inline-flex;align-items:center;gap:5px;}",
-        ".tz-hdstate .tz-hdstop{margin-left:auto;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}",
+        ".tz-hd.wf-bar > .wf-bar-txt{order:2;flex:0 1 auto;min-width:0;}",
+        ".tz-hd.wf-bar > .wf-bar-right{order:3;margin-left:0;}",
+        ".tz-hd.wf-bar > .tz-hdstate{order:4;flex:1 1 0;min-width:0;}",
+        // the start-up chip and the Commands button close the line, on the right
+        ".tz-hd.wf-bar > [data-workshop-startup-input]{order:6;}",
+        ".tz-hd.wf-bar > [data-tz-palette-btn]{order:7;}",
+        // phone / small screen (s): row 1 = badge + the WHOLE title (it never gets cut); row 2 = state, chips and Commands
+        "@media (max-width:899px){.tz-hd.wf-bar{flex-wrap:wrap;overflow:visible;}.tz-hd.wf-bar > .wf-bar-txt{flex:1 1 calc(100% - 64px);}.tz-hd.wf-bar .wf-title{white-space:normal;overflow:visible;text-overflow:clip;}.tz-hd.wf-bar > .tz-hdstate{flex:1 1 120px;}.tz-hd.wf-bar > [data-workshop-startup-input],.tz-hd.wf-bar > [data-tz-palette-btn],.tz-hd.wf-bar > .wf-bar-right{margin-top:0;}}",
+        ".tz-hdstate{display:flex;flex-wrap:nowrap;align-items:center;gap:2px 14px;font-size:13px;overflow:hidden;white-space:nowrap;}",
+        ".tz-hdstate .tz-hdcell{display:inline-flex;align-items:center;gap:5px;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;}",
+        ".tz-hdstate .tz-hdstop{margin-left:auto;display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap;}",
         ".tz-hdstate .tz-hdcell b{font-weight:600;opacity:.65;}",
         ".tz-hdstate .tz-e-lock{padding:1px 10px;border-radius:10px;font-weight:700;color:#fff;background:#c62828;}",
         ".tz-hdstate .tz-e-hint{font-weight:600;color:var(--wf-n-down-text,#ffb74d);}",

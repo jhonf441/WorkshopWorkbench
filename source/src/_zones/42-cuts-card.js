@@ -27,16 +27,11 @@
 
 
       function tcCardHeader(tc, rc) {
-        // encabezado: nombre + deshacer/rehacer
-        var h = tzEl("div", "tz-row");
-        h.style.cssText += "align-items:center;gap:6px;";
+        // the head of the card (the family piece: icon, name and, at the right, undo / redo / paste); what the editor is for is ONE line under it
         var h3 = tzEl("h3", null, i18nT('cuts.editor_name'));
-        h3.style.margin = "0";
-        h.appendChild(h3);
-        var hs = tzEl("span", "tz-muted", i18nT('cuts.draw_or_import_organize_by_layers'));
+        var h = tzCardHead(h3, "draw");
+        var hs = tzEl("div", "tz-muted", i18nT('cuts.draw_or_import_organize_by_layers'));
         hs.style.fontSize = "12px";
-        hs.style.marginRight = "auto";
-        h.appendChild(hs);
         var bU = tzTip(tzBtn(i18nT('cuts.undo'), null, tzBind(tcUndo, tc)), i18nT('cuts.undo_ctrl_z_up_to_60'));
         bU.disabled = !tc.undoStack.length;
         h.appendChild(bU);
@@ -47,6 +42,7 @@
         bPeg.disabled = !tcClipRead(tc);
         h.appendChild(bPeg);
         rc.root.appendChild(h);
+        rc.root.appendChild(hs);
         // no shapes yet: how it works, in one line (the tools are over the map)
         if (!tc.data.shapes.length) rc.root.appendChild(tzEl("div", "tc-guide", i18nT('cuts.guide_on_map')));
         // mensajes (arriba, siempre a la vista)

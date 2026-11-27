@@ -135,7 +135,8 @@
         var box = tzSpaceJobBox(workshopJobButtons(st.status, !!st.liveJob), function () { return tj.ctx.machine.read(); }, "jc-cancel");
         if (box) act.appendChild(box);
         if (st.liveJob && tzLjStopOffered()) {
-          var sb = tzActOnly(tzBtn(tj.cj.stopBusy ? i18nT('jobctl.stop_stopping') : i18nT('jobctl.stop_safe'), null, function () { tjcStopSafe(tj); }));
+          // a stop of the job: 48, the family's critical size (the owner's scale of 2026-11-23: a stop never shrinks)
+          var sb = tzActOnly(tzBtn(tj.cj.stopBusy ? i18nT('jobctl.stop_stopping') : i18nT('jobctl.stop_safe'), "wf-btn--crit", function () { tjcStopSafe(tj); }));
           tzTip(sb, i18nT('jobctl.stop_tip'));
           if (tj.cj.stopBusy) sb.disabled = true;
           act.appendChild(sb);

@@ -2,7 +2,7 @@
   "id": "WorkshopWorkbench",
   "name": "Workbench",
   "author": "jhonf441",
-  "version": "2.23.11",
+  "version": "2.26.0",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/jhonf441/WorkshopWorkbench",
   "tags": [
@@ -34,6 +34,7 @@
     "sys/workshop/macros/guard/laserguard.g",
     "sys/workshop/macros/laser/laseroffset.g",
     "sys/workshop/macros/laser/livemark.g",
+    "sys/workshop/macros/macros.WorkshopWorkbench.json",
     "sys/workshop/macros/work/framecutarea.g",
     "sys/workshop/macros/work/framerect.g",
     "sys/workshop/macros/work/gotobed.g",
@@ -57,7 +58,7 @@
     "permissions.json"
   ],
   "dwcFiles": [
-    "js/WorkshopWorkbench.5dc0087a.js",
-    "js/WorkshopWorkbench.5dc0087a.js.gz"
+    "js/WorkshopWorkbench.6b13367d.js",
+    "js/WorkshopWorkbench.6b13367d.js.gz"
   ]
 }

@@ -83,11 +83,8 @@
       }
 
       function tjTrMainHeader(tj, mn, card, mm) {
-        var h = tzEl("div", "tz-row");
-        h.style.alignItems = "center";
         var h3 = tzEl("h3", null, tj.viewId ? i18nT('job.job_from_the_history') : i18nT('job.current_job'));
-        h3.style.marginRight = "auto";
-        h.appendChild(h3);
+        var h = tzCardHead(h3, "progress-clock"); // the family head: icon, title and, at the right, its buttons
         if (tj.viewId) {
           h.appendChild(tzBtn(i18nT('job.back_to_current'), "primary", function () { tjTrRevert(tj); }));
         } else {

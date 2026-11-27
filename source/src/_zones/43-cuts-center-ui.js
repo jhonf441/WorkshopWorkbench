@@ -7,11 +7,8 @@
           ct.cc = tc.ctx.centerCard;
           ct.cc.innerHTML = "";
           ct.cc.style.borderColor = TC_CENTER_COLOR;
-          var chh = tzEl("div", "tz-row");
-          chh.style.alignItems = "center";
           var ch3 = tzEl("h3", null, i18nT('cuts.find_centre'));
-          ch3.style.marginRight = "auto";
-          chh.appendChild(ch3);
+          var chh = tzCardHead(ch3, "bullseye"); // the family head: icon, title and, at the right, "Remove drawing"
           // whatever Find center has drawn on the map can always be removed, in every mode (camera included)
           if (tcCenterHasDrawing(tc)) chh.appendChild(tzTip(tzBtn(i18nT('cuts.remove_drawing'), null, function () { tcCenterClearDrawing(tc); tcGo(tc); }), i18nT('cuts.remove_drawing_tip')));
           ct.cc.appendChild(chh);
@@ -75,6 +72,7 @@
         [["round", i18nT('cuts.round')], ["rect", i18nT('cuts.rectangular')], ["middle", i18nT('cuts.between_two_points')]].forEach(function (k) {
           var b0 = tzEl("button", "tc-chipb" + (kindNow === k[0] ? " on" : ""), k[1]);
           b0.type = "button";
+          b0.setAttribute("data-wf-hit", "y"); // 30 px chip, 44 px of height to touch (a row of chips: only up and down)
           b0.addEventListener("click", function () { if (kindNow !== k[0]) ct.chooseKind(k[0]); });
           tb0.appendChild(b0);
         });
@@ -87,6 +85,7 @@
             if (m === "camera" && !ct.hasCamera) return; // without Vision installed there is no camera
             var b1 = tzEl("button", "tc-chipb" + (tc.centerMode === m ? " on" : ""), md.c || md.t);
             b1.type = "button";
+            b1.setAttribute("data-wf-hit", "y");
             b1.title = md.d;
             b1.addEventListener("click", function () { if (tc.centerMode !== m) { tc.centerKind = kindNow; ct.choose(m); } });
             mb0.appendChild(b1);

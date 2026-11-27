@@ -4,8 +4,9 @@
           ptb.nav.setZSub("zones");
           setTimeout(ptb.nav.apply, 0);
         }
+        if (ptb.edGuardOff) { ptb.edGuardOff(); ptb.edGuardOff = null; }
         ptb.edCard.innerHTML = "";
-        ptb.edCard.appendChild(tzEl("h3", null, "Editor"));
+        ptb.edCard.appendChild(tzCardHead(tzEl("h3", null, "Editor"), "pencil-outline"));
         ptb.edCard.appendChild(
           tzEl(
             "div",
@@ -27,7 +28,31 @@
         return inp;
       }
 
+      // The editor holds a draft (name, point, size, material, macro): leaving it for another zone with typed changes asks first (the family guard, src/_shared/20-unsaved.js).
+      // A reload or closing the tab is the browser's own message; the page tabs are not guarded here.
       function tzTableOpenEditor(ptb, which, opts) {
+        workshopConfirmLeave(function () { tzTableOpenEditorNow(ptb, which, opts); });
+      }
+
+      // the values the person can type, as one string: the baseline of the guard is taken once the form is built and its fields are filled
+      function tzEditorValues(ed) {
+        return [ed.slotInp, ed.nameInp, ed.rxInp, ed.ryInp, ed.swInp, ed.shInp, ed.matSel, ed.macSel, ed.focusInp, ed.macroInp, ed.askChk].map(function (f) {
+          return f ? (f.type === "checkbox" ? String(f.checked) : String(f.value)) : "";
+        }).join("|");
+      }
+
+      function tzEditorGuard(ptb, ed) {
+        if (ptb.edGuardOff) ptb.edGuardOff();
+        var base = tzEditorValues(ed);
+        // "Save and leave" is the editor's Save button (it answers when the zone file was written); a refused save keeps the person here
+        ptb.edGuardOff = workshopRegisterGuard({
+          dirty: function () { return ed.saveBtn.isConnected !== false && tzEditorValues(ed) !== base; },
+          save: function () { return ed.save(); },
+          discard: function () { base = tzEditorValues(ed); }
+        });
+      }
+
+      function tzTableOpenEditorNow(ptb, which, opts) {
         var ed = {};
         opts = opts || {};
         ed.addMac = function addMac(v, t, dis) {
@@ -74,7 +99,7 @@
         ed.isNew = which === "new";
         ed.src = ed.isNew ? (opts.from !== undefined ? ptb.data.zones()[opts.from] : null) : ptb.data.zones()[which];
         ed.idx = ed.isNew ? null : which;
-        ptb.edCard.appendChild(tzEl("h3", null, ed.isNew ? (opts.from !== undefined ? i18nT('zonesPage.copy_to_another_zone', { code: TZ_CODES[opts.from] }) : i18nT('tzTips.l_new_zone')) : i18nT('zonesPage.edit', { code: TZ_CODES[ed.idx] })));
+        ptb.edCard.appendChild(tzCardHead(tzEl("h3", null, ed.isNew ? (opts.from !== undefined ? i18nT('zonesPage.copy_to_another_zone', { code: TZ_CODES[opts.from] }) : i18nT('tzTips.l_new_zone')) : i18nT('zonesPage.edit', { code: TZ_CODES[ed.idx] })), "pencil-outline"));
         ed.slotInp = null;
         if (ed.isNew) {
           var freeSlots = [];
@@ -86,7 +111,8 @@
           var w = tzEl("div");
           w.appendChild(tzEl("label", null, i18nT('common.zone')));
           ed.slotInp = document.createElement("select");
-          ed.slotInp.style.cssText = "background:#263238;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:4px;width:100%;";
+          ed.slotInp.className = "tz-input"; // the look of the field (dark and light) is the class
+          ed.slotInp.style.cssText = "width:100%;";
           freeSlots.forEach(function (s) {
             var o = document.createElement("option");
             o.value = s;
@@ -118,7 +144,8 @@
           // Saved position (jog > Saved positions) as the zone's point: same
           // reference (the pointer), in machine coords.
           var posSel = document.createElement("select");
-          posSel.style.cssText = "background:#263238;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:4px;margin:2px;max-width:230px;";
+          posSel.className = "tz-input";
+          posSel.style.cssText = "margin:2px;max-width:230px;";
           tzTip(posSel, tzTx('zonesPage.set_as_the_zone_point_one', 'jog'));
           var o0 = document.createElement("option");
           o0.value = "";
@@ -224,7 +251,7 @@
         tzTip(ed.askRow, i18nT('zonesPage.ask_if_there_is_material_before_focusing_tip'));
         ed.mbox.appendChild(ed.askRow);
         ed.macPrev = tzEl("pre");
-        ed.macPrev.style.cssText = "display:none;white-space:pre-wrap;font-size:11px;background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:4px;margin:6px 0 0 0;max-height:180px;overflow:auto;";
+        ed.macPrev.style.cssText = "display:none;white-space:pre-wrap;font-size:12px;background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:4px;margin:6px 0 0 0;max-height:180px;overflow:auto;";
       }
 
       function tzEditorMacro(ptb, ed, which, opts) {
@@ -282,12 +309,12 @@
       }
 
       function tzEditorSave(ptb, ed, which, opts) {
-        ed.saveBtn = tzBtn(i18nT('zcal.save'), "primary", function () {
+        ed.save = function save() {
           var target = ed.isNew ? parseInt(ed.slotInp.value, 10) : ed.idx;
           var fv = ed.macSel.value === "none" ? "" : ed.focusInp.value;
           var mname = ed.macSel.value === "cur" && ed.curFocus ? ed.curFocus.macro : ed.macroInp.value;
           var matId = ed.matSel.value || null;
-          ptb.data.saveZone(target, ed.current(), fv, mname, ed.msg)
+          return ptb.data.saveZone(target, ed.current(), fv, mname, ed.msg)
             .then(function (ok) {
               if (ok && matId !== ((ed.curMat && ed.curMat.id) || null)) return ptb.data.saveZoneMaterial(target, matId).then(function () { return ok; });
               return ok;
@@ -303,17 +330,23 @@
               return ptb.data.saveZoneSize(target, parseFloat(ed.swInp.value), parseFloat(ed.shInp.value)).then(function () { return true; });
             })
             .then(function (ok) {
-              if (ok) tzTableOpenEditor(ptb, target);
+              if (ok) tzTableOpenEditorNow(ptb, target); // saved: the form is built again from the file, no question
+              else workshopRevealResult(ed.msg, { highlight: true }); // a refusal under a long form must not stay below the screen
+              return !!ok;
             });
-        });
+        };
+        ed.saveBtn = tzBtn(i18nT('zcal.save'), "primary", function () { ed.save(); });
         ed.btnRow.appendChild(ed.saveBtn);
         ed.btnRow.appendChild(
           tzBtn(i18nT('zcal.close'), null, function () {
-            ptb.nav.setSelected(null);
-            tzTableRenderEditorEmpty(ptb);
-            tzTableRenderTable(ptb);
+            workshopConfirmLeave(function () {
+              ptb.nav.setSelected(null);
+              tzTableRenderEditorEmpty(ptb);
+              tzTableRenderTable(ptb);
+            });
           })
         );
         ptb.edCard.appendChild(ed.msg);
         ed.preview();
+        tzEditorGuard(ptb, ed);
       }

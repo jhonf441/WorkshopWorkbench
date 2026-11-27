@@ -24,7 +24,7 @@
           clearTimeout(tj.armTimer);
           if (tj.armed !== id) {
             tj.armed = id;
-            tj.armTimer = setTimeout(function () { tj.armed = null; tj.lastKey = ""; tjTrRender(tj); }, 3000);
+            tj.armTimer = setTimeout(function () { tj.armed = null; tj.lastKey = ""; tjTrRender(tj); }, 4000);
           } else {
             tj.armed = null;
             fn();
@@ -148,7 +148,7 @@
           tn.title = e.name || "";
           txt.appendChild(tn);
           var det = tzEl("div", "tz-muted");
-          det.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:11px;";
+          det.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:12px;";
           det.appendChild(tzEl("span", null, String(e.start || e.id).replace("T", " ").slice(0, 16)));
           det.appendChild(tzEl("span", null, e.mode || "--"));
           det.appendChild(tzEl("span", null, tjTrDur(tj, e.duration_s)));

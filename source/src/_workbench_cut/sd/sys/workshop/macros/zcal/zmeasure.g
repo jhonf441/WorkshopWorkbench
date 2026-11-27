@@ -11,14 +11,27 @@
 ; Use:  M98 P"0:/sys/workshop/macros/zcal/zmeasure.g"      (home all axes first; the caller already raised Z and put the probe over the point)
 ; After it, zsurface.g can compare the thickness: sensors.probes[0].lastStopHeight is where the probe stopped.
 
+; 2026-11-20: when this macro aborts (no probe, not homed, the probe touched nothing) the focus is NOT set: the flag goes false and the failure is counted just before
+; the abort (the macros that call it do it too at their start; this covers a call from anywhere else).
+if !exists(global.workshopFocusOk)
+    global workshopFocusOk = true
+if !exists(global.workshopFocusRun)
+    global workshopFocusRun = 0
+if !exists(global.workshopFocusFail)
+    global workshopFocusFail = 0
+
 var en = exists(global.workshopLanguage) ? (global.workshopLanguage == "en") : false   ; messages in English (DWC language, see sys/workshop/macros/system/language.g)
 
 if !move.axes[0].homed || !move.axes[1].homed || !move.axes[2].homed
+    set global.workshopFocusOk = false
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.en ? ("Measure Z: home all axes first") : ("Medir Z: primero hace homing de todos los ejes")}
 if #sensors.probes < 1 || sensors.probes[0] == null || sensors.probes[0].type == 0
     ; RRF rejects an argument over 255 characters ("Keyword argument too long"): the message is built from two short expressions
     var m1 = var.en ? "Measure Z: the machine has no probe to touch the surface with." : "Medir Z: la maquina no tiene sonda para tocar la superficie."
     var m2 = var.en ? "Lower the tool to a sheet of paper and use Z0 with paper" : "Baja la herramienta hasta un papel y usa Z0 con papel"
+    set global.workshopFocusOk = false
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.m1 ^ " " ^ var.m2}
 
 if sensors.probes[0].type == 9
@@ -35,5 +48,7 @@ G30                                             ; measure: Z0 = surface under th
 if result != 0
     var f1 = var.en ? "Measure Z: the probe touched nothing. Is there material under the probe?" : "Medir Z: la sonda no toco nada. Hay material debajo de la sonda?"
     var f2 = var.en ? "The focus was not set and the job was stopped." : "No se fijo el foco y el trabajo se detuvo."
+    set global.workshopFocusOk = false
+    set global.workshopFocusFail = global.workshopFocusFail + 1
     abort {var.f1 ^ " " ^ var.f2}
 

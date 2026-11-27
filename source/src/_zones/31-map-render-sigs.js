@@ -10,7 +10,7 @@
       // mirror (upright texts), the focus mode of a running job, how the other zones are shown, the active zone, the mode and the layers.
       function tzMapSigCommon(pmr, mp) {
         var st = pmr.data.st();
-        return [mp.w, mp.fs, tzMapLanguage(), pmr.view.mapRot(), pmr.view.mapMirror(), mp.focus, mp.other, st.wn, st.mode,
+        return [mp.w, mp.fs, Math.max(mp.minFs || 0, mp.fs * 0.6), tzMapLanguage(), pmr.view.mapRot(), pmr.view.mapMirror(), mp.focus, mp.other, st.wn, st.mode,
           pmr.layerState.layers(), pmr.layerState.clampsOn()];
       }
 
@@ -19,9 +19,14 @@
         return tzLayerSig([mp.common, mp.bounds, mp.themeKey, mp.TH, pmr.view.mapBed(), mp.cameraShown, pb ? [pb.info, pb.opacity] : null]);
       }
 
-      function tzMapSigAreas(pmr, mp) {
+      // the cut area of each mode: the areas layer draws it, and the layers that dodge the labels of the areas (marks, origin) depend on it too
+      function tzMapAreaSig(pmr) {
         var gl = pmr.data.st().globals || {};
-        return tzLayerSig([mp.common, TZ_WORK_MODES.map(function (m) { return gl["cutArea" + m] || null; })]);
+        return TZ_WORK_MODES.map(function (m) { return gl["cutArea" + m] || null; });
+      }
+
+      function tzMapSigAreas(pmr, mp) {
+        return tzLayerSig([mp.common, tzMapAreaSig(pmr)]);
       }
 
       // after tzMapZonesPlan: what is shown is in the plan (rectangles, markers, warnings, material)
@@ -43,13 +48,13 @@
           mp.vision ? [mp.vision.ts, mp.vision.items] : null,
           pmr.data.clamps(), mp.pHit,
           L.positions && full ? [pmr.data.savedPos(), pmr.tools.posPick(), !pmr.nav.layMod()] : null,
-          L.refs && full ? [L.zones ? null : [pmr.data.zones(), pmr.data.zoneSizes()], mp.refPoints] : null,
+          L.refs && full ? [L.zones ? null : [pmr.data.zones(), pmr.data.zoneSizes()], mp.refPoints, tzMapAreaSig(pmr)] : null,
           mp.zPoint ? [mp.zPoint, pmr.data.probeOffset()] : null]);
       }
 
       function tzMapSigOrigin(pmr, mp) {
         var wn = pmr.data.st().wn, az = pmr.data.zones()[wn];
-        return tzLayerSig([mp.common, az ? [az.refX, az.refY] : null, !!mp.rectZone[wn]]);
+        return tzLayerSig([mp.common, az ? [az.refX, az.refY] : null, !!mp.rectZone[wn], tzMapAreaSig(pmr)]);
       }
 
       // the ruler is drawn for the SIZE of the visible region (vr: the view box and the strips of "meet"), the svg on screen and the

@@ -32,13 +32,22 @@
         var nb = { collapsed: window.innerWidth < 480 || tzNavBarRead(TZ_NAV_COLLAPSED_KEY, window.innerWidth < 900), pinned: tzNavBarRead(TZ_NAV_PINNED_KEY, false) };
         pz.tabBar.classList.add("tz-nav");
         nb.head = tzEl("div", "tzn-head");
-        nb.pin = tzEl("button", "tzn-fold tzn-pin");
+        // 32 visible with the family's 40 px touch area (.wf-hit, an invisible ::after; 2026-11-23)
+        nb.pin = tzEl("button", "tzn-fold tzn-pin wf-hit");
         nb.pin.type = "button";
-        nb.fold = tzEl("button", "tzn-fold");
+        nb.fold = tzEl("button", "tzn-fold wf-hit");
         nb.fold.type = "button";
         nb.head.appendChild(nb.pin);
         nb.head.appendChild(nb.fold);
         pz.tabBar.insertBefore(nb.head, pz.tabBar.firstChild);
+        // a phone: one "Section: X" button instead of the bar (22-page-nav-pick.js); its name follows the open tab (.on), whoever changes it
+        nb.pick = tzNavPick(pz.tabBar, ".tz-tab", ".tz-tab-txt", i18nT('zonesPage.section_pick'));
+        pz.tabBar.insertBefore(nb.pick.el, pz.tabBar.firstChild);
+        if (typeof MutationObserver === "function") {
+          var pickWatch = new MutationObserver(function () { nb.pick.paint(); });
+          pickWatch.observe(pz.tabBar, { subtree: true, attributes: true, attributeFilter: ["class"], childList: true });
+          workshopOnStop(function () { pickWatch.disconnect(); });
+        }
         nb.pin.addEventListener("click", function () {
           nb.pinned = !nb.pinned;
           tzNavBarWrite(TZ_NAV_PINNED_KEY, nb.pinned);
@@ -61,6 +70,7 @@
           state: function () { return { collapsed: nb.collapsed, pinned: nb.pinned }; },
         };
         tzNavBarPaint(pz, nb);
+        nb.pick.paint();
         return pz.navBar;
       }
 

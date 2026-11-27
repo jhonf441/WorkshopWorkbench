@@ -8,9 +8,9 @@
 
 
 
-Page `/Plugins/Workbench` ("Workbench"). Place the job on the bed, set origin and height, follow the cut on a live map and prepare, design and run work: work zones (G54...), materials, cut area, a laser editor with layers, CNC toolpaths with passes by depth, cutting a large design in parts, simulation, the running job and interrupted jobs that can be resumed step by step.
+Page `/Plugins/Workbench` ("Workbench"). Place the job on the bed, set origin and height, follow the cut on a live map and prepare, design and run work: work zones (G54...), materials, cut area, a cut editor with layers, CNC toolpaths with passes by depth, cutting a large design in parts, simulation, the running job and interrupted jobs that can be resumed step by step.
 
-Version documented: 2.22.x on DWC 3.6.3 (hand-written JS plugin in `src/`).
+Version documented: 2.26.x on DWC 3.6.3 (hand-written JS plugin in `src/`).
 
 ## 1. Requirements
 
@@ -22,7 +22,7 @@ Version documented: 2.22.x on DWC 3.6.3 (hand-written JS plugin in `src/`).
 
 ## 3. Functions
 
-The page is "Workbench" (side menu: Plugins > Workbench). It has a top status bar, a left side bar of tools in two groups ("Work zone": Prepare, Zones, Materials, Work area, Find centre; "Design and cut": Laser editor, CNC toolpaths (CNC mode only), Cut in parts, Simulate job, Job in progress, Interrupted), the bed map in the centre with its toolbar, and at the right the "Inspector" of the chosen tool with a folded "How to use" help. The side bar shows names, or icons only when collapsed with the double arrow. Red rectangles mark the control described. The zone name is blurred in the pictures.
+The page is "Workbench" (side menu: Plugins > Workbench). It has a top status bar, a left side bar of tools in two groups ("Work zone": Prepare, Zones, Materials, Work area, Find centre; "Design and cut": Cut editor, CNC toolpaths (CNC mode only), Cut in parts, Simulate job, Job in progress, Interrupted), the bed map in the centre with its toolbar, and at the right the "Inspector" of the chosen tool with a folded "How to use" help. The side bar shows names, or icons only when collapsed with the double arrow. Red rectangles mark the control described.
 
 ### Top status bar
 
@@ -60,7 +60,7 @@ Picture 1: the bed map with the Interrupted inspector (right) and the toolbar un
 - Watch out: the camera and move tools can send the machine somewhere; they ask before moving.
 
 #### Clamps (screws, stops)
-- What: markers for the things that must not be touched: a clamp, a screw or a stop on the bed. Each one is a red rectangle on the map. With clamps on, the page warns when a work zone, the Laser editor design or a running job passes over one, and when the Z point would measure a clamp instead of the material. Clamps are off by default (they hide nothing and warn about nothing until you turn them on).
+- What: markers for the things that must not be touched: a clamp, a screw or a stop on the bed. Each one is a red rectangle on the map. With clamps on, the page warns when a work zone, the Cut editor design or a running job passes over one, and when the Z point would measure a clamp instead of the material. Clamps are off by default (they hide nothing and warn about nothing until you turn them on).
 - Where: map toolbar > Layers > "Clamps (CNC)" > "Use clamps: NO / YES". Once on, the layer "Clamps" gets its own eye button. They are stored per machine in `0:/sys/workshop/config/clamps.json`.
 - How: 1) Layers > "Use clamps: YES". 2) Tap a point on the map and choose "Mark clamp here": a red 30 x 20 mm rectangle appears centred there. 3) Tap the rectangle to set its name, position, size and height (how far it stands above the material), or to delete it. 4) A path that goes over a clamp turns it brighter red and the job list shows "Shape(s) go over a clamp".
 - Watch out: turning "Use clamps" on draws nothing by itself: the screen shows "No clamps marked yet" until you mark one. Turning it off hides them and silences every warning but does not delete them. The CNC toolpaths always check every clamp of `clamps.json`, on or off (a cutter hits a clamp the map hides); with no clamps marked they say the clamps were not checked.
@@ -123,7 +123,7 @@ Picture 3: Zones: tabs "Active zone", "All zones", "Positions" and the menu "Cha
 Picture 4: Materials: "New (Laser)", "New (CNC)" and "Import from the macros" (red rectangles).
 
 #### Materials table
-- What: the material list: material, mode, thickness, focus (inside / safe height; for example MDF 3 mm: at the surface H 7.5; MDF 6 mm: 2.5 mm inside) and the cut and engrave powers, with the zones that use it and an "Edit" button per row. Each zone can have its material; the thickness is compared with what the probe measures and the machine asks before going on if they differ. The powers can be used in the layers of the Laser editor. Focus rule used: H = tab - edge - lever(thickness), where tab and edge are the geometry of the laser in `focus.json` (8.0 and 0.533 on the reference laser).
+- What: the material list: material, mode, thickness, focus (inside / safe height; for example MDF 3 mm: at the surface H 7.5; MDF 6 mm: 2.5 mm inside) and the cut and engrave powers, with the zones that use it and an "Edit" button per row. Each zone can have its material; the thickness is compared with what the probe measures and the machine asks before going on if they differ. The powers can be used in the layers of the Cut editor. Focus rule used: H = tab - edge - lever(thickness), where tab and edge are the geometry of the laser in `focus.json` (8.0 and 0.533 on the reference laser).
 - Where: Materials (picture 4).
 - How: press "Edit" on a row.
 
@@ -134,17 +134,12 @@ Picture 4: Materials: "New (Laser)", "New (CNC)" and "Import from the macros" (r
 
 ![Work area](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/05-work-area.png)
 
-Picture 5: "Cutting area" per mode and "Edit in Machine" (red rectangle).
+Picture 5: "Cutting area" per mode.
 
 #### Cutting area per mode
 - What: the part of the bed you can work on in each mode (bed coordinates where the pointer lands), used by the zones (validation), Frame, the mesh and the zone warnings. Laser: active, 590 x 510 mm, X 20..610 Y 0..510. CNC: not measured.
 - Where: Work area (picture 5).
-- How: read it.
-
-#### Edit in Machine
-- What: opens the Machine plugin to measure or change the area (the measurement is done there).
-- Where: button under the cards (red rectangle, picture 5).
-- How: press it.
+- How: read it. The area is measured and changed in the Machine plugin; this page only shows it.
 
 ![Find centre](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/06-find-centre.png)
 
@@ -158,15 +153,15 @@ Picture 6: Find centre: the three measurement types (red rectangle).
 
 ### Design and cut
 
-![Laser editor](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/07-laser-editor.png)
+![Cut editor](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/07-laser-editor.png)
 
-Picture 7: the Laser editor: tool palette on the map (red rectangle), "Show cut order" and "+ Layer".
+Picture 7: the Cut editor: tool palette on the map (red rectangle), "Show cut order" and "+ Layer".
 
 #### Drawing tools
 - What: draw or import a design: select, line, polyline, rectangle, node edit and import file; Undo, Redo and Paste buttons; the list "Drawing" with the number of shapes and the SELECTION buttons "Multiple" and "All".
-- Where: the palette at the left of the map and the card "Editor laser" in the inspector (picture 7).
+- Where: the palette at the left of the map and the card "Cut editor" in the inspector (picture 7).
 - How: 1. Choose a tool. 2. Draw on the map. 3. Use Undo / Redo.
-- Watch out: the origin cannot be saved outside the cut area. The picture shows a sample drawing (a circle and a rotated square).
+- Watch out: the origin cannot be saved outside the cut area. The picture shows a sample drawing (a circle and a square).
 
 #### Layers and cut order
 - What: "Layers" are cut from top to bottom; each has colour, power %, speed (mm/min) and passes; "+ Layer" adds one; "Show cut order" draws the order on the map. New shapes go to the active layer (blue border).
@@ -180,8 +175,8 @@ Picture 7: the Laser editor: tool palette on the map (red rectangle), "Show cut 
 - Watch out: starting a cut FIRES THE LASER and moves the machine: Wear the protective glasses and keep the lid closed.
 
 #### Laser cut guard: cutguard.g
-- What: every file the page generates for a laser cut (the Laser editor, and the marks and the parts of Cut in parts) starts with `M98 P"0:/sys/workshop/macros/guard/cutguard.g" S<power>`: if the machine is not in Laser mode (the selected mode or the firmware mode set by M452), X or Y is not homed or the power is outside 1 to 100 %, the macro aborts and the whole job is cancelled before the laser turns on. The guard also asks WHO started the job: the file can be launched from DWC (Files, Jobs, `M32` by hand) without the checks the CUT button makes (zone, material, focus, work area, clamps, the laser safety list), so right before it sends the file the page arms ONE launch with `jobarm.g` (kind `Laser`, a permission valid for 30 s) and `cutguard.g` asks for it first and uses it up.
-- Where: CUT of the Laser editor and the steps of Cut in parts; `sys/workshop/macros/guard/cutguard.g` and `jobarm.g` on the machine (installed with the plugin).
+- What: every file the page generates for a laser cut (the Cut editor, and the marks and the parts of Cut in parts) starts with `M98 P"0:/sys/workshop/macros/guard/cutguard.g" S<power>`: if the machine is not in Laser mode (the selected mode or the firmware mode set by M452), X or Y is not homed or the power is outside 1 to 100 %, the macro aborts and the whole job is cancelled before the laser turns on. The guard also asks WHO started the job: the file can be launched from DWC (Files, Jobs, `M32` by hand) without the checks the CUT button makes (zone, material, focus, work area, clamps, the laser safety list), so right before it sends the file the page arms ONE launch with `jobarm.g` (kind `Laser`, a permission valid for 30 s) and `cutguard.g` asks for it first and uses it up.
+- Where: CUT of the Cut editor and the steps of Cut in parts; `sys/workshop/macros/guard/cutguard.g` and `jobarm.g` on the machine (installed with the plugin).
 - How: tick the safety list and press CUT as always; there is nothing else to do. If the job cancels itself at once, read the message of the macro (it names what is not right) and fix it.
 - Watch out: launching the file from anywhere else (DWC Files or Jobs, "Start this job" of Simulate job, `M32` by hand, a second start of the same file) cancels the job at its first line, before the laser, and DWC shows the error "Cut: this file was not started from the Workbench page. Press CUT in Workbench > Simple cuts (it checks the zone, the focus, the area and the safety list). The laser was not turned on." (in Spanish when DWC is in Spanish); if more than 30 s pass between CUT and the job beginning, the error is "Cut: the CUT of the Workbench page expired (30 s) before the file began. Press CUT again." In both cases press CUT again on the card. If the card says "The start could not be armed", `jobarm.g` is missing on the machine: reinstall the Workbench plugin so it is in `0:/sys/workshop/macros/`. The permission stops a launch by mistake; it is not a lock against someone who runs `jobarm.g` by hand. A file that the page did not make (LightBurn, CAM) carries no guard and starts from DWC as always.
 
@@ -200,12 +195,12 @@ Picture 7: the Laser editor: tool palette on the map (red rectangle), "Show cut 
 
 ![Cut in parts](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/08-cut-in-parts.png)
 
-Picture 8: the cut-in-parts assistant (red rectangles on "Choose another file" and "Start over").
+Picture 8: the cut-in-parts assistant (red rectangle on "Start over").
 
 #### Cut in parts
 - What: an assistant for a design bigger than the work area. Between parts you move the piece by hand; the laser marks 3 small crosses and then the camera (or the pointer) finds them to continue exactly where it stopped. Step 1 chooses the G-code (file, size, cut length, maximum power; it says if it fits whole), step 2 places the piece (part 1) by marking 2 points. You do not have to add anything to your design.
 - Where: Cut in parts (picture 8).
-- How: 1. Press "Choose another file" or keep the file. 2. Place the piece and mark the 2 points. 3. Follow each part; "Start over" resets the assistant.
+- How: 1. Pick a file in the list and press "Read", or keep the file. 2. Place the piece and mark the 2 points. 3. Follow each part; "Start over" resets the assistant.
 - Watch out: the marks and the cut fire the laser and move the machine; not run.
 
 ![Simulate job](https://raw.githubusercontent.com/jhonf441/WorkshopWorkbench/main/img/09-simulate-job.png)
@@ -233,7 +228,7 @@ Picture 10: "Ready to cut": the safety list (red rectangle on the confirmation b
 Picture 11: "Interrupted jobs" with Resume, Hide path, Start again and Discard (red rectangle).
 
 #### Interrupted jobs: Resume, Hide path, Start again, Discard
-- What: a live job stopped safely stays here with the point where it stopped (line, position, mm cut). "Resume" continues it step by step, verified; "Hide path" hides its path on the map; "Start again" restarts it; "Discard" forgets it. When it cannot be resumed (for example the board restarted after the stop and the origins were lost) the card says why and "Resume" is grey.
+- What: a live job stopped safely stays here with the point where it stopped (line, position, mm cut). "Resume" continues it step by step, verified; "Hide path" hides its path on the map; "Take off the table" hides the job from the map and keeps it listed; "Start again" restarts it; "Discard" forgets it. When it cannot be resumed (for example the board restarted after the stop and the origins were lost) the card says why and "Resume" is grey.
 - Where: Interrupted (picture 11); a number badge on the side bar icon counts the interrupted jobs.
 - How: 1. Read the reason. 2. Press "Resume" if it is enabled, or "Start again" or "Discard".
 - Watch out: "Resume" and "Start again" move the machine and fire the laser; "Discard" deletes the saved point.

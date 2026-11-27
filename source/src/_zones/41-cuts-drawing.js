@@ -133,7 +133,7 @@
         var sb = tc.view === "cuts" && !tc.tool ? tcSelBox(tc) : null;
         if (sb) {
           node("rect", { x: sb.xmin, y: -sb.ymax, width: Math.max(sb.xmax - sb.xmin, 0.01), height: Math.max(sb.ymax - sb.ymin, 0.01), fill: "none", stroke: "#fff", "stroke-width": dv.sw * 0.8, "stroke-dasharray": w / 120 + " " + w / 160 });
-          var hs = (w / 110) * (tcCoarsePointer() ? 1.5 : 1);
+          var hs = (w / 110) * TC_HANDLE_FINGER;
           tcHandles(tc).forEach(function (h) {
             if (h.k === "s") node("rect", { x: h.x - hs, y: -h.y - hs, width: hs * 2, height: hs * 2, fill: "#1e88e5", stroke: "#fff", "stroke-width": dv.sw * 0.8 });
             else tcDrawRotateHandle(dv, node, h, sb, hs);

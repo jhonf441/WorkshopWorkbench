@@ -20,7 +20,7 @@
         // the folding header of the job history (47-job-hidden.js) keeps these four
         ".za-sec-hd{display:flex;align-items:baseline;gap:6px;width:100%;min-height:44px;background:none;border:none;color:#eceff1;padding:8px 0 4px 0;cursor:pointer;text-align:left;font-family:inherit;}",
         ".za-sec-t{font-size:14px;font-weight:500;}",
-        ".za-sec-s{font-size:11px;color:rgba(255,255,255,0.5);margin-left:auto;text-align:right;}",
+        ".za-sec-s{font-size:12px;color:rgba(255,255,255,0.5);margin-left:auto;text-align:right;}",
         ".za-chev{width:12px;color:var(--wf-n-session-text,#90caf9);}",
         ".theme--light .za-sec-hd{color:#212121}",
         ".theme--light .za-sec-s,.theme--light .za-lbl{color:#616161}",

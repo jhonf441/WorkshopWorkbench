@@ -1,5 +1,5 @@
-      // Full screen shows only the map and the panel of one section: the bar of sections stays outside. This picker (a chip at the top
-      // left of the map, visible only in full screen) changes section without leaving it. It lists the tabs the bar shows now.
+      // Full screen shows only the map and the panel of one section: the bar of sections stays outside. This picker (a chip before the status
+      // line over the map, visible only in full screen) changes section without leaving it. It lists the tabs the bar shows now.
       function tzFsSectionSync(pz, lay) {
         var ws = pz.shell && pz.shell.ws && pz.shell.ws();
         if (!ws) return;
@@ -15,7 +15,9 @@
           });
           pz.fsSection.appendChild(pz.fsSectionSel);
         }
-        if (pz.fsSection.parentNode !== ws) ws.appendChild(pz.fsSection);
+        // in the row of the status line (before it), in the flow: it never covers the line (it used to float over the map at the top left)
+        var statusRow = pz.shell.mapStatusRow();
+        if (pz.fsSection.parentNode !== statusRow) statusRow.insertBefore(pz.fsSection, statusRow.firstChild);
         var sel = pz.fsSectionSel;
         var keys = Object.keys(pz.layoutButtons).filter(function (k) { return pz.layoutButtons[k].style.display !== "none" && !pz.layoutButtons[k].hidden; });
         var sig = keys.join(",");
@@ -123,7 +125,9 @@
         pz.zSubBar = tzEl("div", "wf-tabs tz-tabs sub");
         pz.zSubBar.style.marginTop = "0";
         pz.wsSide.insertBefore(pz.zSubBar, pz.wsSide.firstChild);
-        pz.wsSide.insertBefore(pz.helpBox, pz.wsSide.firstChild);
+        // the ONE help of the section goes at the FOOT of the side panel, after the cards of the tools (family rule, 2026-11-23: one fold per section,
+        // at its foot); every card, the ones the tools register included (HOOK etapa 6/7), is already in the panel (tzPagApplyLayout runs first)
+        pz.wsSide.appendChild(pz.helpBox);
         pz.wsSide.insertBefore(pz.space.createInspector(), pz.wsSide.firstChild); // inspector header (33-space.js)
         pz.applyLayout();
         pz.topRow.style.display = "none";
@@ -131,7 +135,7 @@
         if (window.ResizeObserver) {
           var wsRo = new ResizeObserver(function () { if (pz.shell.alive()) pz.wsLayout(); });
           wsRo.observe(pz.page);
-          pz.timers.push(setInterval(function () { if (!pz.shell.alive()) wsRo.disconnect(); }, 2000));
+          pz.timers.push(setInterval(function () { if (!pz.shell.alive()) wsRo.disconnect(); else tzWsClearRail(pz); }, 1000)); // also follows the bar opening or closing
         }
         window.addEventListener("resize", function () { if (pz.shell.alive()) pz.wsTop(); });
         pz.wsLayout();
@@ -141,7 +145,22 @@
         pz.shell.buildTip();
       }
 
+      // The control bar (rail or open card) floats over the right edge of the window. When its option to make room for it is off, or the window is
+      // too narrow for it, it would cover the edge of the map: the page then keeps its own right padding clear of it. With the option on the page is
+      // already narrower than the bar, the overlap is 0 and the padding stays the normal 12 px (nothing is counted twice).
+      function tzWsClearRail(pz) {
+        var rail = document.getElementById("emergency-fab-sidebar");
+        var pad = 12;
+        if (rail && rail.getClientRects().length) {
+          var overlap = pz.page.getBoundingClientRect().right - rail.getBoundingClientRect().left;
+          if (overlap > 0) pad = Math.max(pad, Math.ceil(overlap) + 8);
+        }
+        var want = pad + "px";
+        if (pz.page.style.paddingRight !== want) pz.page.style.paddingRight = want;
+      }
+
       function tzWsLayout(pz) {
+        tzWsClearRail(pz);
         pz.view.setNarrow(pz.page.clientWidth < 760);
         pz.wsTop();
       }
@@ -150,11 +169,12 @@
         var tc = typeof TC_HELP !== "undefined" ? TC_HELP : {};
         var a = pz.otherModeOn ? null : tc[pz.nav.layout()] || pz.TZ_HELP[pz.nav.layout()]; // a mode served elsewhere has no tab open
         pz.helpBox.innerHTML = "";
-        pz.helpBox.style.display = a ? "" : "none";
-        if (!a) return;
-        // H3 of the standard (AYUDAS.md): the "How it works" fold of the section, the shared piece (19-help-dom.js), closed unless the person left it open
-        var rows = (a.steps || []).map(function (s, i) { return [String(i + 1), s]; }).concat((a.notes || []).map(function (s) { return ["", s]; }));
-        var guide = workshopGuideEl(i18nT('zonesPage.how_to_use_2', { title: a.title }), rows);
+        pz.helpBox.style.display = "";
+        // H3 of the standard (AYUDAS.md): the "How it works" fold of the section, the shared piece (19-help-dom.js), closed unless the person left it open.
+        // The description of the page is its first row (2026-11-22: the one-line header keeps it only as a tooltip, which a touch screen never shows); a
+        // mode served elsewhere has no section help, so the fold carries just the description under the title of the page.
+        var rows = [["", i18nT('zonesPage.workbench_lead')]].concat(a ? (a.steps || []).map(function (s, i) { return [String(i + 1), s]; }).concat((a.notes || []).map(function (s) { return ["", s]; })) : []);
+        var guide = workshopGuideEl(i18nT('zonesPage.how_to_use_2', { title: a ? a.title : pz.pag.title }), rows);
         guide.open = !!pz.helpOpen;
         guide.addEventListener("toggle", function () {
           pz.helpOpen = guide.open;

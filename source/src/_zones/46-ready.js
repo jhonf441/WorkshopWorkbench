@@ -99,13 +99,10 @@
       }
 
       function tzReadyHeader(rd, card, checks) {
-        var hd = tzEl("div", "tz-row");
-        hd.style.alignItems = "center";
-        hd.appendChild(tzEl("h3", null, i18nT('ready.title')));
+        var hd = tzCardHead(tzEl("h3", null, i18nT('ready.title')), "shield-check-outline"); // the family head: icon, title and, at the right, the state
         var bad = checks.filter(function (c) { return c.state === "bad"; }).length;
         var ready = bad === 0 && tzSafetyDone("Laser");
         var badge = tzEl("span", "wf-state tz-badge " + (ready ? "ok" : "err"), bad ? i18nT('ready.n_to_fix', { n: bad }) : ready ? i18nT('ready.all_ok') : i18nT('ready.tick_the_list'));
-        badge.style.marginLeft = "8px";
         hd.appendChild(badge);
         card.appendChild(hd);
       }

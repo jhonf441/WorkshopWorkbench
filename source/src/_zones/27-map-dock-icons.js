@@ -2,6 +2,7 @@
         b.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="' + pdk.TZ_ICONS[key] + '"/></svg><span class="tzm-cap"></span>';
         b.querySelector(".tzm-cap").textContent = cap;
         b.classList.add("tzm-ib");
+        b.setAttribute("data-wf-hit", ""); // the icon keeps its look; the click area is 44 px (family helper)
         b.setAttribute("aria-label", (tip || cap));
         if (tip && !b.getAttribute("data-tip")) tzTip(b, tip);
         return b;
@@ -30,15 +31,22 @@
       function tzDockDockPopPlace(pdk) {
         if (!pdk.dockPopBtn) return;
         var mr = pdk.shell.mapCard().getBoundingClientRect(), br = pdk.dockPopBtn.getBoundingClientRect();
+        // 2026-11-22: the menu ALWAYS opens upward, inside the map: its height is limited to the room above the button (it scrolls inside
+        // when it is taller), so it never drops below the bar or past the card. It hangs from the button's right edge when the button is on
+        // the right half of the card (the settings gear), from its left edge otherwise.
+        var pad = 4, gap = 6;
+        var room = Math.floor(br.top - mr.top - gap - pad);
+        pdk.dockPop.style.maxHeight = Math.max(120, Math.min(room, mr.height - 2 * pad)) + "px";
         var w = pdk.dockPop.offsetWidth, h = pdk.dockPop.offsetHeight;
         if (pdk.dockPopPos) { // the user dragged it out of the way: keep it there (inside the map)
-          pdk.dockPop.style.left = Math.max(4, Math.min(pdk.dockPopPos.x, mr.width - w - 4)) + "px";
-          pdk.dockPop.style.top = Math.max(4, Math.min(pdk.dockPopPos.y, mr.height - h - 4)) + "px";
+          pdk.dockPop.style.left = Math.max(pad, Math.min(pdk.dockPopPos.x, mr.width - w - pad)) + "px";
+          pdk.dockPop.style.top = Math.max(pad, Math.min(pdk.dockPopPos.y, mr.height - h - pad)) + "px";
           return;
         }
-        var x = Math.max(4, Math.min(br.left - mr.left, mr.width - w - 4));
-        var y = br.top - mr.top - h - 6;
-        if (y < 4) y = br.bottom - mr.top + 6; // no room above: below the button
+        var onRight = br.left + br.width / 2 - mr.left > mr.width / 2;
+        var x = onRight ? br.right - mr.left - w : br.left - mr.left;
+        x = Math.max(pad, Math.min(x, mr.width - w - pad));
+        var y = Math.max(pad, br.top - mr.top - h - gap);
         pdk.dockPop.style.left = x + "px";
         pdk.dockPop.style.top = y + "px";
       }

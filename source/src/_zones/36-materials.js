@@ -13,6 +13,11 @@
       var TMAT_FILE = "0:/sys/workshop/config/materials.json";
       var tmatItems = [];
       var tmatLoaded = false;
+      var tmatReadFailed = false; // the last read could not be made (not "the library is empty"): the list kept is the last one known
+      // "unread" (never read), "ok" or "failed": what the start-up card needs to tell "no materials" from "could not check"
+      function tmatReadState() {
+        return !tmatLoaded ? "unread" : tmatReadFailed ? "failed" : "ok";
+      }
 
       // The list that window.__workshopMaterials shows to the other modules is taken back when the plugin stops (only if it is still this plugin's
       // list); a read or a save that ends after the stop does not publish it again.
@@ -29,9 +34,16 @@
           .then(function (t) {
             var o = JSON.parse(t);
             tmatItems = o && Array.isArray(o.materials) ? o.materials.filter(function (m) { return m && m.id && m.name; }) : [];
+            tmatReadFailed = false;
           })
-          .catch(function () {
-            tmatItems = [];
+          .catch(function (e) {
+            // no file yet (404) = an empty library; any other failure keeps the last list and is said as "could not read"
+            if (e && e.status === 404) {
+              tmatItems = [];
+              tmatReadFailed = false;
+            } else {
+              tmatReadFailed = true;
+            }
           })
           .then(function () {
             tmatLoaded = true;
@@ -40,6 +52,8 @@
           });
       }
       function tmatSave(list) {
+        // the library could not be read: what we hold may be empty only because of that; saving it would erase the real file
+        if (tmatReadFailed) return Promise.reject(new Error(i18nT("materials.could_not_read_library")));
         return tzPutText(TMAT_FILE, JSON.stringify({ version: 1, materials: list }, null, 1)).then(function () {
           tmatItems = list;
           tmatPublish();

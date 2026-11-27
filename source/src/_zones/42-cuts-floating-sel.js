@@ -38,7 +38,7 @@
           tc.floatingSel = tzEl("div", "tc-floating tc-floating-sel");
           tc.floatingSel.setAttribute("role", "toolbar");
           ["pointerdown", "pointerup", "click", "wheel", "dblclick"].forEach(function (ev) {
-            tc.floatingSel.addEventListener(ev, function (e) { e.stopPropagation(); });
+            tc.floatingSel.addEventListener(ev, function (e) { e.stopPropagation(); }, { passive: true }); // only stops it: passive, so the wheel never waits for it
           });
         }
         if (tc.floatingSel.parentNode !== box) { box.appendChild(tc.floatingSel); tc.floatingSelKey = ""; }

@@ -167,13 +167,13 @@
       }
 
       // R / Shift+R in the editor (40-cuts-state.js): true when the key was used
+      // the handles of the cut canvas are always sized for a finger (44 px always, no pointer query): 1.5x the drawn handle, 1.6x the hit radius
+      var TC_HANDLE_FINGER = 1.5;
+      var TC_HIT_FINGER = 1.6;
+
       function tcRotKey(tc, ev) {
         if (ev.ctrlKey || ev.metaKey || ev.altKey || (ev.key !== "r" && ev.key !== "R")) return false;
         tcRotateSel(tc, ev.shiftKey ? 90 : -90);
         return true;
       }
 
-      // a touch screen: the handles are bigger to be hit with a finger
-      function tcCoarsePointer() {
-        try { return typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches; } catch (e) { return false; }
-      }

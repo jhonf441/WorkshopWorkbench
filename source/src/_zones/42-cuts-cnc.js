@@ -3,7 +3,7 @@
       // With the flag off (the default) NOTHING in this file runs and the laser editor is exactly as it was (tests/cut-job-golden.test.js, trace-modules).
       // With the flag on AND the machine in CNC, the editor of the laser takes the spindle: the layers show their CNC process (depth, side, operation,
       // 40-cuts-process.js), the Cut card is the CNC one below, and the job is the one of the CNC engine (51-cnc-pure.js): tcProcToCnc -> tzCncPlan ->
-      // tzCncValidate -> tzCncGcode, started by tzStartArmed("CNC") behind the safety list of the CNC. Two steps (decision of the owner): REVIEW (the whole
+      // tzCncValidate -> tzCncGcode, started by tzStartArmed("CNC") behind the safety list of the CNC. Two steps (project decision): REVIEW (the whole
       // plan is checked and shown) and then CUT (safety list + double tap). The flag is a browser setting: localStorage workshopCncEditor = "1".
       // Technician only (the CNC is not an operator's, as today): the buttons carry tzTechOnly.
       // Not done yet: frame (spindle off, at safe height) and the tool library (the tool of the editor is the small form of the card).

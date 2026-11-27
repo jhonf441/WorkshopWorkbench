@@ -152,7 +152,7 @@
 
       function tzCncTrayField(cnc, label, el, tip) {
         var w = tzEl("label", "tz-muted");
-        w.style.cssText = "display:inline-flex;flex-direction:column;gap:2px;margin:0 8px 6px 0;font-size:11px;";
+        w.style.cssText = "display:inline-flex;flex-direction:column;gap:2px;margin:0 8px 6px 0;font-size:12px;";
         w.appendChild(tzEl("span", null, label));
         w.appendChild(el);
         return tip ? tzTip(w, tip) : w;

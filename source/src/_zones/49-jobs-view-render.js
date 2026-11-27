@@ -230,7 +230,7 @@
         rv.go.disabled = !tvs.ctx.machine.free() || rv.activeFrame;
         rv.f2.appendChild(rv.go);
         if (rv.activeFrame) {
-          var stp = tzBtn(i18nT('tv.stop'), "danger", function () { tvVisStopFrame(tvs); });
+          var stp = tzBtn(i18nT('tv.stop'), "danger wf-btn--crit", function () { tvVisStopFrame(tvs); }); // a stop: 48 (the family's critical size)
           stp.style.cssText += "background:#c62828;color:#fff;";
           rv.f2.appendChild(stp);
           rv.f2.appendChild(tzEl("span", "tz-muted", tvs.frameSt.stopping ? i18nT('tv.stopping') : (tvs.frameSt.repeat === 0 ? i18nT('tv.lap_cont', { n: tvs.frameSt.turn || 1 }) : i18nT('tv.lap_of', { n: tvs.frameSt.turn || 1, t: tvs.frameSt.repeat || 1 }))));

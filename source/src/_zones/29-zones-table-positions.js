@@ -4,7 +4,7 @@
         if (onlyIfChanged && pk === ptb.posLastKey) return;
         ptb.posLastKey = pk;
         ptb.posCard.innerHTML = "";
-        ptb.posCard.appendChild(tzEl("h3", null, i18nT('zoneActive.saved_positions')));
+        ptb.posCard.appendChild(tzCardHead(tzEl("h3", null, i18nT('zoneActive.saved_positions')), "map-marker-multiple"));
         ptb.posCard.appendChild(tzEl("div", "tz-muted tz-note", tzTx('zonesPage.the_same_as_the_jog_machine', 'jog'))); // the note has its own line, apart from the controls
         var free = ptb.data.machineFree();
         // Compact (2026-10-10: it overflowed in the narrow column and in the

@@ -9,7 +9,7 @@
         mp.node = function node(tag, attrs, parent) {
           var n = document.createElementNS(TZ_SVG_NS, tag);
           Object.keys(attrs).forEach(function (k) {
-            n.setAttribute(k, attrs[k]);
+            n.setAttribute(k, k === "font-size" && tag === "text" ? Math.max(Number(attrs[k]), mp.minFs || 0) : attrs[k]); // no label under 12 px on screen
           });
           (parent || mp.into || pmr.shell.mapRoot()).appendChild(n);
           return n;
@@ -88,6 +88,11 @@
         mp.travelH = h;
         mp.w = mp.w / (pmr.view.mapFull().w / vb.w); // sizes follow the zoom
         mp.fs = Math.max(8 / (pmr.view.mapFull().w / vb.w), mp.w / 45);
+        // the map is drawn in bed mm: 12 screen px are 12 / (px per mm) of them. The labels scale with the zoom, so on a small map (a phone, a 600 px
+        // column) the small ones fell to 7 - 10 px; each text is raised to this floor (mp.minFs is part of the layer signature, 31-map-render-sigs.js).
+        var svgBox = pmr.shell.svg();
+        var pxPerUnit = svgBox && svgBox.clientWidth > 0 && svgBox.clientHeight > 0 ? Math.min(svgBox.clientWidth / mp.vbv.w, svgBox.clientHeight / mp.vbv.h) : 0;
+        mp.minFs = pxPerUnit > 0 ? Math.round(12 / pxPerUnit * 1000) / 1000 : 0;
         tzMapTheme(pmr, mp);
         mp.focus = pmr.data.jobRunning() && !pmr.jobFocus.viewTodo(); // job in progress: only what is needed
         mp.other = pmr.jobFocus.otherMode();
@@ -140,7 +145,9 @@
           mp.node("image", { href: "/machine/file/" + encodeURIComponent("0:/sys/workshop/data/vision-bed.jpg") + "?ts=" + encodeURIComponent(fc.ts || ""), x: fc.x0, y: -fc.y1, width: fc.x1 - fc.x0, height: fc.y1 - fc.y0, preserveAspectRatio: "none", opacity: pmr.data.photoBed().opacity, "pointer-events": "none" });
         }
         if (pmr.layerState.layers().travel) {
-          var lbl = mp.node("text", { x: x1 - 2, y: -y0 + mp.fs * 1.3, fill: "#9e9e9e", "font-size": mp.fs, "text-anchor": "end" });
+          // 2026-11-22: two text lines under the bottom edge, below the coordinates of the corners of the areas (they sit within one line of the
+          // edge): the travel label used to be written over them
+          var lbl = mp.node("text", { x: x1 - 2, y: -y0 + mp.fs * 2.5, fill: "#9e9e9e", "font-size": mp.fs, "text-anchor": "end" });
           lbl.textContent = "X " + x0 + ".." + x1 + "  Y " + y0 + ".." + y1;
         }
       }
@@ -167,28 +174,12 @@
             "stroke-dasharray": mp.w / 80 + " " + mp.w / 120,
           });
           // 2026-10-11 ("the text overflows"): name and coordinates OUTSIDE the box (above and below), with a dark border to be read
-          // over the map: inside they overlapped the design and the right one ended up on the edge
-          var halo = { stroke: "rgba(0,0,0,0.75)", "stroke-width": mp.fs * 0.18, "paint-order": "stroke", "stroke-linejoin": "round" };
-          var al = mp.node("text", Object.assign({ x: a[0], y: -a[3] - mp.fs * 0.35, fill: col, "font-size": mp.fs * 0.85 }, halo));
-          al.textContent = (i18nT('zonesPage.area', { m: m, v: isAct ? i18nT('zonesPage.active_2') : "" })) + (mp.focus ? "" : "  X" + tzFmt(a[0]) + " Y" + tzFmt(a[3]));
-          // Coordinates at the corners (to adjust it with precision). The exact limits are shown by the single floating tooltip (see
-          // mapTip): no native <title> here, they overlapped with it.
-          var cfs = mp.fs * (isAct ? 0.75 : 0.6);
-          // the top left corner goes with the name
-          if (!mp.focus) [
-            [a[0], a[2], "start", cfs * 1.05],
-            [a[1], a[2], "end", cfs * 1.05],
-            [a[1], a[3], "end", -mp.fs * 0.35],
-          ].forEach(function (cc) {
-            var ct = mp.node("text", Object.assign({
-              x: cc[0],
-              y: -cc[1] + cc[3],
-              fill: col,
-              "fill-opacity": isAct ? 0.95 : 0.6,
-              "font-size": cfs,
-              "text-anchor": cc[2],
-            }, halo, { "stroke-width": cfs * 0.18 }));
-            ct.textContent = "X" + tzFmt(cc[0]) + " Y" + tzFmt(cc[1]);
-          });
+          // over the map. 2026-11-22: they are placed by tzMapAreaLabels (31-map-render-labels.js) so that they do not write over each other
+        });
+        // Name and coordinates of the areas: outside the box, with a dark border to be read over the map, none over another
+        var halo = { stroke: "rgba(0,0,0,0.75)", "stroke-width": mp.fs * 0.18, "paint-order": "stroke", "stroke-linejoin": "round" };
+        tzMapAreaLabels(pmr, mp).forEach(function (l) {
+          var t = mp.node("text", Object.assign({ x: l.x, y: l.y, fill: l.color, "font-size": l.fs, "text-anchor": l.anchor }, l.kind === "name" ? {} : { "fill-opacity": l.isAct ? 0.95 : 0.6 }, halo, { "stroke-width": l.fs * 0.18 }));
+          t.textContent = l.text;
         });
       }

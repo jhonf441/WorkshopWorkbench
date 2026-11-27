@@ -65,8 +65,14 @@
         if (!m.replace(/\.g$/i, "").replace(/\./g, "")) m = tzSlug(zoneName);
         return /\.g$/i.test(m) ? m : m + ".g";
       }
-      // Why a zone has no usable file: the p<N>.g is not there (or it is not understood)
+      // true when the zone files could not be READ at the last refresh (machine off or offline): then "no zone" is not known, it is not "there is none".
+      // read = ctx.data.filesRead (or filesOk of the page's data object): the function that says which reads worked.
+      function tzZonesUnread(read) {
+        return !!(typeof read === "function" && (read() || {}).zones === false);
+      }
+      // Why a zone has no usable file: the p<N>.g is not there (or it is not understood), or the files could not be read now
       function tzNoZoneText(ctx, wn) {
+        if (ctx && ctx.data && tzZonesUnread(ctx.data.filesRead)) return i18nT("zoneActive.zones_unread", { code: TZ_CODES[wn] });
         return i18nT("zoneActive.has_no_zone_file_create_it", { code: TZ_CODES[wn] });
       }
 

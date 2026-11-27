@@ -85,7 +85,7 @@
       function tcHandles(tc) {
         var b = tcSelBox(tc);
         if (!b) return [];
-        var hs = (tc.lastW / 70) * (tcCoarsePointer() ? 1.5 : 1);
+        var hs = (tc.lastW / 70) * TC_HANDLE_FINGER;
         return [
           { k: "s", x: b.xmin, y: b.ymin, ax: b.xmax, ay: b.ymax },
           { k: "s", x: b.xmax, y: b.ymin, ax: b.xmin, ay: b.ymax },
@@ -96,7 +96,7 @@
       }
 
       function tcHitHandle(tc, p, tol) {
-        var r = Math.max(tol, tc.lastW / 70) * (tcCoarsePointer() ? 1.6 : 1);
+        var r = Math.max(tol, tc.lastW / 70) * TC_HIT_FINGER;
         var hh = tcHandles(tc);
         for (var i = 0; i < hh.length; i++) if (Math.hypot(p.x - hh[i].x, p.y - hh[i].y) <= r) return hh[i];
         return null;

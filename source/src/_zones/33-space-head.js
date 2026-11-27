@@ -1,6 +1,6 @@
       // ---- Live state of the machine in the header of the page (2026-10-22) ----
       // The header was repeating the footer (mode, status, zone, head X/Y). Now each datum has one place: the header holds the live
-      // state of the machine (state, active zone, position X/Y/Z, homing), the footer only the lock, the control and the job buttons.
+      // state of the machine (state, active zone, lock), the footer only the lock, the control and the job buttons.
       function tzSpaceCreateHead(psp) {
         psp.headBar = tzEl("div", "tz-hdstate");
         psp.headBar.setAttribute("role", "status");
@@ -8,19 +8,12 @@
         return psp.headBar;
       }
 
-      function tzSpaceHeadCell(label, value) {
-        var c = tzEl("span", "tz-hdcell");
-        c.appendChild(tzEl("b", null, label));
-        c.appendChild(tzEl("span", "tz-e-num", value));
-        return c;
-      }
-
       function tzSpacePaintHead(psp) {
         if (!psp.headBar) return;
         var st = psp.data.st();
         var t = tzTextState(st, psp.data.zones());
         var block = t.withState ? tzSpaceBlockReason(t, st) : null; // why the controls are locked: it is read at the top, where the state is
-        var key = JSON.stringify([t.withState, t.level, t.state, t.zone, t.head, block, tzLjStopOffered() ? [!!(st && st.liveJob), tzLjBannerSig(), workshopPluginActive("bar")] : null]);
+        var key = JSON.stringify([t.withState, t.level, t.state, t.zone, block, tzLjStopOffered() ? [!!(st && st.liveJob), tzLjBannerSig(), workshopPluginActive("bar")] : null]);
         if (key === psp.headKey) return;
         psp.headKey = key;
         psp.headBar.innerHTML = "";
@@ -42,11 +35,7 @@
         est.title = i18nT('space.state_tip', { state: t.state });
         psp.headBar.appendChild(est);
         if (t.zone) psp.headBar.appendChild(tzEl("span", "tz-hdcell", i18nT('space.zone', { code: t.zone.code }) + (t.zone.name ? " " + t.zone.name : "")));
-        if (!t.head) return;
-        psp.headBar.appendChild(tzEl("span", "tz-muted", i18nT('space.head')));
-        psp.headBar.appendChild(tzSpaceHeadCell("X", tzFmt(t.head.x)));
-        psp.headBar.appendChild(tzSpaceHeadCell("Y", tzFmt(t.head.y)));
-        if (t.head.z !== null) psp.headBar.appendChild(tzSpaceHeadCell("Z", tzFmt(t.head.z)));
+        // the head position (X Y Z) is in the bar over the map now (28-map-tools-measure.js): the header stays one line (2026-11-22)
       }
 
       // The lock reason (a hint when it is only "no home yet"), in the header with the state: in the footer it sat too low and was often out of sight

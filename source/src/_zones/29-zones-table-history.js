@@ -7,7 +7,7 @@
         setTimeout(ptb.nav.apply, 0);
         tzTableRenderTable(ptb);
         ptb.edCard.innerHTML = "";
-        ptb.edCard.appendChild(tzEl("h3", null, i18nT('zonesPage.history_of', { code: TZ_CODES[idx] })));
+        ptb.edCard.appendChild(tzCardHead(tzEl("h3", null, i18nT('zonesPage.history_of', { code: TZ_CODES[idx] })), "history"));
         var list = tzEl("div", null, i18nT('common.loading'));
         ptb.edCard.appendChild(list);
         var msg = tzEl("div", "tz-msg", "");

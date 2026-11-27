@@ -31,7 +31,7 @@
         var t = tzEl("div", "tc-layers");
         lc.appendChild(t);
         var cab = tzEl("div", "tc-layer tc-layer-cab");
-        (tcCncOn(tc) ? ["", i18nT('job.layer'), i18nT('cnc.depth'), i18nT('cnc.side'), i18nT('cuts.cnc_operation'), ""] : ["", i18nT('job.layer'), i18nT('cuts.power'), "mm/min", i18nT('common.passes'), ""]).forEach(function (x) { cab.appendChild(tzEl("span", null, x)); });
+        (tcCncOn(tc) ? ["", i18nT('job.layer'), i18nT('cnc.depth'), i18nT('cnc.side'), i18nT('cuts.cnc_operation')] : ["", i18nT('job.layer'), i18nT('cuts.power'), "mm/min", i18nT('common.passes')]).forEach(function (x) { cab.appendChild(tzEl("span", null, x)); });
         t.appendChild(cab);
         tc.data.layers.forEach(function (L, li) { return tcLayerRow(tc, t, has, L, li); });
       }
